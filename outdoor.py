@@ -1,4 +1,3 @@
-from ast import Delete
 import tkinter as tk
 import tkinter.messagebox
 from tkinter import ttk
@@ -9,88 +8,120 @@ from ttkbootstrap import Style
 from ttkbootstrap.constants import *
 import datetime
 
+class PickGAApp: #tk.Frame
 
-listofoutdoor = ["SportCo", "Chasse", "Glisse", "Running", "Implant", "PFECA"]
-pdb = ProdDB("./database/goatdata.db")
+    def __init__(self, listofcell): #master, 
+        #super().__init__(master)
+        self.root = tk.Tk()
+        self.root.title("GOAT Of GA (alpha)")
+        self.root.geometry("1600x1080")
+        #self.master = self.root
+        self.tabcontrol = ttk.Notebook(self.root)
+        self.tabcontrol.grid(padx=15, pady=15)
 
-class PickGAApp(tk.Frame):
+        self.configblock = tk.Frame(self.tabcontrol, width= 1600, height=1080)
+        self.taskmgt = tk.Frame(self.tabcontrol, width= 1600, height=1080)
+        self.credit = tk.Frame(self.tabcontrol, width= 1600, height=1080)
 
-    def __init__(self, master, listofcell):
-        super().__init__(master)
+        self.configblock.pack(fill="both", expand=1)
+        self.taskmgt.pack(fill="both", expand=1)
+        self.credit.pack(fill="both", expand=1)
+
+
+        self.tabcontrol.add(self.configblock, text="Blocks Configuration")
+        self.tabcontrol.add(self.taskmgt, text="Task Management")
+        self.tabcontrol.add(self.credit, text="Credits")
+
         self.get_dictglobalpick = {}
         self.dictart_int = {}
         self.dictean_int = {}
-        self.dictblockpickerout = {} # dict picker/block
-        #self.dict_hourname = {}
-        #self.dict_hourout = {}
-        self.master = master
+        self.dictblockpickerout = {}
+
         self.listofcell = listofcell
         self.iniblock(self.listofcell)
-        master.title("GOAT Of GA (alpha)")
-        master.geometry("1600x1080")
-        #master.resizable(False, False)
-        self.backgd()
-        self.block_widget(self.listofcell)
-        self.totalpart()
-    
-    def backgd(self):
-        self.imagecestas = Image.open("./logo/LogoCestasDC2024.png")
-        self.resized_image= self.imagecestas.resize((121,100))
-        self.test = ImageTk.PhotoImage(self.resized_image)
-        self.label1 = tkinter.Label(image=self.test)
-        self.label1.image = self.test
 
-        self.label1.place(x=15, y=35)
+        #master.resizable(False, False)
+
+        self.task_widget(self.listofcell)
+
+        self.credit_widget()     
+        
 
     def iniblock(self, listofblock):
         self.listofblock = listofblock
         for data in self.listofblock:
             
             pdb.insert_nameblock(self.listofblock.index(data)+1, "{}".format(data))
- 
-    def block_widget(self, lsofblock):
+    
+    def credit_widget(self):
+        self.imagecestas = Image.open("./logo/LogoCestasDC2024.png")
+        self.vronalogo = Image.open("./logo/vrona_sas_logo_corporate.png")
+
+        self.resized_cestas= self.imagecestas.resize((242,200))
+        self.resized_vrona= self.vronalogo.resize((140,140))
+
+        self.rcestasimg = ImageTk.PhotoImage(self.resized_cestas)
+        self.rvronaimg = ImageTk.PhotoImage(self.resized_vrona)
+
+        self.cestasimg_credit = tk.Label(self.credit, image=self.rcestasimg)
+        self.vronaimg_credit = tk.Label(self.credit, image=self.rvronaimg)
+
+        self.cestasimg_credit.image = self.rcestasimg
+        self.vronaimg_credit.image = self.rvronaimg
+
+        self.cestasimg_credit.place(x=700, y=240)
+        self.vronaimg_credit.place(x=750, y=558)
+
+        self.credit_text = tk.Label(self.credit, text = "App: GOAT_GA\nTasks Recommendation System\nAuthor: Michael Hatchi")
+        self.credit_text.place(x=726, y=460)
+
+        self.rights_text = tk.Label(self.credit, text = "Copyright © VRONA SAS\nAll rights reserved. \nLicense: XXX")
+        self.rights_text.place(x=750, y=690)
+
+    def task_widget(self, lsofblock):
+        
         self.lsofblock = lsofblock
 
         self.totalpicker_text = tk.IntVar()
 
         # BLOCKS PART
-        self._block = tk.Label(self.master, text='BLOCKS', justify='center', font=('bold', 20), pady=10)
+        self._block = tk.Label(self.taskmgt, text='BLOCKS', justify='center', font=('bold', 20), pady=10)
         self._block.grid(row=0, column=4, )
 
-        self._article = tk.Label(self.master, text='Articles', justify='right',font=("bold", 13), pady=10)
+        self._article = tk.Label(self.taskmgt, text='Articles', justify='right',font=("bold", 13), pady=10)
         self._article.grid(row=2, column=1)
 
-        self.ean = tk.Label(self.master, text='EAN', justify='right',font=("bold", 13), pady=10)
+        self.ean = tk.Label(self.taskmgt, text='EAN', justify='right',font=("bold", 13), pady=10)
         self.ean.grid(row=3, column=1)
 
-        self.totalpicker_input = tk.Entry(self.master, textvariable=self.totalpicker_text, justify="center", width=10)
+        self.totalpicker_input = tk.Entry(self.taskmgt, textvariable=self.totalpicker_text, justify="center", width=10)
         self.totalpicker_input.grid(row=2, column=9)
 
-        self.buttondata = ttk.Button(root, text="GOAT Power", bootstyle=SUCCESS, command=self.add_ateanpik)
+        self.buttondata = ttk.Button(self.taskmgt, text="GOAT Power", bootstyle=SUCCESS, command=self.add_ateanpik)
         self.buttondata.grid(row=3, column=12 , padx=10)
 
         # POLY PART
-        self._poly = tk.Label(self.master, text='POLY', justify='center', font=('bold', 20), pady=10)
+        self._poly = tk.Label(self.taskmgt, text='POLY', justify='center', font=('bold', 20), pady=10)
         self._poly.grid(row=5, column=4)
 
-        self._currentopick = tk.Label(self.master, text='TP \nPresent', justify='center', font=('bold', 16), pady=10)
+        self._currentopick = tk.Label(self.taskmgt, text='TP \nPresent', justify='center', font=('bold', 16), pady=10)
         self._currentopick.grid(row=6, column=2)
 
-        self.currentopick = tk.Listbox(self.master, height=5, width=10, justify="center")
+        self.currentopick = tk.Listbox(self.taskmgt, height=5, width=10, justify="center")
         self.currentopick.grid(row=7, column=2)
 
-        self._theorytopick = tk.Label(self.master, text='TP \nTheorique', justify='center', font=('bold', 16), pady=10)
+        self._theorytopick = tk.Label(self.taskmgt, text='TP \nTheorique', justify='center', font=('bold', 16), pady=10)
         self._theorytopick.grid(row=6, column=4)
 
-        self.theorytopick = tk.Listbox(self.master, height=5, width=10, justify="center")
+        self.theorytopick = tk.Listbox(self.taskmgt, height=5, width=10, justify="center")
         self.theorytopick.grid(row=7, column=4)
 
-        self._polystatus = tk.Label(self.master, text='Poly \nStatus', justify='center', font=('bold', 16), pady=10)
+        self._polystatus = tk.Label(self.taskmgt, text='Poly \nStatus', justify='center', font=('bold', 16), pady=10)
         self._polystatus.grid(row=6, column=6)
 
-        self.polystatus = tk.Listbox(self.master, height=5, width=10, justify="center")
-        Meter(metersize=110, padding=20, amountused=-2, labeltext="Poly",
-                 meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=7, column=6)
+        self.polystatus = tk.Listbox(self.taskmgt, height=5, width=10, justify="center")
+        Meter(master=self.taskmgt, metersize=110, padding=20, amountused=-2, labeltext="Poly",
+                meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=7, column=6)
 
         # SEPARATOR PART
         
@@ -99,27 +130,57 @@ class PickGAApp(tk.Frame):
         
         # PICKERS PART
         self.picker_row = 10 # to merge
-        self.hours = tk.Label(self.master, text='HEURE', font=("bold", 20), pady=10)
+        self.hours = tk.Label(self.taskmgt, text='HEURE', font=("bold", 20), pady=10)
         self.hours.grid(row=self.picker_row, column=1)
 
-        self.pickertitle = tk.Label(self.master, text='PICKERS', font=("bold", 20), pady=10)
+        self.pickertitle = tk.Label(self.taskmgt, text='PICKERS', font=("bold", 20), pady=10)
         self.pickertitle.grid(row=self.picker_row, column=4)
 
         # TOTALS PART
-        self._totals = tk.Label(self.master, text='TOTALS', justify='center', font=('bold', 16), pady=10)
+        self._totals = tk.Label(self.taskmgt, text='TOTALS', justify='center', font=('bold', 16), pady=10)
         self._totals.grid(row=23, column=4)
 
-        self.totalprelev = tk.Label(self.master, text='Total \nPrelev', font=("bold", 13), pady=10)
+        self.totalprelev = tk.Label(self.taskmgt, text='Total \nPrelev', font=("bold", 13), pady=10)
         self.totalprelev.grid(row=24, column=3)
 
-        self.deltacap = tk.Label(self.master, text='Delta \nCapacitif', font=("bold", 13), pady=10)
+        self.deltacap = tk.Label(self.taskmgt, text='Delta \nCapacitif', font=("bold", 13), pady=10)
         self.deltacap.grid(row=24, column=4)
 
-        self.totalpredprlv = tk.Label(self.master, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
+        self.totalpredprlv = tk.Label(self.taskmgt, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
         self.totalpredprlv.grid(row=24, column=5)
 
         self.autoblock(self.lsofblock)
 
+        # Blocks list (listbox)
+        self.blocks_list = tk.Listbox(self.configblock, height=8, width=50, border=0)
+        self.blocks_list.grid(row=27, column=4, pady=20, padx=20) #columnspan=2, rowspan=3, 
+        # Create scrollbar
+        self.scrollbar = tk.Scrollbar(self.configblock)
+        self.scrollbar.grid(row=27, column=2)
+        # Set scrollbar to parts
+        self.blocks_list.configure(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.configure(command=self.blocks_list.yview)
+        # Bind select
+        self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
+
+        self.totalpart()
+
+    def select_item(self, event):
+        # # Create global selected item to use in other functions
+        # global self.selected_item
+        try:
+            # Get index
+            index = self.blocks_list.curselection()[0]
+            # Get selected item
+            self.selected_item = self.blocks_list.get(index)
+            # print(selected_item) # Print tuple
+
+            # Add text to entries
+            # self.part_entry.delete(0, tk.END)
+            # self.part_entry.insert(tk.END, self.selected_item[1])
+
+        except IndexError:
+            pass
 
     def autohour(self):
         
@@ -127,15 +188,15 @@ class PickGAApp(tk.Frame):
         #self.lines = [5,7,9,11,13,15,17,19]
 
         self.hour_row = 9 # to merge
-        self.hourname = tk.Label(self.master, text="H", font=("bold", 13), padx=40, pady=10)
-        self.hourout = tk.Listbox(self.master, height=1, width=25, justify="center")
-        self.totalpickerout = tk.Listbox(self.master, height=1, width=5, justify="center")
+        self.hourname = tk.Label(self.taskmgt, text="H", font=("bold", 13), padx=40, pady=10)
+        self.hourout = tk.Listbox(self.taskmgt, height=1, width=25, justify="center")
+        self.totalpickerout = tk.Listbox(self.taskmgt, height=1, width=5, justify="center")
         self.hourname.grid(row=self.hour_row, column=0)
         self.hourout.grid(row=self.hour_row, column=1)
         
         for nblock in self.listofcell:
             
-            self.dictblockpickerout[self.listofcell.index(nblock)+1] = tk.Listbox(self.master, height=1, width=5, justify="center")
+            self.dictblockpickerout[self.listofcell.index(nblock)+1] = tk.Listbox(self.taskmgt, height=1, width=5, justify="center")
             self.dictblockpickerout[self.listofcell.index(nblock)+1].grid(row=self.hour_row, column=self.listofcell.index(nblock)+2)
             
             self.totalpickerout.grid(row=self.hour_row, column=self.listofcell.index(self.listofcell[-1])+4)
@@ -146,15 +207,15 @@ class PickGAApp(tk.Frame):
     #     self.lines = [5,7,9,11,13,15,17,19]
     #     print(self.dict_hourout.keys())
 
-    #     self.dict_hourname[self.count] = tk.Label(self.master, text="H{}".format(self.count), font=("bold", 13), padx=40, pady=10)
-    #     self.dict_hourout[self.count]= tk.Listbox(self.master, height=1, width=25, justify="center")
-    #     self.totalpickerout = tk.Listbox(self.master, height=1, width=5, justify="center")
+    #     self.dict_hourname[self.count] = tk.Label(self.taskmgt, text="H{}".format(self.count), font=("bold", 13), padx=40, pady=10)
+    #     self.dict_hourout[self.count]= tk.Listbox(self.taskmgt, height=1, width=25, justify="center")
+    #     self.totalpickerout = tk.Listbox(self.taskmgt, height=1, width=5, justify="center")
     #     self.dict_hourname[self.count].grid(row=self.lines[self.count], column=0)
     #     self.dict_hourout[self.count].grid(row=self.lines[self.count], column=1)
         
     #     for nblock in self.listofcell:
             
-    #         self.dictblockpickerout[self.listofcell.index(nblock)+1] = tk.Listbox(self.master, height=1, width=5, justify="center")
+    #         self.dictblockpickerout[self.listofcell.index(nblock)+1] = tk.Listbox(self.taskmgt, height=1, width=5, justify="center")
     #         self.dictblockpickerout[self.listofcell.index(nblock)+1].grid(row=self.lines[self.count], column=self.listofcell.index(nblock)+2)
             
     #         self.totalpickerout.grid(row=self.lines[self.count], column=self.listofcell.index(self.listofcell[-1])+4)
@@ -218,31 +279,31 @@ class PickGAApp(tk.Frame):
             self.dictean_int[self.lsofblock.index(nblock)] = tk.IntVar()
             
 
-            self.part_block = tk.Label(self.master, text=self.lsofblock[self.lsofblock.index(nblock)], font=("bold", 12))
+            self.part_block = tk.Label(self.taskmgt, text=self.lsofblock[self.lsofblock.index(nblock)], font=("bold", 12))
             self.part_block.grid(row=1, column=self.lsofblock.index(nblock)+2)
 
-            self.part_art_input[self.lsofblock.index(nblock)+1] = tk.Entry(self.master, textvariable=self.dictart_int[self.lsofblock.index(nblock)], justify="center", width=10)
+            self.part_art_input[self.lsofblock.index(nblock)+1] = tk.Entry(self.taskmgt, textvariable=self.dictart_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_art_input[self.lsofblock.index(nblock)+1].grid(row=2, column=self.lsofblock.index(nblock)+2)
 
-            self.part_ean_input = tk.Entry(self.master, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
+            self.part_ean_input = tk.Entry(self.taskmgt, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_ean_input.grid(row=3, column=self.lsofblock.index(nblock)+2)
 
-            Meter(metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
+            Meter(master=self.taskmgt, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
                  meterstyle='success.TLabel').grid(row=22, column=self.lsofblock.index(nblock)+2)
             
-            self.totalpicker = tk.Label(self.master, text='Total Pickers', font=("bold", 13), pady=10)
+            self.totalpicker = tk.Label(self.taskmgt, text='Total Pickers', font=("bold", 13), pady=10)
             self.totalpicker.grid(row=1, column=self.lsofblock.index(self.lsofblock[-1])+4)
 
 
     def totalpart(self):
 
-        self.totalprelev_list = tk.Listbox(self.master, height=2, width=10, justify="center")
+        self.totalprelev_list = tk.Listbox(self.taskmgt, height=2, width=10, justify="center")
         self.totalprelev_list.grid(row=25, column=3)
 
-        self.deltacap_list = tk.Listbox(self.master, height=2, width=10, justify="center")
+        self.deltacap_list = tk.Listbox(self.taskmgt, height=2, width=10, justify="center")
         self.deltacap_list.grid(row=25, column=4)
         
-        self.totalpredprlv_list = tk.Listbox(self.master, height=2, width=10, justify="center")
+        self.totalpredprlv_list = tk.Listbox(self.taskmgt, height=2, width=10, justify="center")
         self.totalpredprlv_list.grid(row=25, column=5)
 
     # def clear_text(self, nblocks):
@@ -250,10 +311,18 @@ class PickGAApp(tk.Frame):
     #     self.part_art_input[self.nblocks].delete(0, tk.END)
     #     self.part_ean_input.delete(0, tk.END)
 
+    def mainloop(self):
+        #style = Style('litera')
+        #self.root = style.master
+        #style.master.mainloop()
+        
+        self.root.mainloop()
 
-root = tk.Tk()
-app = PickGAApp(listofcell=listofoutdoor, master=root)
-style = Style('litera')
-root = style.master
-style.master.mainloop()
+listofoutdoor = ["SportCo", "Chasse", "Glisse", "Running", "Implant", "PFECA"]
+pdb = ProdDB("./database/goatdata.db")
+# root = tk.Tk()
+app = PickGAApp(listofcell=listofoutdoor) #, master=root
+# style = Style('litera')
+# root = style.master
+# style.master.mainloop()
 app.mainloop()
