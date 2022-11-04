@@ -42,10 +42,6 @@ class ProdDB:
         self.cur.execute("INSERT INTO poly_out VALUES (?,?)",(time_glob, total_picker_onsite))
         self.conn.commit()
 
-    # def insert_globpick(self, id, time_glob, art_bck1, art_bck2, art_bck3, art_bck4, art_bck5, art_bck6, ean_bck1, ean_bck2, ean_bck3, ean_bck4, ean_bck5, ean_bck6, total_picker):
-    #     self.cur.execute("INSERT INTO globalpick_in VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",(id, time_glob, art_bck1, art_bck2, art_bck3, art_bck4, art_bck5, art_bck6, ean_bck1, ean_bck2, ean_bck3, ean_bck4, ean_bck5, ean_bck6, total_picker))
-    #     self.conn.commit()
-
     def insert_gpick(self, dictbase):
         self.dictbase = dictbase
         self.placeholder = ','.join(['?'] * len(self.dictbase))
@@ -98,6 +94,5 @@ class ProdDB:
 # db.insert_nameblock(4, "Implant")
 # db.insert_nameblock(5, "PFECA")
 # db.insert_capatheo(238.3)
-# db.insert_globpick(1, datetime.datetime.now(), 2922, 3996, 3912, 5864, 0, 0, 1936, 1990, 3064, 3780, 0, 0, 10)
 
 #print(db.fetch_picker(1))

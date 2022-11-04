@@ -1,12 +1,16 @@
-import numpy as np
+import pandas as pd
+import sqlite3
+from globaldb import ProdDB
 #import pandas as pd
 
-
 class Engine():
+
+
     
-    def __init__(self):
-        self.capareal_h = 238.5
-        pass
+    def __init__(self, db):
+        # self.capareal_h = 238.5
+        self.conn = sqlite3.connect(db)
+        self.cur = self.conn.cursor()
 
     #def sumit(self, dictofnum):
     #def subit(self, goal, real):
@@ -16,6 +20,15 @@ class Engine():
     #def delta_time(self, starting_time, ending_time):
 
     # def weights(self, dictofnum):
+
+    def querygb_inputs(self):
+        #self.conn = 
+
+        self.df = pd.read_sql_query("select * from globalpick_in", self.conn)
+        print(self.df.head())
+        self.conn.close()
+
+        
     
 class Dispatch():
 
@@ -57,4 +70,7 @@ class Dispatch():
 
 
     """
+
+    db = Engine("./database/goatdata.db")
+    db.querygb_inputs()
         

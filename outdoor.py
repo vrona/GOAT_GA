@@ -11,7 +11,7 @@ import datetime
 
 
 listofoutdoor = ["SportCo", "Chasse", "Glisse", "Running", "Implant", "PFECA"]
-pdb = ProdDB("zeedata.db")
+pdb = ProdDB("./database/goatdata.db")
 
 class PickGAApp(tk.Frame):
 
@@ -34,7 +34,7 @@ class PickGAApp(tk.Frame):
         self.totalpart()
     
     def backgd(self):
-        self.imagecestas = Image.open("LogoCestasDC2024.png")
+        self.imagecestas = Image.open("./logo/LogoCestasDC2024.png")
         self.resized_image= self.imagecestas.resize((121,100))
         self.test = ImageTk.PhotoImage(self.resized_image)
         self.label1 = tkinter.Label(image=self.test)
@@ -199,7 +199,7 @@ class PickGAApp(tk.Frame):
 
         # Insert into DB
         pdb.insert_gpick(self.get_dictglobalpick)
-        pdb.insert_poly(self.timerecord, self.totalpicker_text.get(), , )
+        #pdb.insert_poly(self.timerecord, self.totalpicker_text.get(), , )
             
         # Insert into list
         #self.hourout.insert(self.get_dictglobalpick['time_glob'])
