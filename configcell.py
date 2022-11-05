@@ -1,12 +1,11 @@
-import pandas as pd
-import sqlite3
 import tkinter as tk
+import pandas as pd
 import tkinter.messagebox
 from tkinter import ttk
+from blocks import Blocks
 
 from ttkbootstrap import Style
 from ttkbootstrap.constants import *
-import datetime
 
 class Configtab(tk.Frame):
 
@@ -48,10 +47,9 @@ class Configtab(tk.Frame):
         self.shiftbutton = ttk.Spinbox(self.master, text="Shift", bootstyle="success", values= ["Morning", "Afternoon", "Night"], font=("Helvetica", 14)).grid(row=2, column=4, pady=10)
 
         # Spinbox Button for Blocks
-        self.blockslabel = tk.Label(self.master, text="Nombre de Blocks", justify='left', font=18)
+        self.blockslabel = tk.Label(self.master, text="Selection de Blocks", justify='left', font=18)
         self.blockslabel.grid(row=4, column=3)
         self.blocksbutton = ttk.Spinbox(self.master, text="Blocks", bootstyle="success", from_=1, to=6, font=("Helvetica", 14)).grid(row=4, column=4, pady=10)
-
 
         # Checkbox Buttons Manuel vs Automation
         self.modelabel = tk.Label(self.master, text="Mode", justify='left', font=18)
@@ -65,9 +63,14 @@ class Configtab(tk.Frame):
         # Navigation Button
         self.navbutton = ttk.Button(self.master, text="Gestion Activite", bootstyle="PRIMARY", command= lambda: self.selecttab(1)).grid(row=12, column=4, pady=10)
 
-        # # Blocks list (listbox)
-        # self.blocks_list = tk.Listbox(self.master, height=8, width=50, border=0)
-        # self.blocks_list.grid(row=8, column=0, pady=20, padx=20, rowspan=3, columnspan=2) # , 
+        # Blocks list (listbox)
+        self.validate_blocks = Blocks().blocdataframe()
+        for row in self.validate_blocks.iterrows():
+            print(row)
+        #self.blocks_entry = tk.Entry(self.master, textvariable=self.validate_blocks)
+        self.blocks_list = tk.Listbox(self.master, height=8, width=50, border=0)
+        self.blocks_list.grid(row=20, column=0, pady=20, padx=20, rowspan=3, columnspan=2)
+        #self.blocks_list.insert(tk.END, self.validate_blocks.get())
         # # Create scrollbar
         # self.scrollbar = ttk.Scrollbar(self.master, bootstyle="PRIMARY-round")
         # self.scrollbar.grid(row=8, column=2)
