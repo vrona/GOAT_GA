@@ -1,5 +1,5 @@
 #from tkinter import *
-from outdoor import PickGAApp
+from backbone import PickGAApp
 
 listofblock = ["Sport Co", "Chasse", "Glisse", "Running", "Implant"]
 # Part

@@ -22,7 +22,10 @@ class PickGAApp: #tk.Frame
 
         self.configblock = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.taskmgt = tk.Frame(self.tabcontrol, width= 1600, height=1080)
+        self.report = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.credit = tk.Frame(self.tabcontrol, width= 1600, height=1080)
+
+        # self.listoftabs = list(self.configblock, self.taskmgt, self.report, self.credit)
 
         self.configblock.pack(fill="both", expand=1)
         self.taskmgt.pack(fill="both", expand=1)
@@ -42,13 +45,13 @@ class PickGAApp: #tk.Frame
         self.iniblock(self.listofcell)
 
         #master.resizable(False, False)
-
-        self.blockwidget = Configtab(self.configblock)
-        self.blockwidget.configwidget()
-        
+       
         self.task_widget(self.listofcell)
 
-        self.credit_widget()     
+        self.credit_widget()
+    
+    def selecttab(self):
+        self.tabcontrol.select(1)
         
 
     def iniblock(self, listofblock):
@@ -56,9 +59,6 @@ class PickGAApp: #tk.Frame
         for data in self.listofblock:
             
             pdb.insert_nameblock(self.listofblock.index(data)+1, "{}".format(data))
-
-    def selecttab(self):
-        self.tabcontrol.select(1)
     
     def credit_widget(self):
         self.imagecestas = Image.open("./logo/LogoCestasDC2024.png")
@@ -160,24 +160,6 @@ class PickGAApp: #tk.Frame
 
         self.totalpart()
 
-    
-
-    def select_item(self, event):
-        # # Create global selected item to use in other functions
-        # global self.selected_item
-        try:
-            # Get index
-            index = self.blocks_list.curselection()[0]
-            # Get selected item
-            self.selected_item = self.blocks_list.get(index)
-            # print(selected_item) # Print tuple
-
-            # Add text to entries
-            # self.part_entry.delete(0, tk.END)
-            # self.part_entry.insert(tk.END, self.selected_item[1])
-
-        except IndexError:
-            pass
 
     def autohour(self):
         
@@ -197,27 +179,6 @@ class PickGAApp: #tk.Frame
             self.dictblockpickerout[self.listofcell.index(nblock)+1].grid(row=self.hour_row, column=self.listofcell.index(nblock)+2)
             
             self.totalpickerout.grid(row=self.hour_row, column=self.listofcell.index(self.listofcell[-1])+4)
-
-    # def autohour(self):
-    #     self.count = 0
-    #     # mise à jour automatique après validation Bouton des chiffres: outout -> hourout, dictblockpickerout, totalpickerout
-    #     self.lines = [5,7,9,11,13,15,17,19]
-    #     print(self.dict_hourout.keys())
-
-    #     self.dict_hourname[self.count] = tk.Label(self.taskmgt, text="H{}".format(self.count), font=("bold", 13), padx=40, pady=10)
-    #     self.dict_hourout[self.count]= tk.Listbox(self.taskmgt, height=1, width=25, justify="center")
-    #     self.totalpickerout = tk.Listbox(self.taskmgt, height=1, width=5, justify="center")
-    #     self.dict_hourname[self.count].grid(row=self.lines[self.count], column=0)
-    #     self.dict_hourout[self.count].grid(row=self.lines[self.count], column=1)
-        
-    #     for nblock in self.listofcell:
-            
-    #         self.dictblockpickerout[self.listofcell.index(nblock)+1] = tk.Listbox(self.taskmgt, height=1, width=5, justify="center")
-    #         self.dictblockpickerout[self.listofcell.index(nblock)+1].grid(row=self.lines[self.count], column=self.listofcell.index(nblock)+2)
-            
-    #         self.totalpickerout.grid(row=self.lines[self.count], column=self.listofcell.index(self.listofcell[-1])+4)
-        
-    #     return self.count
 
     def get_timepickeroutput(self, block_num):
         self.theorytopick.delete(0, tk.END)
@@ -312,6 +273,8 @@ class PickGAApp: #tk.Frame
         #style = Style('litera')
         #self.root = style.master
         #style.master.mainloop()
+        self.blockwidget = Configtab(self.configblock)
+        self.blockwidget.configwidget(self.selecttab)
         
         self.root.mainloop()
 
