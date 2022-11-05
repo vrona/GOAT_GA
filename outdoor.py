@@ -7,6 +7,7 @@ from gauge import Meter
 from ttkbootstrap import Style
 from ttkbootstrap.constants import *
 import datetime
+from configcell import Configtab
 
 class PickGAApp: #tk.Frame
 
@@ -17,7 +18,7 @@ class PickGAApp: #tk.Frame
         self.root.geometry("1600x1080")
         #self.master = self.root
         self.tabcontrol = ttk.Notebook(self.root)
-        self.tabcontrol.grid(padx=15, pady=15)
+        self.tabcontrol.grid(pady=5)
 
         self.configblock = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.taskmgt = tk.Frame(self.tabcontrol, width= 1600, height=1080)
@@ -42,6 +43,9 @@ class PickGAApp: #tk.Frame
 
         #master.resizable(False, False)
 
+        self.blockwidget = Configtab(self.configblock)
+        self.blockwidget.configwidget()
+        
         self.task_widget(self.listofcell)
 
         self.credit_widget()     
@@ -52,6 +56,9 @@ class PickGAApp: #tk.Frame
         for data in self.listofblock:
             
             pdb.insert_nameblock(self.listofblock.index(data)+1, "{}".format(data))
+
+    def selecttab(self):
+        self.tabcontrol.select(1)
     
     def credit_widget(self):
         self.imagecestas = Image.open("./logo/LogoCestasDC2024.png")
@@ -151,19 +158,9 @@ class PickGAApp: #tk.Frame
 
         self.autoblock(self.lsofblock)
 
-        # Blocks list (listbox)
-        self.blocks_list = tk.Listbox(self.configblock, height=8, width=50, border=0)
-        self.blocks_list.grid(row=27, column=4, pady=20, padx=20) #columnspan=2, rowspan=3, 
-        # Create scrollbar
-        self.scrollbar = tk.Scrollbar(self.configblock)
-        self.scrollbar.grid(row=27, column=2)
-        # Set scrollbar to parts
-        self.blocks_list.configure(yscrollcommand=self.scrollbar.set)
-        self.scrollbar.configure(command=self.blocks_list.yview)
-        # Bind select
-        self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
-
         self.totalpart()
+
+    
 
     def select_item(self, event):
         # # Create global selected item to use in other functions
