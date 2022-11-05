@@ -104,7 +104,7 @@ class PickGAApp: #tk.Frame
         self.totalpicker_input = tk.Entry(self.taskmgt, textvariable=self.totalpicker_text, justify="center", width=10)
         self.totalpicker_input.grid(row=2, column=9)
 
-        self.buttondata = ttk.Button(self.taskmgt, text="GOAT Power", bootstyle=SUCCESS, command=self.add_ateanpik)
+        self.buttondata = ttk.Button(self.taskmgt, text="GOAT Power", bootstyle="success", command=self.add_ateanpik)
         self.buttondata.grid(row=3, column=12 , padx=10)
 
         # POLY PART
@@ -270,7 +270,7 @@ class PickGAApp: #tk.Frame
     #     self.part_ean_input.delete(0, tk.END)
 
     def mainloop(self):
-        #style = Style('litera')
+        # style = Style('litera')
         #self.root = style.master
         #style.master.mainloop()
         self.blockwidget = Configtab(self.configblock)
