@@ -29,11 +29,13 @@ class PickGAApp: #tk.Frame
 
         self.configblock.pack(fill="both", expand=1)
         self.taskmgt.pack(fill="both", expand=1)
+        self.report.pack(fill="both", expand=1)
         self.credit.pack(fill="both", expand=1)
 
 
         self.tabcontrol.add(self.configblock, text="Blocks Configuration")
         self.tabcontrol.add(self.taskmgt, text="Task Management")
+        self.tabcontrol.add(self.report, text="Report")
         self.tabcontrol.add(self.credit, text="Credits")
 
         self.get_dictglobalpick = {}
@@ -50,8 +52,9 @@ class PickGAApp: #tk.Frame
 
         self.credit_widget()
     
-    def selecttab(self):
-        self.tabcontrol.select(1)
+    def selecttab(self, tab):
+        self.tab = tab
+        self.tabcontrol.select(self.tab)
         
 
     def iniblock(self, listofblock):
@@ -159,6 +162,9 @@ class PickGAApp: #tk.Frame
         self.autoblock(self.lsofblock)
 
         self.totalpart()
+
+        # Navigation Button
+        self.navbutton = ttk.Button(self.taskmgt, text="Report Activite", bootstyle="PRIMARY", command= lambda: self.selecttab(2)).grid(row=26, column=12, pady=10)
 
 
     def autohour(self):
