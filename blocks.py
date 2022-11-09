@@ -1,26 +1,30 @@
 import pandas as pd
+
 import sqlite3
 import tkinter as tk
 from tkinter import ttk
 import tkinter.messagebox
 
 
-listofoutdoor = ["C Chasse", "C SportCo", "D Glisse", "D Running", "PFECA", "Implant"]
+mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "PFECA", "Implant"]
 listofhopside = ["Bloc E", "Prio E", "Bloc E", "Prio V", "PFECA", "Implant"]
 
 class Blocks:
     
+    statusconfig = False
+    
     def __init__(self, master):
         self.master = master
-        self.listofoutdoor = ["C Chasse", "C SportCo", "D Glisse", "D Running", "PFECA", "Implant"]
+        self.mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "PFECA", "Implant"]
         self.listofhopside = ["Bloc E", "Prio E", "Bloc E", "Prio V", "PFECA", "Implant"]
-
         self.blocdataframe()
         self.show_block()
 
+
+
     def show_block(self):
         self.blocks_list.delete(0, tk.END)
-        for block in self.listofoutdoor:
+        for block in self.mainlistblock:
             self.blocks_list.insert(tk.END, block)
 
     def blocdataframe(self):
@@ -35,7 +39,7 @@ class Blocks:
         self.blocks_entry = tk.Entry(self.master, textvariable=self.blocks_text)
         self.blocks_entry.grid(row=1, column=2)
 
-        self.blocks_list = tk.Listbox(self.master, height=len(self.listofoutdoor), width=15, font=18)
+        self.blocks_list = tk.Listbox(self.master, height=len(self.mainlistblock), width=15, font=18)
         self.blocks_list.place(x=555,y=10) #.grid(row=4, column=7, pady=20, padx=20, rowspan=3, columnspan=2)
 
         self.add_btn = ttk.Button(self.master, text="Ajouter Block", bootstyle="success", width=12, command=self.add_block)
@@ -63,24 +67,44 @@ class Blocks:
         # Bind select
         self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
 
+        # Validate Block List
+        self.validblock_var = tk.IntVar()
+        self.validblock_btn = ttk.Checkbutton(self.master, text="Valider Blocks", bootstyle="danger-round-toggle", variable=self.validblock_var, width=12, command=self.validate_block) #onvalue=True, offvalue = False
+        self.validblock_btn.grid(row=12, column=1)
 
     def add_block(self):
-        self.listofoutdoor.append(self.blocks_text.get())
+        self.mainlistblock.append(self.blocks_text.get())
         self.clear_text()
         self.show_block()
 
     def remove_block(self):
-        self.indexit = self.listofoutdoor.index(self.blocks_text.get())
-        self.listofoutdoor.pop(self.indexit)
+        self.indexit = self.mainlistblock.index(self.blocks_text.get())
+        self.mainlistblock.pop(self.indexit)
         self.clear_text()
         self.show_block()
 
     def replace_block(self):
 
-        self.indexold = self.listofoutdoor.index(self.oldblocks_text.get())
-        self.listofoutdoor[self.indexold] = self.newblocks_text.get()
+        self.indexold = self.mainlistblock.index(self.oldblocks_text.get())
+        self.mainlistblock[self.indexold] = self.newblocks_text.get()
         self.clear_text()
         self.show_block()
+
+
+    def validate_block(self):
+
+        global statusconfig
+
+        if self.validblock_var.get() == 1:
+            statusconfig = True
+            self.listofids = list(self.mainlistblock.index(x) for x in self.mainlistblock)
+            self.data = {'id': self.listofids, 'name': self.mainlistblock}
+            self.df = pd.DataFrame(self.data, columns=['id','name'])
+            return self.mainlistblock
+
+        else:
+            statusconfig = False
+
 
     def clear_text(self):
         self.blocks_entry.delete(0, tk.END)
@@ -111,12 +135,6 @@ class Blocks:
         # Set scrollbar to parts
         self.blocks_list.configure(yscrollcommand=self.scrollbar.set)
         self.scrollbar.configure(command=self.blocks_list.yview)
-
-
-        # self.listofids = list(self.listofblocks.index(x) for x in self.listofblocks)
-        # self.data = {'id': self.listofids, 'name': self.listofblocks}
-        # self.df = pd.DataFrame(self.data, columns=['id','name'])
-        # return self.df.to_string()
         """
 
 

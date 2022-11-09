@@ -12,7 +12,7 @@ from blocks import Blocks
 
 class PickGAApp: #tk.Frame
 
-    def __init__(self, listofcell): #master, 
+    def __init__(self): #master, , listofcell
         #super().__init__(master)
         self.root = tk.Tk()
         self.root.title("GOAT Of GA (alpha)")
@@ -42,17 +42,27 @@ class PickGAApp: #tk.Frame
         self.tabcontrol.add(self.admin, text="AdminOnly")
         self.tabcontrol.add(self.credit, text="Credits")
 
-        self.get_dictglobalpick = {}
-        self.dictart_int = {}
-        self.dictean_int = {}
-        self.dictblockpickerout = {}
+        Blocks(self.admin).validate_block()
+        print(Blocks(self.admin).statusconfig)
+        if Blocks(self.admin).statusconfig == True:
+            self.blocks = Blocks(self.admin)
+            self.get_dictglobalpick = {}
+            self.dictart_int = {}
+            self.dictean_int = {}
+            self.dictblockpickerout = {}
 
-        self.listofcell = listofcell
-        self.iniblock(self.listofcell)
+            #self.listofcell = self.blocks.validate_block()
+            self.tick = self.blocks.validate_block()
+            print(self.tick)
+            
+            #self.iniblock(self.listofcell)
 
-        #master.resizable(False, False)
-       
-        self.task_widget(self.listofcell)
+            #master.resizable(False, False)
+        
+            #self.task_widget(self.listofcell)
+
+        else:
+            self.notready()
 
         self.credit_widget()
     
@@ -274,6 +284,14 @@ class PickGAApp: #tk.Frame
         self.totalpredprlv_list = tk.Listbox(self.taskmgt, height=2, width=10, justify="center")
         self.totalpredprlv_list.grid(row=25, column=5)
 
+    def notready(self):
+        # Text
+        self.text_intro = tk.Text(self.taskmgt, height=25, width= 40, border=0)
+        self.text_intro.place(x=200,y=10)
+        #self.text_intro.grid(row=10, column=10)
+        self.text_itself = """Configurez et Validez les Blocks"""
+        self.text_intro.insert(tk.END, self.text_itself)
+
     # def clear_text(self, nblocks):
     #     self.nblocks = nblocks
     #     self.part_art_input[self.nblocks].delete(0, tk.END)
@@ -285,14 +303,15 @@ class PickGAApp: #tk.Frame
         #style.master.mainloop()
         self.blockwidget = Configtab(self.configblock)
         self.blockwidget.configwidget(self.selecttab)
-        self.adminwidget = Blocks(self.admin)
+        #self.adminwidget = Blocks(self.admin)
         
         self.root.mainloop()
+
 
 listofoutdoor = ["SportCo", "Chasse", "Glisse", "Running", "Implant", "PFECA"]
 pdb = ProdDB("./database/goatdata.db")
 # root = tk.Tk()
-app = PickGAApp(listofcell=listofoutdoor) #, master=root
+app = PickGAApp() #, master=root listofcell=listofoutdoor
 # style = Style('litera')
 # root = style.master
 # style.master.mainloop()
