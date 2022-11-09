@@ -14,8 +14,6 @@ class Blocks:
         self.master = master
         self.listofoutdoor = ["C Chasse", "C SportCo", "D Glisse", "D Running", "PFECA", "Implant"]
         self.listofhopside = ["Bloc E", "Prio E", "Bloc E", "Prio V", "PFECA", "Implant"]
-        # Init selected item var
-        self.selected_item = 0
 
         self.blocdataframe()
         self.show_block()
@@ -37,7 +35,7 @@ class Blocks:
         self.blocks_entry = tk.Entry(self.master, textvariable=self.blocks_text)
         self.blocks_entry.grid(row=1, column=2)
 
-        self.blocks_list = tk.Listbox(self.master, height=len(self.listofoutdoor), width=15)
+        self.blocks_list = tk.Listbox(self.master, height=len(self.listofoutdoor), width=15, font=18)
         self.blocks_list.place(x=555,y=10) #.grid(row=4, column=7, pady=20, padx=20, rowspan=3, columnspan=2)
 
         self.add_btn = ttk.Button(self.master, text="Ajouter Block", bootstyle="success", width=12, command=self.add_block)
@@ -47,11 +45,11 @@ class Blocks:
         self.remove_btn.grid(row=4, column=3)
 
         # Changing Block
-        self.oldblocks_text = tk.Label(self.master, text="Ancien Nom Block", justify='center', font=16)
-        self.oldblocks_text.grid(row=6, column=1)
+        self.oldblocks_label = tk.Label(self.master, text="Ancien Nom Block", justify='center', font=16)
+        self.oldblocks_label.grid(row=6, column=1)
 
-        self.newblocks_text = tk.Label(self.master, text="Nouveau Nom Block", justify='center', font=16)
-        self.newblocks_text.grid(row=7, column=1)
+        self.newblocks_label = tk.Label(self.master, text="Nouveau Nom Block", justify='center', font=16)
+        self.newblocks_label.grid(row=8, column=1)
 
         self.oldblocks_entry = tk.Entry(self.master, textvariable=self.oldblocks_text)
         self.oldblocks_entry.grid(row=6, column=3)
@@ -67,41 +65,42 @@ class Blocks:
 
 
     def add_block(self):
-        self.listofoutdoor.insert(0,self.blocks_text.get())
+        self.listofoutdoor.append(self.blocks_text.get())
         self.clear_text()
         self.show_block()
 
     def remove_block(self):
-        self.listofoutdoor.remove(self.blocks_text.get())
+        self.indexit = self.listofoutdoor.index(self.blocks_text.get())
+        self.listofoutdoor.pop(self.indexit)
         self.clear_text()
         self.show_block()
 
     def replace_block(self):
 
         self.indexold = self.listofoutdoor.index(self.oldblocks_text.get())
-        self.listofoutdoor.remove(self.blocks_text.get())
-        self.listofoutdoor[self.indexold] = self.newblocks_text
+        self.listofoutdoor[self.indexold] = self.newblocks_text.get()
         self.clear_text()
         self.show_block()
 
     def clear_text(self):
         self.blocks_entry.delete(0, tk.END)
+        self.oldblocks_entry.delete(0, tk.END)
+        self.newblocks_entry.delete(0, tk.END)
 
     def select_item(self, event):
-        # # Create global selected item to use in other functions
-        # global self.selected_item
+
         try:
             # Get index
-            index = self.blocks_list.curselection()[0]
+            index = self.blocks_list.curselection()
             # Get selected item
             self.selected_item = self.blocks_list.get(index)
-            # print(selected_item) # Print tuple
+            #print(self.selected_item)
 
             # Add text to entries
             self.blocks_entry.delete(0, tk.END)
-            self.blocks_entry.insert(tk.END, self.selected_item[1])
+            self.blocks_entry.insert(tk.END, self.selected_item)
             self.oldblocks_entry.delete(0, tk.END)
-            self.oldblocks_entry.insert(tk.END, self.selected_item[2])
+            self.oldblocks_entry.insert(tk.END, self.selected_item)
         except IndexError:
             pass
 

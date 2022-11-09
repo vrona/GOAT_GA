@@ -86,7 +86,7 @@ class PickGAApp: #tk.Frame
         self.cestasimg_credit.place(x=700, y=240)
         self.vronaimg_credit.place(x=750, y=558)
 
-        self.credit_text = tk.Label(self.credit, text = "App: GOAT_GA\nTasks Recommendation System\nAuthor: Michael Hatchi")
+        self.credit_text = tk.Label(self.credit, text = "App: GOAT_GA\nTasks Recommendation System\nversion: alpha v1.00\nAuthor: Michael Hatchi")
         self.credit_text.place(x=726, y=460)
 
         self.rights_text = tk.Label(self.credit, text = "Copyright © VRONA SAS\nAll rights reserved. \nLicense: XXX")
