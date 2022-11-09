@@ -8,6 +8,7 @@ from ttkbootstrap import Style
 from ttkbootstrap.constants import *
 import datetime
 from configcell import Configtab
+from blocks import Blocks
 
 class PickGAApp: #tk.Frame
 
@@ -23,6 +24,7 @@ class PickGAApp: #tk.Frame
         self.configblock = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.taskmgt = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.report = tk.Frame(self.tabcontrol, width= 1600, height=1080)
+        self.admin = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.credit = tk.Frame(self.tabcontrol, width= 1600, height=1080)
 
         # self.listoftabs = list(self.configblock, self.taskmgt, self.report, self.credit)
@@ -30,12 +32,14 @@ class PickGAApp: #tk.Frame
         self.configblock.pack(fill="both", expand=1)
         self.taskmgt.pack(fill="both", expand=1)
         self.report.pack(fill="both", expand=1)
+        self.admin.pack(fill="both", expand=1)
         self.credit.pack(fill="both", expand=1)
 
 
         self.tabcontrol.add(self.configblock, text="Blocks Configuration")
         self.tabcontrol.add(self.taskmgt, text="Task Management")
         self.tabcontrol.add(self.report, text="Report")
+        self.tabcontrol.add(self.admin, text="AdminOnly")
         self.tabcontrol.add(self.credit, text="Credits")
 
         self.get_dictglobalpick = {}
@@ -281,6 +285,8 @@ class PickGAApp: #tk.Frame
         #style.master.mainloop()
         self.blockwidget = Configtab(self.configblock)
         self.blockwidget.configwidget(self.selecttab)
+        self.adminwidget = Blocks(self.admin)
+        self.adminwidget.blocdataframe()
         
         self.root.mainloop()
 
