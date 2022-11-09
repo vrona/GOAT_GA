@@ -71,8 +71,10 @@ class Configtab(tk.Frame):
         #     print(row)
         ########
         #self.blocks_entry = tk.Entry(self.master, textvariable=self.validate_blocks)
-        self.blocks_list = tk.Listbox(self.master, height=8, width=50, border=0)
-        self.blocks_list.grid(row=20, column=0, pady=20, padx=20, rowspan=3, columnspan=2)
+
+        #self.blocks_list = tk.Listbox(self.master, height=8, width=50, border=0)
+        #self.blocks_list.grid(row=20, column=0, pady=20, padx=20, rowspan=3, columnspan=2)
+
         #self.blocks_list.insert(tk.END, self.validate_blocks.get())
         # # Create scrollbar
         # self.scrollbar = ttk.Scrollbar(self.master, bootstyle="PRIMARY-round")

@@ -286,7 +286,6 @@ class PickGAApp: #tk.Frame
         self.blockwidget = Configtab(self.configblock)
         self.blockwidget.configwidget(self.selecttab)
         self.adminwidget = Blocks(self.admin)
-        self.adminwidget.blocdataframe()
         
         self.root.mainloop()
 
