@@ -25,8 +25,6 @@ class Blocks(tk.Frame):
             self.blocks_list.insert(tk.END, block)
 
     def blocdataframe(self):
-        style = Style()
-        style.configure('valid.btn', font = (20, 'bold'), foreground ='red')
 
         self.blocks_text = tk.StringVar()
         self.oldblocks_text = tk.StringVar()
@@ -109,13 +107,17 @@ class Blocks(tk.Frame):
         return self.mainlistblock
 
     def validate_block(self):
-
+        print("0")
         self.listofids = list(self.mainlistblock.index(x) for x in self.mainlistblock)
+        print(self.listofids)
         self.data = {'id': self.listofids, 'name': self.mainlistblock}
-        self.df = pd.DataFrame(self.data, columns=['id','name'])
 
+        self.df = pd.DataFrame(self.data, columns=['id','name'])
+        print(self.df)
         self.pdb = ProdDB("./database/goatdata.db")
+        print(1)
         self.iniblock(self.mainlistblock)
+        print(2)
         
         #self.launch_btn["state"] = tk.NORMAL
 

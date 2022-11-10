@@ -5,6 +5,7 @@ from globaldb import ProdDB
 from PIL import Image, ImageTk
 from gauge import Meter
 from ttkbootstrap import Style
+#from tkinter.ttk import Style
 from ttkbootstrap.constants import *
 import datetime
 #from configcell import Configtab
@@ -12,13 +13,14 @@ from adminblocks import Blocks
 
 class PickGAApp(tk.Frame):
 
-    def __init__(self):
-        #super().__init__(master)
+    def __init__(self, master):
+        super().__init__(master)
         self.get_dictglobalpick = {}
         self.dictart_int = {}
         self.dictean_int = {}
         self.dictblockpickerout = {}
-        self.root = tk.Tk()
+        self.root = master
+        #self.root = tk.Tk()
         self.root.title("GOAT Of GA (alpha)")
         self.root.geometry("1600x1080")
         self.tabcontrol = ttk.Notebook(self.root)
@@ -44,8 +46,7 @@ class PickGAApp(tk.Frame):
         self.tabcontrol.add(self.credit, text="Credits")
 
         # Admin widget's Validation & Launch Buttons
-        self.validblock_btn = ttk.Button(self.admin, text="Valider Blocks", bootstyle="danger",
-                                        command=lambda:[lambda:Blocks(self.admin).validate_block(), self.ready(), self.switchstate()], width=12) 
+        self.validblock_btn = ttk.Button(self.admin, text="Valider Blocks", bootstyle="danger", command=lambda:[Blocks(self.admin).validate_block(), self.ready(), self.switchstate()], width=12)
         self.validblock_btn.grid(row=17, column=1, pady=10)
 
         self.launch_btn = ttk.Button(self.admin, text="Lancer Activité", style='valid.btn', width=12, command=lambda:self.selecttab(1), state=tk.DISABLED) #, 
@@ -61,9 +62,7 @@ class PickGAApp(tk.Frame):
         self.validblock_btn["state"]=tk.DISABLED
 
     def ready(self):
-        self.listofcell = Blocks(self.admin).lisfofblock()
-        print(self.listofcell)
-        
+        self.listofcell = Blocks(self.admin).lisfofblock()        
         self.task_widget(self.listofcell)
     
     def selecttab(self, tab):
@@ -290,31 +289,16 @@ class PickGAApp(tk.Frame):
     #     self.part_ean_input.delete(0, tk.END)
 
     def mainloop(self):
-        #style = Style('litera')
-        #self.root = style.master
-        #style.master.mainloop()
-        
-
-        
-        #self.adminwidget = Blocks(self.admin)
+    #     #style = Style('litera')
         
         self.root.mainloop()
 
-# class LaunchApp(tk.Frame):
-#     def __init__(self): #master, , listofcell
-#         #super().__init__(master)
-#         pass
 
-#     def launch(self):
+root = tk.Tk()
+style = Style('flatly')
+style.master
+app = PickGAApp(master = root) #, master=root listofcell=listofoutdoor
 
-#         # Launch Activity
-
-#         return self.statuslaunch
-
-
-# root = tk.Tk()
-app = PickGAApp() #, master=root listofcell=listofoutdoor
-# style = Style('litera')
 # root = style.master
 # style.master.mainloop()
 app.mainloop()
