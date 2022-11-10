@@ -311,7 +311,7 @@ class PickGAApp(tk.Frame):
     #     self.part_ean_input.delete(0, tk.END)
 
     def mainloop(self):
-        # style = Style('litera')
+        #style = Style('litera')
         #self.root = style.master
         #style.master.mainloop()
 

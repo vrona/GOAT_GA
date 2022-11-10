@@ -2,7 +2,7 @@ import pandas as pd
 
 import sqlite3
 import tkinter as tk
-from tkinter import ttk
+from tkinter.ttk import *
 import tkinter.messagebox
 
 class Blocks(tk.Frame):
@@ -23,32 +23,34 @@ class Blocks(tk.Frame):
             self.blocks_list.insert(tk.END, block)
 
     def blocdataframe(self):
+        style = Style()
+        style.configure('valid.btn', font = (20, 'bold'), foreground ='red')
 
         self.blocks_text = tk.StringVar()
         self.oldblocks_text = tk.StringVar()
         self.newblocks_text = tk.StringVar()
 
-        self.intro_label = ttk.Label(self.master, text="Configuration Activite", justify='center',font=('bold', 20))
-        self.text_label = ttk.Label(self.master, text="Pour ajouter, supprimer ou renommer les blocks,\nselectionner les.\nPuis valider votre liste de blocks.", font=16, padding=10)
+        self.intro_label = tk.Label(self.master, text="Configuration Activite", justify='center',font=('bold', 20))
+        self.text_label = Label(self.master, text="Pour ajouter, supprimer ou renommer les blocks,\nselectionner les.\nPuis valider votre liste de blocks.", font=16, padding=10)
         self.intro_label.grid(row=0, column=1, columnspan=3)
         self.text_label.grid(row=2, column=1, columnspan=3)
         
-        self.listblocktitle = ttk.Label(self.master, text="Liste de Blocks", font=('bold', 16), padding=15)
-        self.listblocktitle.grid(row=3, column=1)
+        self.listblocktitle = Label(self.master, text="Liste de Blocks", font=('bold', 16), padding=15)
+        self.listblocktitle.grid(row=3, column=1, pady=15)
         self.blocks_list = tk.Listbox(self.master, height=len(self.mainlistblock), width=15, font=18)
-        self.blocks_list.grid(row=5, column=1, pady=5)  #.place(x=555,y=10) #padx=20, rowspan=3, columnspan=2
+        self.blocks_list.grid(row=4, column=1, pady=15)  #.place(x=555,y=10) #padx=20, rowspan=3, columnspan=2
 
         # Add Remove Blocks
-        self.blocks_label = ttk.Label(self.master, text="Nom Block", justify='center', font=('bold', 16))
+        self.blocks_label = Label(self.master, text="Nom Block", justify='center', font=('bold', 16))
         self.blocks_label.grid(row=7, column=1)
         
         self.blocks_entry = tk.Entry(self.master, textvariable=self.blocks_text)
         self.blocks_entry.grid(row=7, column=2)
 
-        self.add_btn = ttk.Button(self.master, text="Ajouter Block", bootstyle="success", width=12, command=self.add_block)
-        self.add_btn.grid(row=9, column=1, pady=20)
+        self.add_btn = Button(self.master, text="Ajouter Block", bootstyle="success", width=12, command=self.add_block)
+        self.add_btn.grid(row=9, column=1, pady=30)
 
-        self.remove_btn = ttk.Button(self.master, text="Supprimer Block", bootstyle="warning", width=12, command=self.remove_block)
+        self.remove_btn = Button(self.master, text="Supprimer Block", bootstyle="warning", width=12, command=self.remove_block)
         self.remove_btn.grid(row=9, column=3)
 
         # Changing Block
@@ -59,20 +61,20 @@ class Blocks(tk.Frame):
         self.newblocks_label.grid(row=13, column=1)
 
         self.oldblocks_entry = tk.Entry(self.master, textvariable=self.oldblocks_text)
-        self.oldblocks_entry.grid(row=11, column=2)
+        self.oldblocks_entry.grid(row=11, column=2, pady=10)
 
         self.newblocks_entry = tk.Entry(self.master, textvariable=self.newblocks_text)
         self.newblocks_entry.grid(row=13, column=2)
 
-        self.rename_btn = ttk.Button(self.master, text="Renommer Block", bootstyle="info", width=12, padding=10 ,command=self.replace_block)
-        self.rename_btn.grid(row=15, column=1)
+        self.rename_btn = Button(self.master, text="Renommer Block", bootstyle="info", width=12,command=self.replace_block)
+        self.rename_btn.grid(row=14, column=1, pady=30)
 
         # Bind select
         self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
 
         # Validate Block List
-        self.validblock_var = tk.IntVar()
-        self.validblock_btn = ttk.Checkbutton(self.master, text="Valider Blocks", bootstyle="danger-round-toggle", padding=20,variable=self.validblock_var, width=12, font=('bold', 20), command=self.validate_block)
+        
+        self.validblock_btn = Button(self.master, text="Valider Blocks", style='valid.btn', width=12, command=self.validate_block)
         self.validblock_btn.grid(row=17, column=1)
 
     def add_block(self):
@@ -133,7 +135,7 @@ class Blocks(tk.Frame):
 
         """
         # Create scrollbar
-        self.scrollbar = ttk.Scrollbar(self.master, bootstyle="PRIMARY-round")
+        self.scrollbar = Scrollbar(self.master, bootstyle="PRIMARY-round")
         self.scrollbar.grid(row=8, column=2)
         # Set scrollbar to parts
         self.blocks_list.configure(yscrollcommand=self.scrollbar.set)
