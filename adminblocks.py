@@ -6,7 +6,7 @@ from tkinter.ttk import *
 import tkinter.messagebox
 from globaldb import ProdDB
 
-mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "PFECA", "Implant"]
+mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "E Rando/Camp", "Prio E", "V Cycle/Urban", "Prio V", "PFECA", "Implant"]
 class Blocks(tk.Frame):
     
     statusconfig = False
@@ -14,8 +14,6 @@ class Blocks(tk.Frame):
     def __init__(self, master):
         
         self.master = master
-        
-        self.listofhopside = ["Bloc E", "Prio E", "Bloc E", "Prio V", "PFECA", "Implant"]
         self.blocdataframe()
         self.show_block()
 
