@@ -1,5 +1,4 @@
 import sqlite3
-import datetime
 
 class ProdDB:
     def __init__(self, db) :

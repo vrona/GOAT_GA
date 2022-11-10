@@ -6,14 +6,15 @@ from tkinter.ttk import *
 import tkinter.messagebox
 from globaldb import ProdDB
 
-
+mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "PFECA", "Implant"]
 class Blocks(tk.Frame):
     
     statusconfig = False
 
     def __init__(self, master):
+        
         self.master = master
-        self.mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "PFECA", "Implant"]
+        
         self.listofhopside = ["Bloc E", "Prio E", "Bloc E", "Prio V", "PFECA", "Implant"]
         self.blocdataframe()
         self.show_block()
@@ -21,7 +22,7 @@ class Blocks(tk.Frame):
 
     def show_block(self):
         self.blocks_list.delete(0, tk.END)
-        for block in self.mainlistblock:
+        for block in mainlistblock:
             self.blocks_list.insert(tk.END, block)
 
     def blocdataframe(self):
@@ -37,7 +38,7 @@ class Blocks(tk.Frame):
         
         self.listblocktitle = Label(self.master, text="Liste de Blocks", font=('bold', 16), padding=15)
         self.listblocktitle.grid(row=3, column=1, pady=15)
-        self.blocks_list = tk.Listbox(self.master, height=len(self.mainlistblock), width=15, font=18)
+        self.blocks_list = tk.Listbox(self.master, height=10, width=15, font=18)
         self.blocks_list.grid(row=4, column=1, pady=15)  #.place(x=555,y=10) #padx=20, rowspan=3, columnspan=2
 
         # Add Remove Blocks
@@ -70,29 +71,23 @@ class Blocks(tk.Frame):
         self.rename_btn.grid(row=14, column=1, pady=30)
 
         # Bind select
-        self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
-
-        # Validate Block List
-        # self.valid_var = tk.IntVar()
-        # self.validblock_btn = Checkbutton(self.master, text="Valider Blocks", bootstyle="danger-round-toggle", command=self.validate_block, variable=self.valid_var, width=12, state=tk.NORMAL) 
-        # self.validblock_btn.grid(row=17, column=1)
-       
+        self.blocks_list.bind('<<ListboxSelect>>', self.select_item)       
 
     def add_block(self):
-        self.mainlistblock.append(self.blocks_text.get())
+        mainlistblock.append(self.blocks_text.get())
         self.clear_text()
         self.show_block()
 
     def remove_block(self):
-        self.indexit = self.mainlistblock.index(self.blocks_text.get())
-        self.mainlistblock.pop(self.indexit)
+        self.indexit = mainlistblock.index(self.blocks_text.get())
+        mainlistblock.pop(self.indexit)
         self.clear_text()
         self.show_block()
 
     def replace_block(self):
 
-        self.indexold = self.mainlistblock.index(self.oldblocks_text.get())
-        self.mainlistblock[self.indexold] = self.newblocks_text.get()
+        self.indexold = mainlistblock.index(self.oldblocks_text.get())
+        mainlistblock[self.indexold] = self.newblocks_text.get()
         self.clear_text()
         self.show_block()
 
@@ -104,23 +99,16 @@ class Blocks(tk.Frame):
 
 
     def lisfofblock(self):
-        return self.mainlistblock
+        return mainlistblock
 
+    
     def validate_block(self):
-        print("0")
-        self.listofids = list(self.mainlistblock.index(x) for x in self.mainlistblock)
-        print(self.listofids)
-        self.data = {'id': self.listofids, 'name': self.mainlistblock}
 
+        self.listofids = list(mainlistblock.index(x) for x in mainlistblock)
+        self.data = {'id': self.listofids, 'name': mainlistblock}
         self.df = pd.DataFrame(self.data, columns=['id','name'])
-        print(self.df)
         self.pdb = ProdDB("./database/goatdata.db")
-        print(1)
-        self.iniblock(self.mainlistblock)
-        print(2)
-        
-        #self.launch_btn["state"] = tk.NORMAL
-
+        self.iniblock(mainlistblock)
 
     def clear_text(self):
         self.blocks_entry.delete(0, tk.END)

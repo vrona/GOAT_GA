@@ -11,13 +11,13 @@ import datetime
 #from configcell import Configtab
 from adminblocks import Blocks
 
-class PickGAApp(tk.Frame):
 
+class PickGAApp(tk.Frame):
+    
     def __init__(self, master):
         super().__init__(master)
         self.get_dictglobalpick = {}
-        self.dictart_int = {}
-        self.dictean_int = {}
+
         self.dictblockpickerout = {}
         self.root = master
         #self.root = tk.Tk()
@@ -97,6 +97,7 @@ class PickGAApp(tk.Frame):
     def task_widget(self, lsofblock):
         
         self.lsofblock = lsofblock
+        print(self.lsofblock)
 
         self.totalpicker_text = tk.IntVar()
 
@@ -239,8 +240,11 @@ class PickGAApp(tk.Frame):
         self.get_timepickeroutput(len(self.listofcell))
 
     def autoblock(self, lsofblock):
+        self.dictart_int = {}
+        self.dictean_int = {}
         self.part_art_input = {}
         self.lsofblock = lsofblock
+        print("autoblock")
         
         for nblock in self.lsofblock:
             self.dictart_int[self.lsofblock.index(nblock)] = tk.IntVar()
