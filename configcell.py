@@ -7,10 +7,10 @@ from blocks import Blocks
 from ttkbootstrap import Style
 from ttkbootstrap.constants import *
 
-class Configtab(tk.Frame):
+class Configtab: #tk.Frame
 
     def __init__(self, master): 
-        super().__init__(master)
+        #super().__init__(master)
         self.master = master
 
     def select_item(self, event):

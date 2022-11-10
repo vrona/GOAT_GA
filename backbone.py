@@ -9,41 +9,44 @@ from ttkbootstrap.constants import *
 import datetime
 from configcell import Configtab
 from blocks import Blocks
+from tabcontrol import Tabs
 
-class PickGAApp: #tk.Frame
+class PickGAApp(tk.Frame):
 
     def __init__(self): #master, , listofcell
         #super().__init__(master)
         self.root = tk.Tk()
         self.root.title("GOAT Of GA (alpha)")
         self.root.geometry("1600x1080")
-        #self.master = self.root
         self.tabcontrol = ttk.Notebook(self.root)
         self.tabcontrol.grid(pady=5)
 
-        self.configblock = tk.Frame(self.tabcontrol, width= 1600, height=1080)
-        self.taskmgt = tk.Frame(self.tabcontrol, width= 1600, height=1080)
-        self.report = tk.Frame(self.tabcontrol, width= 1600, height=1080)
+        self.config = tk.Frame(self.tabcontrol, width= 1600, height=1080)
+        self.activity = tk.Frame(self.tabcontrol, width= 1600, height=1080)
+        self.reporting = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.admin = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.credit = tk.Frame(self.tabcontrol, width= 1600, height=1080)
 
-        # self.listoftabs = list(self.configblock, self.taskmgt, self.report, self.credit)
+        # self.listoftabs = list(self.config, self.activity, self.reporting, self.credit)
 
-        self.configblock.pack(fill="both", expand=1)
-        self.taskmgt.pack(fill="both", expand=1)
-        self.report.pack(fill="both", expand=1)
+        self.config.pack(fill="both", expand=1)
+        self.activity.pack(fill="both", expand=1)
+        self.reporting.pack(fill="both", expand=1)
         self.admin.pack(fill="both", expand=1)
         self.credit.pack(fill="both", expand=1)
 
 
-        self.tabcontrol.add(self.configblock, text="Blocks Configuration")
-        self.tabcontrol.add(self.taskmgt, text="Task Management")
-        self.tabcontrol.add(self.report, text="Report")
+        self.tabcontrol.add(self.config, text="Blocks Configuration")
+        self.tabcontrol.add(self.activity, text="Task Management")
+        self.tabcontrol.add(self.reporting, text="Report")
         self.tabcontrol.add(self.admin, text="AdminOnly")
         self.tabcontrol.add(self.credit, text="Credits")
 
-        Blocks(self.admin).validate_block()
+        #Blocks(self.admin).validate_block()
+        #self.status = status
         print(Blocks(self.admin).statusconfig)
+        #self.getstatus = self.launch()
+        #if self.status == 1:
         if Blocks(self.admin).statusconfig == True:
             self.blocks = Blocks(self.admin)
             self.get_dictglobalpick = {}
@@ -51,15 +54,15 @@ class PickGAApp: #tk.Frame
             self.dictean_int = {}
             self.dictblockpickerout = {}
 
-            #self.listofcell = self.blocks.validate_block()
+            self.listofcell = self.blocks.validate_block()
             self.tick = self.blocks.validate_block()
             print(self.tick)
             
-            #self.iniblock(self.listofcell)
+            self.iniblock(self.listofcell)
 
             #master.resizable(False, False)
         
-            #self.task_widget(self.listofcell)
+            self.task_widget(self.listofcell)
 
         else:
             self.notready()
@@ -109,42 +112,42 @@ class PickGAApp: #tk.Frame
         self.totalpicker_text = tk.IntVar()
 
         # BLOCKS PART
-        self._block = tk.Label(self.taskmgt, text='BLOCKS', justify='center', font=('bold', 20), pady=10)
+        self._block = tk.Label(self.activity, text='BLOCKS', justify='center', font=('bold', 20), pady=10)
         self._block.grid(row=0, column=4, )
 
-        self._article = tk.Label(self.taskmgt, text='Articles', justify='right',font=("bold", 13), pady=10)
+        self._article = tk.Label(self.activity, text='Articles', justify='right',font=("bold", 13), pady=10)
         self._article.grid(row=2, column=1)
 
-        self.ean = tk.Label(self.taskmgt, text='EAN', justify='right',font=("bold", 13), pady=10)
+        self.ean = tk.Label(self.activity, text='EAN', justify='right',font=("bold", 13), pady=10)
         self.ean.grid(row=3, column=1)
 
-        self.totalpicker_input = tk.Entry(self.taskmgt, textvariable=self.totalpicker_text, justify="center", width=10)
+        self.totalpicker_input = tk.Entry(self.activity, textvariable=self.totalpicker_text, justify="center", width=10)
         self.totalpicker_input.grid(row=2, column=9)
 
-        self.buttondata = ttk.Button(self.taskmgt, text="GOAT Power", bootstyle="success", command=self.add_ateanpik)
+        self.buttondata = ttk.Button(self.activity, text="GOAT Power", bootstyle="success", command=self.add_ateanpik)
         self.buttondata.grid(row=3, column=12 , padx=10)
 
         # POLY PART
-        self._poly = tk.Label(self.taskmgt, text='POLY', justify='center', font=('bold', 20), pady=10)
+        self._poly = tk.Label(self.activity, text='POLY', justify='center', font=('bold', 20), pady=10)
         self._poly.grid(row=5, column=4)
 
-        self._currentopick = tk.Label(self.taskmgt, text='TP \nPresent', justify='center', font=('bold', 16), pady=10)
+        self._currentopick = tk.Label(self.activity, text='TP \nPresent', justify='center', font=('bold', 16), pady=10)
         self._currentopick.grid(row=6, column=2)
 
-        self.currentopick = tk.Listbox(self.taskmgt, height=5, width=10, justify="center")
+        self.currentopick = tk.Listbox(self.activity, height=5, width=10, justify="center")
         self.currentopick.grid(row=7, column=2)
 
-        self._theorytopick = tk.Label(self.taskmgt, text='TP \nTheorique', justify='center', font=('bold', 16), pady=10)
+        self._theorytopick = tk.Label(self.activity, text='TP \nTheorique', justify='center', font=('bold', 16), pady=10)
         self._theorytopick.grid(row=6, column=4)
 
-        self.theorytopick = tk.Listbox(self.taskmgt, height=5, width=10, justify="center")
+        self.theorytopick = tk.Listbox(self.activity, height=5, width=10, justify="center")
         self.theorytopick.grid(row=7, column=4)
 
-        self._polystatus = tk.Label(self.taskmgt, text='Poly \nStatus', justify='center', font=('bold', 16), pady=10)
+        self._polystatus = tk.Label(self.activity, text='Poly \nStatus', justify='center', font=('bold', 16), pady=10)
         self._polystatus.grid(row=6, column=6)
 
-        self.polystatus = tk.Listbox(self.taskmgt, height=5, width=10, justify="center")
-        Meter(master=self.taskmgt, metersize=110, padding=20, amountused=-2, labeltext="Poly",
+        self.polystatus = tk.Listbox(self.activity, height=5, width=10, justify="center")
+        Meter(master=self.activity, metersize=110, padding=20, amountused=-2, labeltext="Poly",
                 meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=7, column=6)
 
         # SEPARATOR PART
@@ -154,23 +157,23 @@ class PickGAApp: #tk.Frame
         
         # PICKERS PART
         self.picker_row = 10 # to merge
-        self.hours = tk.Label(self.taskmgt, text='HEURE', font=("bold", 20), pady=10)
+        self.hours = tk.Label(self.activity, text='HEURE', font=("bold", 20), pady=10)
         self.hours.grid(row=self.picker_row, column=1)
 
-        self.pickertitle = tk.Label(self.taskmgt, text='PICKERS', font=("bold", 20), pady=10)
+        self.pickertitle = tk.Label(self.activity, text='PICKERS', font=("bold", 20), pady=10)
         self.pickertitle.grid(row=self.picker_row, column=4)
 
         # TOTALS PART
-        self._totals = tk.Label(self.taskmgt, text='TOTALS', justify='center', font=('bold', 16), pady=10)
+        self._totals = tk.Label(self.activity, text='TOTALS', justify='center', font=('bold', 16), pady=10)
         self._totals.grid(row=23, column=4)
 
-        self.totalprelev = tk.Label(self.taskmgt, text='Total \nPrelev', font=("bold", 13), pady=10)
+        self.totalprelev = tk.Label(self.activity, text='Total \nPrelev', font=("bold", 13), pady=10)
         self.totalprelev.grid(row=24, column=3)
 
-        self.deltacap = tk.Label(self.taskmgt, text='Delta \nCapacitif', font=("bold", 13), pady=10)
+        self.deltacap = tk.Label(self.activity, text='Delta \nCapacitif', font=("bold", 13), pady=10)
         self.deltacap.grid(row=24, column=4)
 
-        self.totalpredprlv = tk.Label(self.taskmgt, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
+        self.totalpredprlv = tk.Label(self.activity, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
         self.totalpredprlv.grid(row=24, column=5)
 
         self.autoblock(self.lsofblock)
@@ -178,7 +181,7 @@ class PickGAApp: #tk.Frame
         self.totalpart()
 
         # Navigation Button
-        self.navbutton = ttk.Button(self.taskmgt, text="Report Activite", bootstyle="PRIMARY", command= lambda: self.selecttab(2)).grid(row=26, column=12, pady=10)
+        self.navbutton = ttk.Button(self.activity, text="Report Activite", bootstyle="PRIMARY", command= lambda: self.selecttab(2)).grid(row=26, column=12, pady=10)
 
 
     def autohour(self):
@@ -187,15 +190,15 @@ class PickGAApp: #tk.Frame
         #self.lines = [5,7,9,11,13,15,17,19]
 
         self.hour_row = 9 # to merge
-        self.hourname = tk.Label(self.taskmgt, text="H", font=("bold", 13), padx=40, pady=10)
-        self.hourout = tk.Listbox(self.taskmgt, height=1, width=25, justify="center")
-        self.totalpickerout = tk.Listbox(self.taskmgt, height=1, width=5, justify="center")
+        self.hourname = tk.Label(self.activity, text="H", font=("bold", 13), padx=40, pady=10)
+        self.hourout = tk.Listbox(self.activity, height=1, width=25, justify="center")
+        self.totalpickerout = tk.Listbox(self.activity, height=1, width=5, justify="center")
         self.hourname.grid(row=self.hour_row, column=0)
         self.hourout.grid(row=self.hour_row, column=1)
         
         for nblock in self.listofcell:
             
-            self.dictblockpickerout[self.listofcell.index(nblock)+1] = tk.Listbox(self.taskmgt, height=1, width=5, justify="center")
+            self.dictblockpickerout[self.listofcell.index(nblock)+1] = tk.Listbox(self.activity, height=1, width=5, justify="center")
             self.dictblockpickerout[self.listofcell.index(nblock)+1].grid(row=self.hour_row, column=self.listofcell.index(nblock)+2)
             
             self.totalpickerout.grid(row=self.hour_row, column=self.listofcell.index(self.listofcell[-1])+4)
@@ -257,40 +260,50 @@ class PickGAApp: #tk.Frame
             self.dictean_int[self.lsofblock.index(nblock)] = tk.IntVar()
             
 
-            self.part_block = tk.Label(self.taskmgt, text=self.lsofblock[self.lsofblock.index(nblock)], font=("bold", 12))
+            self.part_block = tk.Label(self.activity, text=self.lsofblock[self.lsofblock.index(nblock)], font=("bold", 12))
             self.part_block.grid(row=1, column=self.lsofblock.index(nblock)+2)
 
-            self.part_art_input[self.lsofblock.index(nblock)+1] = tk.Entry(self.taskmgt, textvariable=self.dictart_int[self.lsofblock.index(nblock)], justify="center", width=10)
+            self.part_art_input[self.lsofblock.index(nblock)+1] = tk.Entry(self.activity, textvariable=self.dictart_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_art_input[self.lsofblock.index(nblock)+1].grid(row=2, column=self.lsofblock.index(nblock)+2)
 
-            self.part_ean_input = tk.Entry(self.taskmgt, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
+            self.part_ean_input = tk.Entry(self.activity, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_ean_input.grid(row=3, column=self.lsofblock.index(nblock)+2)
 
-            Meter(master=self.taskmgt, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
+            Meter(master=self.activity, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
                  meterstyle='success.TLabel').grid(row=22, column=self.lsofblock.index(nblock)+2)
             
-            self.totalpicker = tk.Label(self.taskmgt, text='Total Pickers', font=("bold", 13), pady=10)
+            self.totalpicker = tk.Label(self.activity, text='Total Pickers', font=("bold", 13), pady=10)
             self.totalpicker.grid(row=1, column=self.lsofblock.index(self.lsofblock[-1])+4)
 
 
     def totalpart(self):
 
-        self.totalprelev_list = tk.Listbox(self.taskmgt, height=2, width=10, justify="center")
+        self.totalprelev_list = tk.Listbox(self.activity, height=2, width=10, justify="center")
         self.totalprelev_list.grid(row=25, column=3)
 
-        self.deltacap_list = tk.Listbox(self.taskmgt, height=2, width=10, justify="center")
+        self.deltacap_list = tk.Listbox(self.activity, height=2, width=10, justify="center")
         self.deltacap_list.grid(row=25, column=4)
         
-        self.totalpredprlv_list = tk.Listbox(self.taskmgt, height=2, width=10, justify="center")
+        self.totalpredprlv_list = tk.Listbox(self.activity, height=2, width=10, justify="center")
         self.totalpredprlv_list.grid(row=25, column=5)
+
 
     def notready(self):
         # Text
-        self.text_intro = tk.Text(self.taskmgt, height=25, width= 40, border=0)
+        self.text_intro = tk.Text(self.activity, height=25, font=30,width= 40)
         self.text_intro.place(x=200,y=10)
-        #self.text_intro.grid(row=10, column=10)
-        self.text_itself = """Configurez et Validez les Blocks"""
+
+        self.text_itself = """Pour lancer l'activité,\nles Blocks doivent être CONFIGURES et VALIDES"""
         self.text_intro.insert(tk.END, self.text_itself)
+
+    def launch(self):
+
+        # Launch Activity
+        self.launch_var = tk.IntVar()
+        self.launch_btn = ttk.Checkbutton(self.admin, text="Lancer Activite", bootstyle="danger-round-toggle", variable=self.launch_var, width=12) #, command=self.launch
+        self.launch_btn.grid(row=14, column=1)
+        self.statuslaunch = self.launch_var.get()
+        return self.statuslaunch
 
     # def clear_text(self, nblocks):
     #     self.nblocks = nblocks
@@ -301,8 +314,10 @@ class PickGAApp: #tk.Frame
         # style = Style('litera')
         #self.root = style.master
         #style.master.mainloop()
-        self.blockwidget = Configtab(self.configblock)
-        self.blockwidget.configwidget(self.selecttab)
+
+        self.configwidget = Configtab(self.config)
+        self.configwidget.configwidget(self.selecttab)
+        
         #self.adminwidget = Blocks(self.admin)
         
         self.root.mainloop()
