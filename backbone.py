@@ -9,11 +9,10 @@ from ttkbootstrap.constants import *
 import datetime
 from configcell import Configtab
 from blocks import Blocks
-from tabcontrol import Tabs
 
 class PickGAApp(tk.Frame):
 
-    def __init__(self): #master, , listofcell
+    def __init__(self):
         #super().__init__(master)
         self.root = tk.Tk()
         self.root.title("GOAT Of GA (alpha)")
@@ -26,8 +25,6 @@ class PickGAApp(tk.Frame):
         self.reporting = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.admin = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.credit = tk.Frame(self.tabcontrol, width= 1600, height=1080)
-
-        # self.listoftabs = list(self.config, self.activity, self.reporting, self.credit)
 
         self.config.pack(fill="both", expand=1)
         self.activity.pack(fill="both", expand=1)
@@ -44,7 +41,7 @@ class PickGAApp(tk.Frame):
 
         #Blocks(self.admin).validate_block()
         #self.status = status
-        print(Blocks(self.admin).statusconfig)
+        #print(Blocks(self.admin).statusconfig)
         #self.getstatus = self.launch()
         #if self.status == 1:
         if Blocks(self.admin).statusconfig == True:
@@ -58,10 +55,6 @@ class PickGAApp(tk.Frame):
             self.tick = self.blocks.validate_block()
             print(self.tick)
             
-            self.iniblock(self.listofcell)
-
-            #master.resizable(False, False)
-        
             self.task_widget(self.listofcell)
 
         else:
@@ -72,13 +65,6 @@ class PickGAApp(tk.Frame):
     def selecttab(self, tab):
         self.tab = tab
         self.tabcontrol.select(self.tab)
-        
-
-    def iniblock(self, listofblock):
-        self.listofblock = listofblock
-        for data in self.listofblock:
-            
-            pdb.insert_nameblock(self.listofblock.index(data)+1, "{}".format(data))
     
     def credit_widget(self):
         self.imagecestas = Image.open("./logo/LogoCestasDC2024.png")
@@ -183,7 +169,6 @@ class PickGAApp(tk.Frame):
         # Navigation Button
         self.navbutton = ttk.Button(self.activity, text="Report Activite", bootstyle="PRIMARY", command= lambda: self.selecttab(2)).grid(row=26, column=12, pady=10)
 
-
     def autohour(self):
         
         # mise à jour automatique après validation Bouton des chiffres: outout -> hourout, dictblockpickerout, totalpickerout
@@ -221,7 +206,6 @@ class PickGAApp(tk.Frame):
             for row in pdb.fetch_total_picker():
                 self.totalpickerout.insert(tk.END, row)
                 self.theorytopick.insert(tk.END, row)
-
 
     def add_ateanpik(self):
         self.dkey = ['time_glob', 'art_bck1', 'art_bck2', 'art_bck3', 'art_bck4', 'art_bck5', 'art_bck6', 'ean_bck1', 'ean_bck2', 'ean_bck3', 'ean_bck4', 'ean_bck5', 'ean_bck6', 'total_pickers']
@@ -275,7 +259,6 @@ class PickGAApp(tk.Frame):
             self.totalpicker = tk.Label(self.activity, text='Total Pickers', font=("bold", 13), pady=10)
             self.totalpicker.grid(row=1, column=self.lsofblock.index(self.lsofblock[-1])+4)
 
-
     def totalpart(self):
 
         self.totalprelev_list = tk.Listbox(self.activity, height=2, width=10, justify="center")
@@ -287,7 +270,6 @@ class PickGAApp(tk.Frame):
         self.totalpredprlv_list = tk.Listbox(self.activity, height=2, width=10, justify="center")
         self.totalpredprlv_list.grid(row=25, column=5)
 
-
     def notready(self):
         # Text
         self.text_intro = tk.Text(self.activity, height=25, font=30,width= 40)
@@ -296,14 +278,7 @@ class PickGAApp(tk.Frame):
         self.text_itself = """Pour lancer l'activité,\nles Blocks doivent être CONFIGURES et VALIDES"""
         self.text_intro.insert(tk.END, self.text_itself)
 
-    def launch(self):
-
-        # Launch Activity
-        self.launch_var = tk.IntVar()
-        self.launch_btn = ttk.Checkbutton(self.admin, text="Lancer Activite", bootstyle="danger-round-toggle", variable=self.launch_var, width=12) #, command=self.launch
-        self.launch_btn.grid(row=14, column=1)
-        self.statuslaunch = self.launch_var.get()
-        return self.statuslaunch
+    
 
     # def clear_text(self, nblocks):
     #     self.nblocks = nblocks
@@ -314,17 +289,26 @@ class PickGAApp(tk.Frame):
         #style = Style('litera')
         #self.root = style.master
         #style.master.mainloop()
-
-        self.configwidget = Configtab(self.config)
-        self.configwidget.configwidget(self.selecttab)
+        if Blocks(self.admin).statusconfig == True:
+            self.configwidget = Configtab(self.config)
+            self.configwidget.configwidget(self.selecttab)
         
         #self.adminwidget = Blocks(self.admin)
         
         self.root.mainloop()
 
+class LaunchApp(tk.Frame):
+    def __init__(self): #master, , listofcell
+        #super().__init__(master)
+        pass
 
-listofoutdoor = ["SportCo", "Chasse", "Glisse", "Running", "Implant", "PFECA"]
-pdb = ProdDB("./database/goatdata.db")
+    def launch(self):
+
+        # Launch Activity
+
+        return self.statuslaunch
+
+
 # root = tk.Tk()
 app = PickGAApp() #, master=root listofcell=listofoutdoor
 # style = Style('litera')
