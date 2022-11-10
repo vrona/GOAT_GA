@@ -7,60 +7,64 @@ from gauge import Meter
 from ttkbootstrap import Style
 from ttkbootstrap.constants import *
 import datetime
-from configcell import Configtab
-from blocks import Blocks
+#from configcell import Configtab
+from adminblocks import Blocks
 
 class PickGAApp(tk.Frame):
 
     def __init__(self):
         #super().__init__(master)
+        self.get_dictglobalpick = {}
+        self.dictart_int = {}
+        self.dictean_int = {}
+        self.dictblockpickerout = {}
         self.root = tk.Tk()
         self.root.title("GOAT Of GA (alpha)")
         self.root.geometry("1600x1080")
         self.tabcontrol = ttk.Notebook(self.root)
         self.tabcontrol.grid(pady=5)
 
-        self.config = tk.Frame(self.tabcontrol, width= 1600, height=1080)
+        #self.config = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.activity = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.reporting = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.admin = tk.Frame(self.tabcontrol, width= 1600, height=1080)
         self.credit = tk.Frame(self.tabcontrol, width= 1600, height=1080)
 
-        self.config.pack(fill="both", expand=1)
+        #self.config.pack(fill="both", expand=1)
         self.activity.pack(fill="both", expand=1)
         self.reporting.pack(fill="both", expand=1)
         self.admin.pack(fill="both", expand=1)
         self.credit.pack(fill="both", expand=1)
 
 
-        self.tabcontrol.add(self.config, text="Blocks Configuration")
+        #self.tabcontrol.add(self.config, text="Blocks Configuration")
+        self.tabcontrol.add(self.admin, text="AdminOnly")
         self.tabcontrol.add(self.activity, text="Task Management")
         self.tabcontrol.add(self.reporting, text="Report")
-        self.tabcontrol.add(self.admin, text="AdminOnly")
         self.tabcontrol.add(self.credit, text="Credits")
 
-        #Blocks(self.admin).validate_block()
-        #self.status = status
-        #print(Blocks(self.admin).statusconfig)
-        #self.getstatus = self.launch()
-        #if self.status == 1:
-        if Blocks(self.admin).statusconfig == True:
-            self.blocks = Blocks(self.admin)
-            self.get_dictglobalpick = {}
-            self.dictart_int = {}
-            self.dictean_int = {}
-            self.dictblockpickerout = {}
+        # Admin widget's Validation & Launch Buttons
+        self.validblock_btn = ttk.Button(self.admin, text="Valider Blocks", bootstyle="danger",
+                                        command=lambda:[lambda:Blocks(self.admin).validate_block(), self.ready(), self.switchstate()], width=12) 
+        self.validblock_btn.grid(row=17, column=1, pady=10)
 
-            self.listofcell = self.blocks.validate_block()
-            self.tick = self.blocks.validate_block()
-            print(self.tick)
-            
-            self.task_widget(self.listofcell)
+        self.launch_btn = ttk.Button(self.admin, text="Lancer Activité", style='valid.btn', width=12, command=lambda:self.selecttab(1), state=tk.DISABLED) #, 
+        self.launch_btn.grid(row=20, column=1)
 
-        else:
-            self.notready()
+        Blocks(self.admin)
 
+        #Configtab(self.config).configwidget(self.selecttab)
         self.credit_widget()
+    
+    def switchstate(self):
+        self.launch_btn["state"]=tk.NORMAL
+        self.validblock_btn["state"]=tk.DISABLED
+
+    def ready(self):
+        self.listofcell = Blocks(self.admin).lisfofblock()
+        print(self.listofcell)
+        
+        self.task_widget(self.listofcell)
     
     def selecttab(self, tab):
         self.tab = tab
@@ -289,24 +293,23 @@ class PickGAApp(tk.Frame):
         #style = Style('litera')
         #self.root = style.master
         #style.master.mainloop()
-        if Blocks(self.admin).statusconfig == True:
-            self.configwidget = Configtab(self.config)
-            self.configwidget.configwidget(self.selecttab)
+        
+
         
         #self.adminwidget = Blocks(self.admin)
         
         self.root.mainloop()
 
-class LaunchApp(tk.Frame):
-    def __init__(self): #master, , listofcell
-        #super().__init__(master)
-        pass
+# class LaunchApp(tk.Frame):
+#     def __init__(self): #master, , listofcell
+#         #super().__init__(master)
+#         pass
 
-    def launch(self):
+#     def launch(self):
 
-        # Launch Activity
+#         # Launch Activity
 
-        return self.statuslaunch
+#         return self.statuslaunch
 
 
 # root = tk.Tk()

@@ -2,7 +2,7 @@ import tkinter as tk
 import pandas as pd
 import tkinter.messagebox
 from tkinter import ttk
-from blocks import Blocks
+from adminblocks import Blocks
 
 from ttkbootstrap import Style
 from ttkbootstrap.constants import *

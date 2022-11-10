@@ -6,6 +6,7 @@ from tkinter.ttk import *
 import tkinter.messagebox
 from globaldb import ProdDB
 
+
 class Blocks(tk.Frame):
     
     statusconfig = False
@@ -74,15 +75,10 @@ class Blocks(tk.Frame):
         self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
 
         # Validate Block List
-        
-        self.validblock_btn = Button(self.master, text="Valider Blocks", style='valid.btn', width=12, command=self.validate_block, state=tk.NORMAL)
-        self.validblock_btn.grid(row=17, column=1)
-
-        # Launch Activity
-        self.launch_var = tk.IntVar()
-        self.launch_btn = Checkbutton(self.master, text="Lancer Activite", bootstyle="danger-round-toggle", command=self.launch, variable=self.launch_var, width=12, state=tk.DISABLED)
-        self.launch_btn.grid(row=20, column=1)
-        
+        # self.valid_var = tk.IntVar()
+        # self.validblock_btn = Checkbutton(self.master, text="Valider Blocks", bootstyle="danger-round-toggle", command=self.validate_block, variable=self.valid_var, width=12, state=tk.NORMAL) 
+        # self.validblock_btn.grid(row=17, column=1)
+       
 
     def add_block(self):
         self.mainlistblock.append(self.blocks_text.get())
@@ -106,32 +102,22 @@ class Blocks(tk.Frame):
         self.listofblock = listofblock
         for data in self.listofblock:
             
-            self.pdb.insert_nameblock(self.listofblock.index(data)+1, "{}".format(data))
+            self.pdb.insert_nameblock(self.listofblock.index(data)+1, "{}".format(data))     
 
 
-    def launch(self):
-        self.statuslaunch = self.launch_var.get()
-        global statusconfig
-
-        if self.statuslaunch == 1:
-            self.validblock_btn["state"]=tk.DISABLED
-            self.pdb = ProdDB("./database/goatdata.db")
-            self.iniblock(self.mainlistblock)
-            
-            statusconfig = True
-
-        else:
-            statusconfig = False
-
+    def lisfofblock(self):
+        return self.mainlistblock
 
     def validate_block(self):
-        
+
         self.listofids = list(self.mainlistblock.index(x) for x in self.mainlistblock)
         self.data = {'id': self.listofids, 'name': self.mainlistblock}
         self.df = pd.DataFrame(self.data, columns=['id','name'])
+
+        self.pdb = ProdDB("./database/goatdata.db")
+        self.iniblock(self.mainlistblock)
         
-        self.launch_btn["state"] = tk.NORMAL
-        return self.mainlistblock
+        #self.launch_btn["state"] = tk.NORMAL
 
 
     def clear_text(self):
@@ -164,7 +150,3 @@ class Blocks(tk.Frame):
         self.blocks_list.configure(yscrollcommand=self.scrollbar.set)
         self.scrollbar.configure(command=self.blocks_list.yview)
         """
-
-
-# bloc = Blocks()
-# bloc.blocdataframe()
