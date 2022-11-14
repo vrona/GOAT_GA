@@ -1,7 +1,7 @@
 import sqlite3
 
 class ProdDB:
-    def __init__(self, db) :
+    def __init__(self, db):
         self.dictbase = {}
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
@@ -14,17 +14,17 @@ class ProdDB:
         self.cur.execute("CREATE TABLE IF NOT EXISTS poly_out (time_glob REAL PRIMARY KEY, total_picker_onsite INTEGER NOT NULL, total_pick_goal INTEGER NOT NULL, poly_status INTEGER, FOREIGN KEY (total_picker_onsite) REFERENCES globalpick_in (time_glob), FOREIGN KEY (time_glob) REFERENCES globalpick_in (total_pickers))")
         self.conn.commit()
 
-    def fetch_hourout(self) :
+    def fetch_hourout(self):
         self.cur.execute("SELECT time_glob FROM globalpick_in ORDER BY time_glob DESC LIMIT 1")
         rows = self.cur.fetchall()
         return rows
 
-    def fetch_picker(self, block_id) :
+    def fetch_picker(self, block_id):
         self.cur.execute("SELECT num_picker FROM block_picker_out WHERE block_id=?",(block_id,))
         rows = self.cur.fetchall()
         return rows
 
-    def fetch_total_picker(self) :
+    def fetch_total_picker(self):
         self.cur.execute("SELECT total_picker FROM block_picker_out ORDER BY total_picker DESC LIMIT 1")
         rows = self.cur.fetchall()
         return rows
@@ -36,7 +36,7 @@ class ProdDB:
     def insert_nameblock(self, id, name):
         self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(id, name))
         self.conn.commit()
-    
+
     def insert_poly(self, time_glob, total_picker_onsite):
         self.cur.execute("INSERT INTO poly_out VALUES (?,?)",(time_glob, total_picker_onsite))
         self.conn.commit()

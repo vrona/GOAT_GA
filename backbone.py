@@ -8,7 +8,7 @@ from ttkbootstrap import Style
 #from tkinter.ttk import Style
 from ttkbootstrap.constants import *
 import datetime
-#from configcell import Configtab
+from globaldb import ProdDB
 from adminblocks import Blocks
 
 
@@ -192,6 +192,7 @@ class PickGAApp(tk.Frame):
             self.totalpickerout.grid(row=self.hour_row, column=self.listofcell.index(self.listofcell[-1])+4)
 
     def get_timepickeroutput(self, block_num):
+        pdb = ProdDB("/Volumes/vrona_SSD/GOAT_GA/database/goatdata.db")
         self.theorytopick.delete(0, tk.END)
         self.autohour()
         for self.block_id in range(1, block_num +1):
@@ -211,6 +212,7 @@ class PickGAApp(tk.Frame):
                 self.theorytopick.insert(tk.END, row)
 
     def add_ateanpik(self):
+        pdb = ProdDB("/Volumes/vrona_SSD/GOAT_GA/database/goatdata.db")
         self.dkey = ['time_glob', 'art_bck1', 'art_bck2', 'art_bck3', 'art_bck4', 'art_bck5', 'art_bck6', 'ean_bck1', 'ean_bck2', 'ean_bck3', 'ean_bck4', 'ean_bck5', 'ean_bck6', 'total_pickers']
 
         self.get_dictart = dict(zip(self.dkey[1:7], self.dictart_int.values()))
@@ -283,7 +285,6 @@ class PickGAApp(tk.Frame):
         self.text_itself = """Pour lancer l'activité,\nles Blocks doivent être CONFIGURES et VALIDES"""
         self.text_intro.insert(tk.END, self.text_itself)
 
-    
 
     # def clear_text(self, nblocks):
     #     self.nblocks = nblocks
