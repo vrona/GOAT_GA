@@ -42,7 +42,7 @@ class PickGAApp(tk.Frame):
         #self.tabcontrol.add(self.config, text="Blocks Configuration")
         self.tabcontrol.add(self.admin, text="AdminOnly")
         self.tabcontrol.add(self.activity, text="Task Management")
-        self.tabcontrol.add(self.reporting, text="Report")
+        self.tabcontrol.add(self.reporting, text="Reporting")
         self.tabcontrol.add(self.credit, text="Credits")
 
         # Admin widget's Validation & Launch Buttons
@@ -97,7 +97,6 @@ class PickGAApp(tk.Frame):
     def task_widget(self, lsofblock):
         
         self.lsofblock = lsofblock
-        print(self.lsofblock)
 
         self.totalpicker_text = tk.IntVar()
 
@@ -171,7 +170,7 @@ class PickGAApp(tk.Frame):
         self.totalpart()
 
         # Navigation Button
-        self.navbutton = ttk.Button(self.activity, text="Report Activite", bootstyle="PRIMARY", command= lambda: self.selecttab(2)).grid(row=26, column=12, pady=10)
+        self.navbutton = ttk.Button(self.activity, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2)).grid(row=26, column=12, pady=10)
 
     def autohour(self):
         
@@ -244,7 +243,6 @@ class PickGAApp(tk.Frame):
         self.dictean_int = {}
         self.part_art_input = {}
         self.lsofblock = lsofblock
-        print("autoblock")
         
         for nblock in self.lsofblock:
             self.dictart_int[self.lsofblock.index(nblock)] = tk.IntVar()
