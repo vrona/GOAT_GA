@@ -212,6 +212,7 @@ class PickGAApp(tk.Frame):
                 self.theorytopick.insert(tk.END, row)
 
     def add_ateanpik(self):
+        # DEAD DEAD DEAD DEAD DEAD DEAD DEAD DEAD
         pdb = ProdDB("/Volumes/vrona_SSD/GOAT_GA/database/goatdata.db")
         self.dkey = ['time_glob', 'art_bck1', 'art_bck2', 'art_bck3', 'art_bck4', 'art_bck5', 'art_bck6', 'ean_bck1', 'ean_bck2', 'ean_bck3', 'ean_bck4', 'ean_bck5', 'ean_bck6', 'total_pickers']
 
@@ -224,7 +225,7 @@ class PickGAApp(tk.Frame):
                
         # if (self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys()):
         #     tkinter.messagebox.showerror(
-        #         "Required Fields", "Please include all fields")
+        #         "Champs requis", "Remplissez les champs, svp")
         #     return
         #print(self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys())
 

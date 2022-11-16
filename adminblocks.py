@@ -53,7 +53,7 @@ class Blocks(tk.Frame):
         self.remove_btn.grid(row=9, column=3)
 
         # Changing Block
-        self.oldblocks_label = tk.Label(self.master, text="Ancien Nom Block", justify='center', font=16)
+        self.oldblocks_label = tk.Label(self.master, text="Ancien Nom Block\n(à sélectionner)", justify='center', font=16)
         self.oldblocks_label.grid(row=11, column=1)
 
         self.newblocks_label = tk.Label(self.master, text="Nouveau Nom Block", justify='center', font=16)
@@ -72,17 +72,32 @@ class Blocks(tk.Frame):
         self.blocks_list.bind('<<ListboxSelect>>', self.select_item)       
 
     def add_block(self):
-        mainlistblock.append(self.blocks_text.get())
+        if self.blocks_text.get() == '':
+            tkinter.messagebox.showerror(
+                "Champs requis", "Selectionnez un nom de la liste, svp")
+            return
+        else:
+            mainlistblock.append(self.blocks_text.get())
         self.clear_text()
         self.show_block()
 
     def remove_block(self):
-        self.indexit = mainlistblock.index(self.blocks_text.get())
-        mainlistblock.pop(self.indexit)
+        if self.blocks_text.get() == '':
+            tkinter.messagebox.showerror(
+                "Champs requis", "Selectionnez un nom de la liste, svp")
+            return
+        else:
+            self.indexit = mainlistblock.index(self.blocks_text.get())
+            mainlistblock.pop(self.indexit)
+
         self.clear_text()
         self.show_block()
 
     def replace_block(self):
+        if self.oldblocks_text.get() == '' or self.newblocks_text.get() == '':
+            tkinter.messagebox.showerror(
+                "Champs requis, Ancien nom ou Nouveau nom à remplir, svp.")
+            return
 
         self.indexold = mainlistblock.index(self.oldblocks_text.get())
         mainlistblock[self.indexold] = self.newblocks_text.get()
@@ -104,8 +119,8 @@ class Blocks(tk.Frame):
 
         self.listofids = list(mainlistblock.index(x) for x in mainlistblock)
         self.data = {'id': self.listofids, 'name': mainlistblock}
-        self.df = pd.DataFrame(self.data, columns=['id','name'])
-        self.pdb = ProdDB("./database/goatdata.db")
+        #self.df = pd.DataFrame(self.data, columns=['id','name'])
+        self.pdb = ProdDB(len(mainlistblock),"./database/goatdata.db")
         self.iniblock(mainlistblock)
 
     def clear_text(self):

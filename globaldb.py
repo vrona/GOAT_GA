@@ -1,21 +1,49 @@
 import sqlite3
+import pandas as pd
+
+globaldict = {}
 
 class ProdDB:
-    def __init__(self, db):
+    def __init__(self, numofblock, db):
         self.dictbase = {}
+        self.numofblock = numofblock
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
+        self.createglobalpick(self.numofblock, db)
         self.cur.execute("CREATE TABLE IF NOT EXISTS blocks_in (id INTEGER PRIMARY KEY, name text NOT NULL)")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS globalpick_in (time_glob REAL PRIMARY KEY, art_bck1 INTEGER,art_bck2 INTEGER,art_bck3 INTEGER,art_bck4 INTEGER,art_bck5 INTEGER,art_bck6 INTEGER,ean_bck1 INTEGER,ean_bck2 INTEGER,ean_bck3 INTEGER,ean_bck4 INTEGER,ean_bck5 INTEGER,ean_bck6 INTEGER,total_pickers INTEGER NOT NULL)")
+        #self.cur.execute("CREATE TABLE IF NOT EXISTS in_globalpick (time_glob REAL PRIMARY KEY, art_bck1 INTEGER,art_bck2 INTEGER,art_bck3 INTEGER,art_bck4 INTEGER,art_bck5 INTEGER,art_bck6 INTEGER,ean_bck1 INTEGER,ean_bck2 INTEGER,ean_bck3 INTEGER,ean_bck4 INTEGER,ean_bck5 INTEGER,ean_bck6 INTEGER,total_pickers INTEGER NOT NULL)")
         self.cur.execute("CREATE TABLE IF NOT EXISTS capa (capatheo_h REAL NOT NULL)")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS totals_out (id INTEGER PRIMARY KEY, timeofrecord REAL NOT NULL, total_prelev INTEGER NOT NULL, delta_capacitif INTEGER NOT NULL, total_predic INTEGER NOT NULL, capareal_h INTEGER NOT NULL, capaavg INTEGER, FOREIGN KEY (timeofrecord) REFERENCES globalpick_in (time_glob))")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES globalpick_in (total_pickers))")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS totals_out (id INTEGER PRIMARY KEY, timeofrecord REAL NOT NULL, total_prelev INTEGER NOT NULL, delta_capacitif INTEGER NOT NULL, total_predic INTEGER NOT NULL, capareal_h INTEGER NOT NULL, capaavg INTEGER, FOREIGN KEY (timeofrecord) REFERENCES in_globalpick (time_glob))")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES in_globalpick (total_pickers))")
         self.cur.execute("CREATE TABLE IF NOT EXISTS pickers_out (id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, time_block_arrival record REAL NOT NULL, time_block_departure REAL NOT NULL, block_id_origin INTEGER, block_id_landing INTEGER, FOREIGN KEY (block_id_origin) REFERENCES blocks_in (id))")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS poly_out (time_glob REAL PRIMARY KEY, total_picker_onsite INTEGER NOT NULL, total_pick_goal INTEGER NOT NULL, poly_status INTEGER, FOREIGN KEY (total_picker_onsite) REFERENCES globalpick_in (time_glob), FOREIGN KEY (time_glob) REFERENCES globalpick_in (total_pickers))")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS poly_out (time_glob REAL PRIMARY KEY, total_picker_onsite INTEGER NOT NULL, total_pick_goal INTEGER NOT NULL, poly_status INTEGER, FOREIGN KEY (total_picker_onsite) REFERENCES in_globalpick (time_glob), FOREIGN KEY (time_glob) REFERENCES in_globalpick (total_pickers))")
         self.conn.commit()
 
+    def createglobalpick(self, numofblock, db):
+        sql_ent = []
+        self.numoblock = numofblock
+        
+        self.lsartean = ["artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
+
+        for artean in self.lsartean:
+            self.attribute = ' '.join((artean, "INTEGER"))
+            sql_ent.append(self.attribute)
+
+        self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
+        self.corps = ', '.join((sql_ent))
+        self.complete = self.entete + "time_glob REAL PRIMARY KEY" + ", " + self.corps + ", total_pickers INTEGER NOT NULL)"
+        print(self.complete)
+        self.conn = sqlite3.connect(db)
+        self.cur = self.conn.cursor()
+        self.cur.execute(self.complete)
+        
+        # self.get_dictart = dict(zip(self.dkey[1:7], self.dictart_int.values()))
+        # self.get_dictart = dict((key, value.get()) for key, value in self.get_dictart.items())
+        # self.get_dictean = dict(zip(self.dkey[7:13], self.dictean_int.values()))
+        # self.get_dictean = dict((key, value.get()) for key, value in self.get_dictean.items())
+
     def fetch_hourout(self):
-        self.cur.execute("SELECT time_glob FROM globalpick_in ORDER BY time_glob DESC LIMIT 1")
+        self.cur.execute("SELECT time_glob FROM in_globalpick ORDER BY time_glob DESC LIMIT 1")
         rows = self.cur.fetchall()
         return rows
 
@@ -45,7 +73,7 @@ class ProdDB:
         self.dictbase = dictbase
         self.placeholder = ','.join(['?'] * len(self.dictbase))
         self.column = ', '.join(self.dictbase.keys())
-        self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('globalpick_in', self.column, self.placeholder)
+        self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('in_globalpick', self.column, self.placeholder)
         
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
