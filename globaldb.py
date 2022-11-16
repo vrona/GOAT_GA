@@ -2,6 +2,7 @@ import sqlite3
 import pandas as pd
 
 globaldict = {}
+lsartean = []
 
 class ProdDB:
     def __init__(self, numofblock, db):
@@ -20,22 +21,26 @@ class ProdDB:
         self.conn.commit()
 
     def createglobalpick(self, numofblock, db):
+        global lsartean
         sql_ent = []
         self.numoblock = numofblock
         
-        self.lsartean = ["artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
+        lsartean = ["artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
 
-        for artean in self.lsartean:
+        for artean in lsartean:
             self.attribute = ' '.join((artean, "INTEGER"))
             sql_ent.append(self.attribute)
 
         self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
         self.corps = ', '.join((sql_ent))
         self.complete = self.entete + "time_glob REAL PRIMARY KEY" + ", " + self.corps + ", total_pickers INTEGER NOT NULL)"
-        print(self.complete)
+        
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.cur.execute(self.complete)
+        
+        lsartean.insert(0, "time_glob")
+        lsartean.insert(len(lsartean), "total_pickers")
         
         # self.get_dictart = dict(zip(self.dkey[1:7], self.dictart_int.values()))
         # self.get_dictart = dict((key, value.get()) for key, value in self.get_dictart.items())
