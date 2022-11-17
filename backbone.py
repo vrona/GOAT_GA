@@ -1,25 +1,25 @@
 import tkinter as tk
 import tkinter.messagebox
 from tkinter import ttk
-from globaldb import ProdDB
+from globaldb import CreationDB, UsingDB
 from PIL import Image, ImageTk
 from gauge import Meter
 from ttkbootstrap import Style
 #from tkinter.ttk import Style
 from ttkbootstrap.constants import *
 import datetime
-from globaldb import ProdDB
 from adminblocks import Blocks
 import adminblocks
 import globaldb
 
-dictart_int = {}
-dictean_int = {}
+
 
 class PickGAApp(tk.Frame):
     
     def __init__(self, master):
         super().__init__(master)
+        self.dictart_int = {}
+        self.dictean_int = {}
         self.get_dictglobalpick = {}
         
         self.dictblockpickerout = {}
@@ -197,7 +197,7 @@ class PickGAApp(tk.Frame):
             self.totalpickerout.grid(row=self.hour_row, column=self.listofcell.index(self.listofcell[-1])+4)
 
     def get_timepickeroutput(self, block_num):
-        pdb = ProdDB(block_num, "/Volumes/vrona_SSD/GOAT_GA/database/goatdata.db")
+        pdb = UsingDB("./database/goatdata.db")
         self.theorytopick.delete(0, tk.END)
         self.autohour()
         for self.block_id in range(1, block_num +1):
@@ -217,14 +217,13 @@ class PickGAApp(tk.Frame):
                 self.theorytopick.insert(tk.END, row)
 
     def add_arteanpik(self):
-        # DEAD DEAD DEAD DEAD DEAD DEAD DEAD DEAD
-        
+
         self.dkey = globaldb.lsartean
         limit = len(self.dkey) //2 -1 # getting the frontier between art and ean      
 
-        self.get_dictart = dict(zip(self.dkey[1 : limit+1], dictart_int.values()))
+        self.get_dictart = dict(zip(self.dkey[1 : limit+1], self.dictart_int.values()))
         self.get_dictart = dict((key, value.get()) for key, value in self.get_dictart.items())
-        self.get_dictean = dict(zip(self.dkey[limit+1 : len(self.dkey)-1], dictean_int.values()))
+        self.get_dictean = dict(zip(self.dkey[limit+1 : len(self.dkey)-1], self.dictean_int.values()))
         self.get_dictean = dict((key, value.get()) for key, value in self.get_dictean.items())
         self.timerecord = datetime.datetime.now()
         self.get_dictglobalpick = {'time_glob': self.timerecord, **self.get_dictart,**self.get_dictean, 'total_pickers':self.totalpicker_text.get()}
@@ -236,14 +235,14 @@ class PickGAApp(tk.Frame):
         #print(self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys())
 
         # Insert into DB
-        pdb = ProdDB(len(self.dkey)-2,"/Volumes/vrona_SSD/GOAT_GA/database/goatdata.db")
+        pdb = UsingDB("./database/goatdata.db")
         pdb.insert_gpick(self.get_dictglobalpick)
         #pdb.insert_poly(self.timerecord, self.totalpicker_text.get(), , )
             
         # Insert into list
         #self.hourout.insert(self.get_dictglobalpick['time_glob'])
 
-        #     self.dictblockpickerout[self.lsofblock.index(nblock)].insert(dictart_int[self.lsofblock.index(nblock)].get(), dictean_int[self.lsofblock.index(nblock)].get(),
+        #     self.dictblockpickerout[self.lsofblock.index(nblock)].insert(self.dictart_int[self.lsofblock.index(nblock)].get(), self.dictean_int[self.lsofblock.index(nblock)].get(),
         #             self.totalpicker_text.get())
             #self.clear_text(nblock)
         self.get_timepickeroutput(len(self.dkey)-2)
@@ -254,17 +253,17 @@ class PickGAApp(tk.Frame):
         self.lsofblock = lsofblock
         
         for nblock in self.lsofblock:
-            dictart_int[self.lsofblock.index(nblock)] = tk.IntVar()
-            dictean_int[self.lsofblock.index(nblock)] = tk.IntVar()
+            self.dictart_int[self.lsofblock.index(nblock)] = tk.IntVar()
+            self.dictean_int[self.lsofblock.index(nblock)] = tk.IntVar()
             
 
             self.part_block = tk.Label(self.activity, text=self.lsofblock[self.lsofblock.index(nblock)], font=("bold", 12))
             self.part_block.grid(row=1, column=self.lsofblock.index(nblock)+2)
 
-            self.part_art_input[self.lsofblock.index(nblock)+1] = tk.Entry(self.activity, textvariable=dictart_int[self.lsofblock.index(nblock)], justify="center", width=10)
+            self.part_art_input[self.lsofblock.index(nblock)+1] = tk.Entry(self.activity, textvariable=self.dictart_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_art_input[self.lsofblock.index(nblock)+1].grid(row=2, column=self.lsofblock.index(nblock)+2)
 
-            self.part_ean_input = tk.Entry(self.activity, textvariable=dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
+            self.part_ean_input = tk.Entry(self.activity, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_ean_input.grid(row=3, column=self.lsofblock.index(nblock)+2)
 
             Meter(master=self.activity, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',

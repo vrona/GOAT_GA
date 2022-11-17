@@ -4,7 +4,7 @@ import pandas as pd
 globaldict = {}
 lsartean = []
 
-class ProdDB:
+class CreationDB:
     def __init__(self, numofblock, db):
         self.dictbase = {}
         self.numofblock = numofblock
@@ -41,11 +41,15 @@ class ProdDB:
         
         lsartean.insert(0, "time_glob")
         lsartean.insert(len(lsartean), "total_pickers")
-        
-        # self.get_dictart = dict(zip(self.dkey[1:7], self.dictart_int.values()))
-        # self.get_dictart = dict((key, value.get()) for key, value in self.get_dictart.items())
-        # self.get_dictean = dict(zip(self.dkey[7:13], self.dictean_int.values()))
-        # self.get_dictean = dict((key, value.get()) for key, value in self.get_dictean.items())
+
+    def insert_nameblock(self, id, name):
+        self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(id, name))
+        self.conn.commit()
+
+class UsingDB:
+    def __init__(self, db):
+        self.conn = sqlite3.connect(db)
+        self.cur = self.conn.cursor()
 
     def fetch_hourout(self):
         self.cur.execute("SELECT time_glob FROM in_globalpick ORDER BY time_glob DESC LIMIT 1")
@@ -64,10 +68,6 @@ class ProdDB:
 
     def insert_capatheo(self, capatheo_h):
         self.cur.execute("INSERT INTO capa VALUES (?)",(capatheo_h,))
-        self.conn.commit()
-
-    def insert_nameblock(self, id, name):
-        self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(id, name))
         self.conn.commit()
 
     def insert_poly(self, time_glob, total_picker_onsite):

@@ -4,7 +4,7 @@ import sqlite3
 import tkinter as tk
 from tkinter.ttk import *
 import tkinter.messagebox
-from globaldb import ProdDB
+from globaldb import CreationDB
 
 
 mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "E Rando/Camp", "Prio E", "V Cycle/Urban", "Prio V", "PFECA", "Implant"]
@@ -119,9 +119,9 @@ class Blocks(tk.Frame):
     def validate_block(self):
         global mainlistblock
         self.listofids = list(mainlistblock.index(x) for x in mainlistblock)
-        self.data = {'id': self.listofids, 'name': mainlistblock}
+        #self.data = {'id': self.listofids, 'name': mainlistblock}
         #self.df = pd.DataFrame(self.data, columns=['id','name'])
-        self.pdb = ProdDB(len(mainlistblock),"./database/goatdata.db")
+        self.pdb = CreationDB(len(mainlistblock),"./database/goatdata.db")
         
         self.iniblock(mainlistblock)
 
