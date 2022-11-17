@@ -30,34 +30,38 @@ bibi.mainloop()"""
 import pandas as pd
 import sqlite3
 
-listdk = ['time_glob', 'total_pickers']
+#1listdk = ['time_glob', 'total_pickers']
 qualificatif = ["REAL PRIMARY KEY", "INTEGER", "NOT NULL"]
 def creaglobalpick(numofblock):
-    listart = ["artbck{}".format(nblock) for nblock in range(0, numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, numofblock)]
-    for b in listart:
-        gogo = ' '.join((b, qualificatif[1]))
-        listart[listart.index(b)]= gogo
+    # listart = ["artbck{}".format(nblock) for nblock in range(0, numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, numofblock)]
+    # for b in listart:
+    #     gogo = ' '.join((b, qualificatif[1]))
+    #     listart[listart.index(b)]= gogo
     
-    # listart.insert(0, listdk[0])
-    # listart.insert(len(listart), listdk[1])
+    # # listart.insert(0, listdk[0])
+    # # listart.insert(len(listart), listdk[1])
 
-    # df = pd.DataFrame(columns=listart)
+    # # df = pd.DataFrame(columns=listart)
     
-    entete = "\"CREATE TABLE IF NOT EXISTS in_globalpick ("
-    completone = ' '.join(('time_glob', qualificatif[0]))
-    complettwo = ''.join((entete, completone))
-    completthree = ', '.join((listart))
-    completfour = ','.join((complettwo, completthree))
+    # entete = "\"CREATE TABLE IF NOT EXISTS in_globalpick ("
+    # completone = ' '.join(('time_glob', qualificatif[0]))
+    # complettwo = ''.join((entete, completone))
+    # completthree = ', '.join((listart))
+    # completfour = ','.join((complettwo, completthree))
     
-    completfive = ' '.join((listdk[1], qualificatif[1]))
-    completsix = ', '.join((completfour, completfive))
-    ending = ")\""
-    completseven = entete + completone + ', ' + completthree + ', ' + completfive + ending
-
-    
-    #complet = ' '.join(((entete, ' '.join(listdk[0], qualificatif[0])))) #, k for k in listart, ' '.join(listdk[0], qualificatif[2]
-    print(completseven)
+    # completfive = ' '.join((listdk[1], qualificatif[1]))
+    # completsix = ', '.join((completfour, completfive))
+    # ending = ")\""
+    # completseven = entete + completone + ', ' + completthree + ', ' + completfive + ending
 
     
+    # #complet = ' '.join(((entete, ' '.join(listdk[0], qualificatif[0])))) #, k for k in listart, ' '.join(listdk[0], qualificatif[2]
+    # print(completseven)
 
-creaglobalpick(2)
+
+    limit = numofblock //2 -1
+    print(limit)
+
+    
+
+creaglobalpick(22)
