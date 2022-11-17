@@ -144,8 +144,10 @@ class PickGAApp(tk.Frame):
 
         # SEPARATOR PART
         
-        # self.separator = ttk.Separator(bootstyle="info")
-        # self.separator.grid(row=4, column=1, sticky="nsew", rowspan=2, columnspan=9)
+        self.seppoly1 = ttk.Separator(self.activity, bootstyle="info")
+        self.seppoly2 = ttk.Separator(self.activity, bootstyle="info")
+        self.seppoly1.grid(row=4, column=1, sticky="nsew", rowspan=2, columnspan=3)
+        self.seppoly2.grid(row=4, column=5, sticky="nsew", rowspan=2, columnspan=3)
         
         # PICKERS PART
         self.picker_row = 10 # to merge

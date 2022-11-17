@@ -37,37 +37,45 @@ class Blocks(tk.Frame):
         
         self.listblocktitle = Label(self.master, text="Liste de Blocks", font=('bold', 16), padding=15)
         self.listblocktitle.grid(row=3, column=1, pady=15)
-        self.blocks_list = tk.Listbox(self.master, height=10, width=15, font=18) #, selectmode= "multiple"
-        self.blocks_list.grid(row=4, column=1, pady=15)  #.place(x=555,y=10) #padx=20, rowspan=3, columnspan=2
+        self.blocks_list = tk.Listbox(self.master, height=10, width=13, font=18) #, selectmode= "multiple"
+        self.blocks_list.place(x=10,y=155) #padx=20, rowspan=3, columnspan=2 grid(row=4, column=1, pady=15)  #
 
         # Add Remove Blocks
-        self.blocks_label = Label(self.master, text="Nom Block", justify='center', font=('bold', 16))
-        self.blocks_label.grid(row=7, column=1)
+        self.blocks_label = Label(self.master, text="Nom Block", justify='center', font=('bold', 14))
+        self.blocks_label.place(x=203,y=165) #.grid(row=3, column=2)
         
         self.blocks_entry = tk.Entry(self.master, textvariable=self.blocks_text)
-        self.blocks_entry.grid(row=7, column=2)
+        self.blocks_entry.grid(row=4, column=2)
 
         self.add_btn = Button(self.master, text="Ajouter Block", bootstyle="success", width=12, command=self.add_block)
-        self.add_btn.grid(row=9, column=1, pady=30)
+        self.add_btn.grid(row=6, column=2, pady=5)
 
         self.remove_btn = Button(self.master, text="Supprimer Block", bootstyle="warning", width=12, command=self.remove_block)
-        self.remove_btn.grid(row=9, column=3)
+        self.remove_btn.grid(row=7, column=2, pady=10)
+
+        # SEPARATOR PART
+        
+        # self.addsuppsep = Separator(self.master, bootstyle="success")
+        # self.addsuppsep.grid(row=8, column=1, sticky="nsew", rowspan=2, columnspan=9)
+
+        self.renomsep = Separator(self.master, bootstyle="success")
+        self.renomsep.grid(row=15, column=1, sticky="nsew", rowspan=2, columnspan=9)
 
         # Changing Block
         self.oldblocks_label = tk.Label(self.master, text="Ancien Nom Block\n(à sélectionner)", justify='center', font=16)
-        self.oldblocks_label.grid(row=11, column=1)
+        self.oldblocks_label.grid(row=11, column=1, pady=40)
 
         self.newblocks_label = tk.Label(self.master, text="Nouveau Nom Block", justify='center', font=16)
         self.newblocks_label.grid(row=13, column=1)
 
         self.oldblocks_entry = tk.Entry(self.master, textvariable=self.oldblocks_text)
-        self.oldblocks_entry.grid(row=11, column=2, pady=10)
+        self.oldblocks_entry.grid(row=11, column=2)
 
         self.newblocks_entry = tk.Entry(self.master, textvariable=self.newblocks_text)
         self.newblocks_entry.grid(row=13, column=2)
 
         self.rename_btn = Button(self.master, text="Renommer Block", bootstyle="info", width=12,command=self.replace_block)
-        self.rename_btn.grid(row=14, column=1, pady=30)
+        self.rename_btn.grid(row=14, column=2, pady=10)
 
         # Bind select
         self.blocks_list.bind('<<ListboxSelect>>', self.select_item)       
@@ -146,12 +154,3 @@ class Blocks(tk.Frame):
             self.oldblocks_entry.insert(tk.END, self.selected_item)
         except IndexError:
             pass
-
-        """
-        # Create scrollbar
-        self.scrollbar = Scrollbar(self.master, bootstyle="PRIMARY-round")
-        self.scrollbar.grid(row=8, column=2)
-        # Set scrollbar to parts
-        self.blocks_list.configure(yscrollcommand=self.scrollbar.set)
-        self.scrollbar.configure(command=self.blocks_list.yview)
-        """
