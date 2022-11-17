@@ -1,8 +1,8 @@
 import sqlite3
 import pandas as pd
 
-globaldict = {}
 lsartean = []
+ls_w_artean = []
 
 class CreationDB:
     def __init__(self, numofblock, db):
@@ -12,7 +12,6 @@ class CreationDB:
         self.cur = self.conn.cursor()
         self.createglobalpick(self.numofblock, db)
         self.cur.execute("CREATE TABLE IF NOT EXISTS blocks_in (id INTEGER PRIMARY KEY, name text NOT NULL)")
-        #self.cur.execute("CREATE TABLE IF NOT EXISTS in_globalpick (time_glob REAL PRIMARY KEY, art_bck1 INTEGER,art_bck2 INTEGER,art_bck3 INTEGER,art_bck4 INTEGER,art_bck5 INTEGER,art_bck6 INTEGER,ean_bck1 INTEGER,ean_bck2 INTEGER,ean_bck3 INTEGER,ean_bck4 INTEGER,ean_bck5 INTEGER,ean_bck6 INTEGER,total_pickers INTEGER NOT NULL)")
         self.cur.execute("CREATE TABLE IF NOT EXISTS capa (capatheo_h REAL NOT NULL)")
         self.cur.execute("CREATE TABLE IF NOT EXISTS totals_out (id INTEGER PRIMARY KEY, timeofrecord REAL NOT NULL, total_prelev INTEGER NOT NULL, delta_capacitif INTEGER NOT NULL, total_predic INTEGER NOT NULL, capareal_h INTEGER NOT NULL, capaavg INTEGER, FOREIGN KEY (timeofrecord) REFERENCES in_globalpick (time_glob))")
         self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES in_globalpick (total_pickers))")
@@ -23,21 +22,32 @@ class CreationDB:
     def createglobalpick(self, numofblock, db):
         global lsartean
         sql_ent = []
+        sql_w_ent = []
         self.numoblock = numofblock
         
         lsartean = ["artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_w_artean = ["wartbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["weanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
 
         for artean in lsartean:
             self.attribute = ' '.join((artean, "INTEGER"))
             sql_ent.append(self.attribute)
+        
+        for w_artean in lsartean:
+            self.w_attribute = ' '.join((w_artean, "FLOAT"))
+            sql_w_ent.append(self.w_attribute)
 
         self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
         self.corps = ', '.join((sql_ent))
         self.complete = self.entete + "time_glob REAL PRIMARY KEY" + ", " + self.corps + ", total_pickers INTEGER NOT NULL)"
+
+        self.w_entete = "CREATE TABLE IF NOT EXISTS in_weight_globpick ("
+        self.w_corps = ', '.join((sql_w_ent))
+        self.w_complete = self.w_entete + "time_glob REAL PRIMARY KEY" + ", " + self.w_corps + ", total_art_topick INTEGER, total_ean_topick INTEGER)"
         
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.cur.execute(self.complete)
+        self.cur.execute(self.w_complete)
         
         lsartean.insert(0, "time_glob")
         lsartean.insert(len(lsartean), "total_pickers")

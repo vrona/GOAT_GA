@@ -66,8 +66,6 @@ class PickGAApp(tk.Frame):
         self.validblock_btn["state"]=tk.DISABLED
 
     def ready(self):
-        # self.listofcell = Blocks(self.admin).lisfofblock()
-        # self.task_widget(self.listofcell)
         self.task_widget(adminblocks.mainlistblock)
 
     def selecttab(self, tab):
@@ -189,12 +187,12 @@ class PickGAApp(tk.Frame):
         self.hourname.grid(row=self.hour_row, column=0)
         self.hourout.grid(row=self.hour_row, column=1)
         
-        for nblock in self.listofcell:
+        for nblock in adminblocks.mainlistblock:
             
-            self.dictblockpickerout[self.listofcell.index(nblock)+1] = tk.Listbox(self.activity, height=1, width=5, justify="center")
-            self.dictblockpickerout[self.listofcell.index(nblock)+1].grid(row=self.hour_row, column=self.listofcell.index(nblock)+2)
+            self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)+1] = tk.Listbox(self.activity, height=1, width=5, justify="center")
+            self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)+1].grid(row=self.hour_row, column=adminblocks.mainlistblock.index(nblock)+2)
             
-            self.totalpickerout.grid(row=self.hour_row, column=self.listofcell.index(self.listofcell[-1])+4)
+            self.totalpickerout.grid(row=self.hour_row, column=adminblocks.mainlistblock.index(adminblocks.mainlistblock[-1])+4)
 
     def get_timepickeroutput(self, block_num):
         pdb = UsingDB("./database/goatdata.db")
