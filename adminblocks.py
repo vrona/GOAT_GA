@@ -37,7 +37,7 @@ class Blocks(tk.Frame):
         
         self.listblocktitle = Label(self.master, text="Liste de Blocks", font=('bold', 16), padding=15)
         self.listblocktitle.grid(row=3, column=1, pady=15)
-        self.blocks_list = tk.Listbox(self.master, height=10, width=15, font=18)
+        self.blocks_list = tk.Listbox(self.master, height=10, width=15, font=18) #, selectmode= "multiple"
         self.blocks_list.grid(row=4, column=1, pady=15)  #.place(x=555,y=10) #padx=20, rowspan=3, columnspan=2
 
         # Add Remove Blocks
