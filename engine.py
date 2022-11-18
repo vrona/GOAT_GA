@@ -1,6 +1,6 @@
 import pandas as pd
 import sqlite3
-from globaldb import ProdDB
+
 #import pandas as pd
 
 class Engine():
@@ -24,7 +24,7 @@ class Engine():
     def querygb_inputs(self):
         #self.conn = 
 
-        self.df = pd.read_sql_query("select * from globalpick_in", self.conn)
+        self.df = pd.read_sql_query("select * from in_globalpick", self.conn)
         print(self.df.head())
         self.conn.close()
 

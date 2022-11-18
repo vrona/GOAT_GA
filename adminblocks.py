@@ -6,12 +6,11 @@ from tkinter.ttk import *
 import tkinter.messagebox
 from globaldb import CreationDB
 
-
+is_on = False
 mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "E Rando/Camp", "Prio E", "V Cycle/Urban", "Prio V", "PFECA", "Implant"]
 class Blocks(tk.Frame):
     
-    statusconfig = False
-
+    
     def __init__(self, master):
         
         self.master = master
@@ -31,54 +30,107 @@ class Blocks(tk.Frame):
         self.newblocks_text = tk.StringVar()
 
         self.intro_label = tk.Label(self.master, text="Configuration Activite", justify='center',font=('bold', 20))
-        self.text_label = Label(self.master, text="Pour ajouter, supprimer ou renommer les blocks,\nselectionner les.\nPuis valider votre liste de blocks.", font=16, padding=10)
-        self.intro_label.grid(row=0, column=1, columnspan=3)
-        self.text_label.grid(row=2, column=1, columnspan=3)
+        self.text_label = Label(self.master, text="Pour ajouter, supprimer ou renommer les blocks,\nselectionner les.\nPuis valider votre liste de blocks.", font=18, padding=10)
+        self.intro_label.place(x=550,y=25) #.grid(row=0, column=1, columnspan=3)
+        self.text_label.place(x=550,y=75) #.grid(row=1, column=1, columnspan=3)
+
+        # SEPARATOR PART
+        self.blocksepleft = Separator(self.master, bootstyle="success", orient="horizontal")
+        self.blocksepleft.grid(row=2, column=0, sticky="nsew", columnspan=1)
+        self.blockpart = Label(self.master, text="BLOCKS", justify='center', font=('bold', 16))
+        self.blockpart.grid(row=2, column=2, pady=15)
+        self.blocksepright = Separator(self.master, bootstyle="success")
+        self.blocksepright.grid(row=2, column=3, sticky="nsew", columnspan=1)
         
-        self.listblocktitle = Label(self.master, text="Liste de Blocks", font=('bold', 16), padding=15)
-        self.listblocktitle.grid(row=3, column=1, pady=15)
+        self.listblocktitle = Label(self.master, text="Liste de Blocks", font=('bold', 16)) #, padding=15
+        self.listblocktitle.grid(row=3, column=0)
         self.blocks_list = tk.Listbox(self.master, height=10, width=13, font=18) #, selectmode= "multiple"
-        self.blocks_list.place(x=10,y=155) #padx=20, rowspan=3, columnspan=2 grid(row=4, column=1, pady=15)  #
+        self.blocks_list.place(x=10,y=75) #padx=20, rowspan=3, columnspan=2 grid(row=4, column=1, pady=15)  #
 
         # Add Remove Blocks
         self.blocks_label = Label(self.master, text="Nom Block", justify='center', font=('bold', 14))
-        self.blocks_label.place(x=203,y=165) #.grid(row=3, column=2)
+        self.blocks_label.grid(row=3, column=2) #.place(x=203,y=165) #
         
-        self.blocks_entry = tk.Entry(self.master, textvariable=self.blocks_text)
+        self.blocks_entry = tk.Entry(self.master, textvariable=self.blocks_text, justify='center')
         self.blocks_entry.grid(row=4, column=2)
 
         self.add_btn = Button(self.master, text="Ajouter Block", bootstyle="success", width=12, command=self.add_block)
         self.add_btn.grid(row=6, column=2, pady=5)
 
         self.remove_btn = Button(self.master, text="Supprimer Block", bootstyle="warning", width=12, command=self.remove_block)
-        self.remove_btn.grid(row=7, column=2, pady=10)
-
-        # SEPARATOR PART
-        
-        # self.addsuppsep = Separator(self.master, bootstyle="success")
-        # self.addsuppsep.grid(row=8, column=1, sticky="nsew", rowspan=2, columnspan=9)
-
-        self.renomsep = Separator(self.master, bootstyle="success")
-        self.renomsep.grid(row=15, column=1, sticky="nsew", rowspan=2, columnspan=9)
+        self.remove_btn.grid(row=7, column=2, pady=15)
 
         # Changing Block
         self.oldblocks_label = tk.Label(self.master, text="Ancien Nom Block\n(à sélectionner)", justify='center', font=16)
-        self.oldblocks_label.grid(row=11, column=1, pady=40)
+        self.oldblocks_label.grid(row=12, column=2, pady=15)
 
         self.newblocks_label = tk.Label(self.master, text="Nouveau Nom Block", justify='center', font=16)
-        self.newblocks_label.grid(row=13, column=1)
+        self.newblocks_label.grid(row=14, column=2, pady=5)
 
-        self.oldblocks_entry = tk.Entry(self.master, textvariable=self.oldblocks_text)
-        self.oldblocks_entry.grid(row=11, column=2)
+        self.oldblocks_entry = tk.Entry(self.master, textvariable=self.oldblocks_text, justify='center')
+        self.oldblocks_entry.grid(row=13, column=2)
 
-        self.newblocks_entry = tk.Entry(self.master, textvariable=self.newblocks_text)
-        self.newblocks_entry.grid(row=13, column=2)
+        self.newblocks_entry = tk.Entry(self.master, textvariable=self.newblocks_text, justify='center')
+        self.newblocks_entry.grid(row=15, column=2)
 
         self.rename_btn = Button(self.master, text="Renommer Block", bootstyle="info", width=12,command=self.replace_block)
-        self.rename_btn.grid(row=14, column=2, pady=10)
+        self.rename_btn.grid(row=16, column=2, pady=10)
+
+        # SEPARATOR PART
+        self.pilotsepleft = Separator(self.master, bootstyle="success")
+        self.pilotsepleft.grid(row=17, column=0, sticky="nsew", columnspan=4)
+        self.pilotpart = Label(self.master, text="PILOTAGE", justify='center', font=('bold', 16))
+        self.pilotpart.grid(row=17, column=2, pady=15)
+        self.pilotsepright = Separator(self.master, bootstyle="success")
+        self.pilotsepright.grid(row=17, column=3, sticky="nsew", columnspan=4)
+
+        # PILOTAGE PART
+
+        self.volume = "Volume Art."
+        self.percentage = "Pourcent. %"
+        self.volbtn = Button(self.master, text=self.volume, command=self.switch, bootstyle="success-outline") #bootstyle="success-round-toggle", 
+        self.volbtn.place(x=180, y=440) #grid(row=19, column=1, pady=5)
+
+
+        self.target_input = tk.IntVar()
+        self.percent_input = tk.IntVar()
+
+        self.target_label = Label(self.master, text="Goal Vol. Tablette Art.", justify='center', font=16)
+        self.target_label.grid(row=21, column=2, pady=25)
+        self.target_entry = Entry(self.master, text=self.target_input, justify='center')
+        self.target_entry.grid(row=22, column=2)
+
+        self.percent_label = Label(self.master, text="Goal % Tablette Art.", justify='center', font=16)
+        self.percent_label.grid(row=25, column=2, pady=10)
+        self.percent_entry = Entry(self.master, text=self.percent_input, justify='center', state=tk.DISABLED)
+        self.percent_entry.grid(row=26, column=2)
+
+
+        # SEPARATOR PART
+        self.validsepleft = Separator(self.master, bootstyle="success")
+        self.validsepleft.grid(row=27, column=0, sticky="nsew", columnspan=4)
+        self.validpart = Label(self.master, text="GO LIVE", justify='center', font=('bold', 16))
+        self.validpart.grid(row=27, column=2, pady=15)
+        self.validsepright = Separator(self.master, bootstyle="success")
+        self.validsepright.grid(row=27, column=3, sticky="nsew", columnspan=4)
+
 
         # Bind select
-        self.blocks_list.bind('<<ListboxSelect>>', self.select_item)       
+        self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
+    
+    def switch(self):
+        global is_on
+
+        if is_on:
+            self.volbtn.config(text=self.percentage)        
+            self.target_entry['state']=tk.DISABLED
+            self.percent_entry['state']=tk.NORMAL
+            is_on = False
+        else: 
+            self.volbtn.config(text=self.volume)
+            self.target_entry['state']=tk.NORMAL
+            self.percent_entry['state']=tk.DISABLED
+            is_on = True
 
     def add_block(self):
         if self.blocks_text.get() == '':

@@ -51,10 +51,10 @@ class PickGAApp(tk.Frame):
 
         # Admin widget's Validation & Launch Buttons
         self.validblock_btn = ttk.Button(self.admin, text="Valider Blocks", bootstyle="danger", command=lambda:[Blocks(self.admin).validate_block(), self.ready(), self.switchstate()], width=12)
-        self.validblock_btn.grid(row=17, column=1, pady=10)
+        self.validblock_btn.grid(row=29, column=0, pady=10)
 
         self.launch_btn = ttk.Button(self.admin, text="Lancer Activité", style='valid.btn', width=12, command=lambda:self.selecttab(1), state=tk.DISABLED) #, 
-        self.launch_btn.grid(row=20, column=1)
+        self.launch_btn.grid(row=31, column=0)
 
         Blocks(self.admin)
 
@@ -112,6 +112,13 @@ class PickGAApp(tk.Frame):
 
         self.ean = tk.Label(self.activity, text='EAN', justify='right',font=("bold", 13), pady=10)
         self.ean.grid(row=3, column=1)
+
+        self._articlegoal = tk.Label(self.activity, text='Articles Goal', justify='right',font=("bold", 13), pady=10)
+        self._articlegoal.grid(row=4, column=1)
+
+        self.eangoal = tk.Label(self.activity, text='EAN Goal', justify='right',font=("bold", 13), pady=10)
+        self.eangoal.grid(row=5, column=1) 
+
 
         self.totalpicker_input = tk.Entry(self.activity, textvariable=self.totalpicker_text, justify="center", width=10)
         self.totalpicker_input.grid(row=2, column=9)
