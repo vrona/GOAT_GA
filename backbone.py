@@ -117,43 +117,41 @@ class PickGAApp(tk.Frame):
         self._articlegoal.grid(row= self.rowpart, column=1)
 
         self.eangoal = tk.Label(self.activity, text='EAN Goal', justify='right',font=("bold", 13), pady=10)
-        self.eangoal.grid(row=self.rowpart+1, column=1) 
+        self.eangoal.grid(row=self.rowpart+1, column=1)
 
+        self.capatheo = tk.Label(self.activity, text='Capacitif Theorique', justify='right',font=("bold", 13), pady=10)
+        self.capatheo.grid(row=self.rowpart+3, column=1)
 
-
-
-        self.buttondata = ttk.Button(self.activity, text="GOAT Power", bootstyle="success", command=self.add_arteanpik)
-        self.buttondata.grid(row=3, column=12 , padx=10)
 
         # POLY PART
         self._poly = tk.Label(self.activity, text='POLY', justify='center', font=('bold', 20), pady=10)
-        self._poly.grid(row=self.rowpart+2, column=4)
+        self._poly.grid(row=self.rowpart+4, column=4)
 
         self._currentopick = tk.Label(self.activity, text='TP \nPresent', justify='center', font=('bold', 16), pady=10)
-        self._currentopick.grid(row=self.rowpart+3, column=2)
+        self._currentopick.grid(row=self.rowpart+5, column=2)
 
         self.currentopick = tk.Listbox(self.activity, height=5, width=10, justify="center")
-        self.currentopick.grid(row=self.rowpart+4, column=2)
+        self.currentopick.grid(row=self.rowpart+6, column=2)
 
         self._theorytopick = tk.Label(self.activity, text='TP \nTheorique', justify='center', font=('bold', 16), pady=10)
-        self._theorytopick.grid(row=self.rowpart+3, column=4)
+        self._theorytopick.grid(row=self.rowpart+5, column=4)
 
         self.theorytopick = tk.Listbox(self.activity, height=5, width=10, justify="center")
-        self.theorytopick.grid(row=self.rowpart+4, column=4)
+        self.theorytopick.grid(row=self.rowpart+6, column=4)
 
         self._polystatus = tk.Label(self.activity, text='Poly \nStatus', justify='center', font=('bold', 16), pady=10)
-        self._polystatus.grid(row=self.rowpart+3, column=6)
+        self._polystatus.grid(row=self.rowpart+5, column=6)
 
         self.polystatus = tk.Listbox(self.activity, height=5, width=10, justify="center")
         Meter(master=self.activity, metersize=110, padding=20, amountused=-2, labeltext="Poly",
-                meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=self.rowpart+4, column=6)
+                meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=self.rowpart+6, column=6)
 
         # SEPARATOR PART
         
         self.seppoly1 = ttk.Separator(self.activity, bootstyle="info")
         self.seppoly2 = ttk.Separator(self.activity, bootstyle="info")
-        self.seppoly1.grid(row=self.rowpart+2, column=1, sticky="nsew", rowspan=2, columnspan=3)
-        self.seppoly2.grid(row=self.rowpart+2, column=5, sticky="nsew", rowspan=2, columnspan=3)
+        self.seppoly1.grid(row=self.rowpart+4, column=1, sticky="nsew", rowspan=2, columnspan=3)
+        self.seppoly2.grid(row=self.rowpart+4, column=5, sticky="nsew", rowspan=2, columnspan=3)
         
         # PICKERS PART
         self.picker_row = 10 # to merge
@@ -280,6 +278,9 @@ class PickGAApp(tk.Frame):
 
             self.totalpicker_input = tk.Entry(self.activity, textvariable=self.totalpicker_text, justify="center", width=10)
             self.totalpicker_input.grid(row=2, column=self.lsofblock.index(self.lsofblock[-1])+4)
+
+            self.buttondata = ttk.Button(self.activity, text="GOAT Power", bootstyle="success", command=self.add_arteanpik)
+            self.buttondata.grid(row=3, column=self.lsofblock.index(self.lsofblock[-1])+5 , padx=10)
 
     def totalpart(self):
 
