@@ -3,6 +3,7 @@ import pandas as pd
 
 lsartean = []
 ls_w_artean = []
+ls_capa_theoae = []
 
 class CreationDB:
     def __init__(self, numofblock, db):
@@ -23,10 +24,12 @@ class CreationDB:
         global lsartean
         sql_ent = []
         sql_w_ent = []
+        sql_capa_theo = []
         self.numoblock = numofblock
         
         lsartean = ["artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_w_artean = ["wartbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["weanbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["ratioaebck{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_capa_theoae = ["capa_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["capa_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
 
         for artean in lsartean:
             self.attribute = ' '.join((artean, "INTEGER"))
@@ -36,6 +39,10 @@ class CreationDB:
             self.w_attribute = ' '.join((w_artean, "FLOAT"))
             sql_w_ent.append(self.w_attribute)
 
+        for capa_ae in ls_capa_theoae:
+            self.capa_attribute = ' '.join((capa_ae, "FLOAT"))
+            sql_capa_theo.append(self.capa_attribute)
+
         self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
         self.corps = ', '.join((sql_ent))
         self.complete = self.entete + "time_glob REAL PRIMARY KEY" + ", " + self.corps + ", total_pickers INTEGER NOT NULL)"
@@ -43,6 +50,10 @@ class CreationDB:
         self.w_entete = "CREATE TABLE IF NOT EXISTS in_weight_globpick ("
         self.w_corps = ', '.join((sql_w_ent))
         self.w_complete = self.w_entete + "time_glob REAL PRIMARY KEY" + ", " + self.w_corps + ", total_art_topick INTEGER, total_ean_topick INTEGER)"
+
+        self.capatheo_entete = "CREATE TABLE IF NOT EXISTS in_capatheo ("
+        self.capatheo_corps = ', '.join((sql_capa_theo))
+        self.capatheo_complete = self.capatheo_entete + ", " + self.capatheo_corps + ", capatheo_art_avg FLOAT, capatheo_ean_avg FLOAT)"
         
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()

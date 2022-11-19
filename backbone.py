@@ -255,11 +255,17 @@ class PickGAApp(tk.Frame):
     def autoblock(self, lsofblock):
 
         self.part_art_input = {}
+        self.part_ean_input = {}
+        self.artgoal_input = {}
+        self.capa_input = {}
         self.lsofblock = lsofblock
         
         for nblock in self.lsofblock:
             self.dictart_int[self.lsofblock.index(nblock)] = tk.IntVar()
             self.dictean_int[self.lsofblock.index(nblock)] = tk.IntVar()
+            self.dictart_goal[self.lsofblock.index(nblock)] = tk.IntVar()
+            self.dictean_goal[self.lsofblock.index(nblock)] = tk.IntVar()
+            self.capa_input[self.lsofblock.index(nblock)] = tk.IntVar()
             
 
             self.part_block = tk.Label(self.activity, text=self.lsofblock[self.lsofblock.index(nblock)], font=("bold", 12))
@@ -268,13 +274,13 @@ class PickGAApp(tk.Frame):
             self.part_art_input[self.lsofblock.index(nblock)+1] = tk.Entry(self.activity, textvariable=self.dictart_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_art_input[self.lsofblock.index(nblock)+1].grid(row=2, column=self.lsofblock.index(nblock)+2)
 
-            self.part_ean_input = tk.Entry(self.activity, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
-            self.part_ean_input.grid(row=3, column=self.lsofblock.index(nblock)+2)
+            self.part_ean_input[self.lsofblock.index(nblock)+1] = tk.Entry(self.activity, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
+            self.part_ean_input[self.lsofblock.index(nblock)+1].grid(row=3, column=self.lsofblock.index(nblock)+2)
 
-            self.artgoal_input = tk.Entry(self.activity, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10, state=tk.DISABLED)
-            self.artgoal_input.grid(row= self.rowpart, column=self.lsofblock.index(nblock)+2)
+            self.artgoal_input[self.lsofblock.index(nblock)] = tk.Entry(self.activity, textvariable=self.dictart_goal[self.lsofblock.index(nblock)], justify="center", width=10, state=tk.DISABLED)
+            self.artgoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart, column=self.lsofblock.index(nblock)+2)
 
-            self.eangoal_input = tk.Entry(self.activity, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10, state=tk.DISABLED)
+            self.eangoal_input = tk.Entry(self.activity, textvariable=self.dictean_goal[self.lsofblock.index(nblock)], justify="center", width=10, state=tk.DISABLED)
             self.eangoal_input.grid(row= self.rowpart+1, column=self.lsofblock.index(nblock)+2)
 
             self.capatheo_input = tk.Entry(self.activity, textvariable=adminblocks.capatheolist[nblock], justify="center", width=10)
