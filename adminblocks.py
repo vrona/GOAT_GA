@@ -32,7 +32,7 @@ class Blocks(tk.Frame):
         self.newblocks_text = tk.StringVar()
 
         self.intro_label = tk.Label(self.master, text="Configuration Activite", justify='center',font=('bold', 20))
-        self.text_label = Label(self.master, text="Pour ajouter, supprimer ou renommer les blocks,\nselectionner les.\nPuis valider votre liste de blocks.", font=18, padding=10)
+        self.text_label = Label(self.master, text="Pour ajouter, supprimer ou renommer les blocks,\nselectionner les.\n\nTu connais l'objectif du jour ?\nOui, renseignes le Pilotage du jour en VOLUME ou en %.\nNon, demande à ton patron, ta patronne.\n\nPuis valides et lances l'activité.", font=18, padding=10)
         self.intro_label.place(x=550,y=25) #.grid(row=0, column=1, columnspan=3)
         self.text_label.place(x=550,y=75) #.grid(row=1, column=1, columnspan=3)
 
@@ -183,10 +183,11 @@ class Blocks(tk.Frame):
     
     def validate_block(self):
         global mainlistblock
-        self.listofids = list(mainlistblock.index(x) for x in mainlistblock)
+        #self.listofids = list(mainlistblock.index(x) for x in mainlistblock)
         #self.data = {'id': self.listofids, 'name': mainlistblock}
         #self.df = pd.DataFrame(self.data, columns=['id','name'])
         self.pdb = CreationDB(len(mainlistblock),"./database/goatdata.db")
+        print(capatheolist)
         
         self.iniblock(mainlistblock)
 

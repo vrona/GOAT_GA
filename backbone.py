@@ -17,6 +17,7 @@ class PickGAApp(tk.Frame):
     
     def __init__(self, master):
         super().__init__(master)
+        self.rowpart = 4
         self.dictart_int = {}
         self.dictean_int = {}
         self.get_dictglobalpick = {}
@@ -103,7 +104,7 @@ class PickGAApp(tk.Frame):
         self.totalpicker_text = tk.IntVar()
 
         # BLOCKS PART
-        self.rowpart = 4
+        
         self._block = tk.Label(self.activity, text='BLOCKS', justify='center', font=('bold', 20), pady=10)
         self._block.grid(row=0, column=4, )
 
@@ -116,8 +117,8 @@ class PickGAApp(tk.Frame):
         self._articlegoal = tk.Label(self.activity, text='Articles Goal', justify='right',font=("bold", 13), pady=10)
         self._articlegoal.grid(row= self.rowpart, column=1)
 
-        self.eangoal = tk.Label(self.activity, text='EAN Goal', justify='right',font=("bold", 13), pady=10)
-        self.eangoal.grid(row=self.rowpart+1, column=1)
+        self.eangoal_input = tk.Label(self.activity, text='EAN Goal', justify='right',font=("bold", 13), pady=10)
+        self.eangoal_input.grid(row=self.rowpart+1, column=1)
 
         self.capatheo = tk.Label(self.activity, text='Capacitif Theorique', justify='right',font=("bold", 13), pady=10)
         self.capatheo.grid(row=self.rowpart+3, column=1)
@@ -269,6 +270,15 @@ class PickGAApp(tk.Frame):
 
             self.part_ean_input = tk.Entry(self.activity, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_ean_input.grid(row=3, column=self.lsofblock.index(nblock)+2)
+
+            self.artgoal_input = tk.Entry(self.activity, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10, state=tk.DISABLED)
+            self.artgoal_input.grid(row= self.rowpart, column=self.lsofblock.index(nblock)+2)
+
+            self.eangoal_input = tk.Entry(self.activity, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10, state=tk.DISABLED)
+            self.eangoal_input.grid(row= self.rowpart+1, column=self.lsofblock.index(nblock)+2)
+
+            self.capatheo_input = tk.Entry(self.activity, textvariable=adminblocks.capatheolist[nblock], justify="center", width=10)
+            self.capatheo_input.grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
 
             Meter(master=self.activity, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
                  meterstyle='success.TLabel').grid(row=22, column=self.lsofblock.index(nblock)+2)

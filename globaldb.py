@@ -26,13 +26,13 @@ class CreationDB:
         self.numoblock = numofblock
         
         lsartean = ["artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
-        ls_w_artean = ["wartbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["weanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_w_artean = ["wartbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["weanbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["ratioaebck{}".format(nblock) for nblock in range(0, self.numofblock)]
 
         for artean in lsartean:
             self.attribute = ' '.join((artean, "INTEGER"))
             sql_ent.append(self.attribute)
         
-        for w_artean in lsartean:
+        for w_artean in ls_w_artean:
             self.w_attribute = ' '.join((w_artean, "FLOAT"))
             sql_w_ent.append(self.w_attribute)
 
