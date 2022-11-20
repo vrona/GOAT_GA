@@ -2,15 +2,16 @@ import pandas as pd
 import sqlite3
 
 #import pandas as pd
+capatheodictfull = {}
 
 class Engine():
 
+    def __init__(self): #, db
 
-    
-    def __init__(self, db):
-        # self.capareal_h = 238.5
-        self.conn = sqlite3.connect(db)
-        self.cur = self.conn.cursor()
+    #     self.conn = sqlite3.connect(db)
+    #     self.cur = self.conn.cursor()
+        pass
+        
 
     #def sumit(self, dictofnum):
     #def subit(self, goal, real):
@@ -28,8 +29,29 @@ class Engine():
         print(self.df.head())
         self.conn.close()
 
+class Computing:
+    def __init__(self, db):
+        self.conn = sqlite3.connect(db)
+        self.cur = self.conn.cursor()
+
+    def weightnratio(self, dictbase):
+        #pdb = UsingDB("./database/goatdata.db")
+        #self.anydict = anydict
+        self.dictbase = dictbase
+        self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
+        self.df = pd.DataFrame(self.sql_query, columns=[key for key in dictbase.keys()])
+        print(self.df)
+
+
+    def insert_capatheo(self, dictcapat):
+        self.dictcapat = dictcapat
+        self.placeholder = ','.join(['?'] * len(self.dictcapat))
+        self.column = ', '.join(self.dictcapat.keys())
+        self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('in_capatheo', self.column, self.placeholder)
         
-    
+        self.cur.execute(self.sql, list(self.dictcapat.values()))
+        self.conn.commit()
+
 class Dispatch():
 
     def __init__(self):
@@ -67,10 +89,6 @@ class Dispatch():
    
     POLY FUNCTION
     delta time = time ending shift - time of record
-
-
     """
 
-    db = Engine("./database/goatdata.db")
-    db.querygb_inputs()
         

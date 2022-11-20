@@ -45,7 +45,7 @@ class CreationDB:
 
         self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
         self.corps = ', '.join((sql_ent))
-        self.complete = self.entete + "time_glob REAL PRIMARY KEY" + ", " + self.corps + ", total_pickers INTEGER NOT NULL)"
+        self.complete = self.entete + "id INTEGER PRIMARY KEY," + "time_glob REAL" + ", " + self.corps + ", total_pickers INTEGER NOT NULL)"
 
         self.w_entete = "CREATE TABLE IF NOT EXISTS in_weight_globpick ("
         self.w_corps = ', '.join((sql_w_ent))
@@ -53,13 +53,15 @@ class CreationDB:
 
         self.capatheo_entete = "CREATE TABLE IF NOT EXISTS in_capatheo ("
         self.capatheo_corps = ', '.join((sql_capa_theo))
-        self.capatheo_complete = self.capatheo_entete + ", " + self.capatheo_corps + ", capatheo_art_avg FLOAT, capatheo_ean_avg FLOAT)"
+        self.capatheo_complete = self.capatheo_entete + self.capatheo_corps + ", capatheo_art_avg FLOAT, capatheo_ean_avg FLOAT)"
         
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.cur.execute(self.complete)
         self.cur.execute(self.w_complete)
+        self.cur.execute(self.capatheo_complete)
         
+        # do not delete : global list of art. ean used in backbone.add_arteanpik() 
         lsartean.insert(0, "time_glob")
         lsartean.insert(len(lsartean), "total_pickers")
 
@@ -74,6 +76,11 @@ class UsingDB:
 
     def fetch_hourout(self):
         self.cur.execute("SELECT time_glob FROM in_globalpick ORDER BY time_glob DESC LIMIT 1")
+        rows = self.cur.fetchall()
+        return rows
+
+    def fetch_art_ean_input(self):
+        self.cur.execute("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1")
         rows = self.cur.fetchall()
         return rows
 
@@ -103,6 +110,16 @@ class UsingDB:
         
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
+
+    def insert_weigthratio(self, dictwr):
+        self.dictwr = dictwr
+        self.placeholdwr = ','.join(['?'] * len(self.dictwr))
+        self.columnwr = ', '.join(self.dictwr.keys())
+        self.sqlwr = "INSERT INTO %s (%s) VALUES (%s)" % ('in_weight_globpick', self.columnwr, self.placeholdwr)
+        
+        self.cur.execute(self.sqlwr, list(self.dictwr.values()))
+        self.conn.commit()
+
 
     def insert_totals_out(self, id, timeofrecord, total_prelev, delta_capacitif, total_predic, capareal_h, capaavg):
         self.cur.execute("INSERT INTO totals_out VALUES (?,?,?,?,?,?,?)",(id, timeofrecord, total_prelev, delta_capacitif, total_predic, capareal_h, capaavg))
