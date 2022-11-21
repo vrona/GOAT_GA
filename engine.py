@@ -1,8 +1,8 @@
 import pandas as pd
 import sqlite3
+import globaldb
 
-#import pandas as pd
-capatheodictfull = {}
+globaldf = pd.DataFrame()
 
 class Engine():
 
@@ -30,17 +30,34 @@ class Engine():
         self.conn.close()
 
 class Computing:
-    def __init__(self, db):
+    def __init__(self, db, ):
+        
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
 
     def weightnratio(self, dictbase):
-        #pdb = UsingDB("./database/goatdata.db")
-        #self.anydict = anydict
+        global globaldf
+
+        #lengthlist = len(globaldb.lsartean)
+        
         self.dictbase = dictbase
         self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
-        self.df = pd.DataFrame(self.sql_query, columns=[key for key in dictbase.keys()])
-        print(self.df)
+        globaldf = pd.DataFrame(self.sql_query, columns=[key for key in dictbase.keys()])
+
+        
+        self.dfwr = globaldf.drop(columns='total_pickers')
+        print(len(self.dfwr.columns))
+        middle = len(self.dfwr.columns) //2 # getting the frontier between art and ean
+
+        print(self.dfwr)
+        print(self.dfwr.iloc[:, 1 : middle+1],"\n", self.dfwr.iloc[:, middle+1 : ]) 
+        self.dfwr['total_art_topick '] = [self.dfwr.iloc[:, 1 : middle+1].sum(axis=1)]
+        self.dfwr['total_ean_topick '] = [self.dfwr.iloc[:, middle+1 : ].sum(axis=1)]
+
+        #globaldf = self.dfwr.assign(self.dfwr)
+        
+
+        print(self.dfwr)
 
 
     def insert_capatheo(self, dictcapat):

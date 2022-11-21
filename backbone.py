@@ -236,8 +236,9 @@ class PickGAApp(tk.Frame):
         # if (self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys()):
         #     tkinter.messagebox.showerror(
         #         "Champs requis", "Remplissez les champs, svp")
-        #     return
-        #print(self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys())
+            # print(self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys())
+            # return
+        
 
         # Insert into DB
         pdb = UsingDB("./database/goatdata.db")
