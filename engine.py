@@ -46,16 +46,9 @@ class Computing:
 
         
         self.dfwr = globaldf.drop(columns='total_pickers')
-        print(len(self.dfwr.columns))
-        middle = len(self.dfwr.columns) //2 # getting the frontier between art and ean
-
-        print(self.dfwr)
-        print(self.dfwr.iloc[:, 1 : middle+1],"\n", self.dfwr.iloc[:, middle+1 : ]) 
-        self.dfwr['total_art_topick '] = [self.dfwr.iloc[:, 1 : middle+1].sum(axis=1)]
-        self.dfwr['total_ean_topick '] = [self.dfwr.iloc[:, middle+1 : ].sum(axis=1)]
-
-        #globaldf = self.dfwr.assign(self.dfwr)
-        
+        self.middle = len(self.dfwr.columns) //2 # getting the frontier between art and ean
+        self.lencolbase = len(self.dfwr.columns) 
+        self.dfwr['total_art_topick '], self.dfwr['total_ean_topick '] = [self.dfwr.iloc[:, 1 : self.middle+1].sum(axis=1), self.dfwr.iloc[:, self.middle+1 : self.lencolbase].sum(axis=1)]
 
         print(self.dfwr)
 
