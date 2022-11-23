@@ -65,15 +65,16 @@ class Computing:
         self.dfwr = self.dfwr[self.new_col]
 
         self.placeholdwr = ','.join(['?'] * len(self.dfwr.columns))
-        self.columnwr = ', '.join(self.dfwr.keys())
-        
+        self.columnwr = ','.join(self.dfwr.keys())
+        print(self.dfwr)
+        print(self.placeholdwr, '\n',self.columnwr)
+
         self.sqlwr = "INSERT INTO %s (%s) VALUES (%s)" % ('in_weight_globpick', self.columnwr, self.placeholdwr)
         print(self.sqlwr)
-        print(self.dfwr)
-        print(list(x for x in self.dfwr.columns))
-        self.cur.execute(self.sqlwr, list(self.dfwr[x].values[-1] for x in self.dfwr.columns))
+
+        #PROBLEM PROBLEM PROBLEM
+        self.cur.execute(self.sqlwr, list(self.dfwr.iloc[-1][x] for x in self.dfwr.keys()))
         self.conn.commit()
-        self.conn.close()
 
 
     def insert_capatheo(self, dictcapat):

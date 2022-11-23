@@ -60,7 +60,6 @@ class CreationDB:
         self.cur.execute(self.complete)
         self.cur.execute(self.w_complete)
         self.cur.execute(self.capatheo_complete)
-        self.cur.close()
         
         # do not delete : global list of art. ean used in backbone.add_arteanpik() 
         lsartean.insert(0, "time_glob")

@@ -68,10 +68,10 @@ class PickGAApp(tk.Frame):
         self.img = ImageTk.PhotoImage(self.resized_img)
         self.unlock_var = tk.IntVar()
         self.unlock_btn = ttk.Checkbutton(self.admin, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn)
-        self.unlock_btn = ttk.Checkbutton(self.activity, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn)
+        #self.unlock_btn = ttk.Checkbutton(self.activity, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn)
         self.unlock_btn.grid(row=33, column=1)
         self.reset_btn = ttk.Button(self.admin, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED)
-        self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED)
+        #self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED)
         self.reset_btn.grid(row=33, column=3)
 
 
