@@ -54,7 +54,7 @@ class PickGAApp(tk.Frame):
         self.validblock_btn = ttk.Button(self.admin, text="Valider Blocks", bootstyle="danger", command=lambda:[Blocks(self.admin).validate_block(), self.ready(), self.switchstate()], width=12)
         self.validblock_btn.grid(row=29, column=0, pady=10)
 
-        self.launch_btn = ttk.Button(self.admin, text="Lancer Activité", style='valid.btn', width=12, command=lambda:self.selecttab(1), state=tk.DISABLED) #, 
+        self.launch_btn = ttk.Button(self.admin, text="Lancer Activité", style='valid.btn', width=12, command=lambda:self.selecttab(1), state=tk.DISABLED)
         self.launch_btn.grid(row=29, column=2)
 
         Blocks(self.admin)
@@ -67,8 +67,13 @@ class PickGAApp(tk.Frame):
         self.resized_img= self.unlock_img.resize((15,15))
         self.img = ImageTk.PhotoImage(self.resized_img)
         self.unlock_var = tk.IntVar()
-        self.unlock_btn = ttk.Checkbutton(self.admin, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn).grid(row=33, column=1)
-        self.reset_btn = ttk.Button(self.admin, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED).grid(row=33, column=3)
+        self.unlock_btn = ttk.Checkbutton(self.admin, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn)
+        self.unlock_btn = ttk.Checkbutton(self.activity, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn)
+        self.unlock_btn.grid(row=33, column=1)
+        self.reset_btn = ttk.Button(self.admin, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED)
+        self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED)
+        self.reset_btn.grid(row=33, column=3)
+
 
 
     def resetapp(self):
@@ -81,12 +86,11 @@ class PickGAApp(tk.Frame):
         self.root.destroy()
 
     def unlock_killbtn(self):
-        print(self.reset_btn["state"])
-        print(self.unlock_var.get())
+
         if self.unlock_var.get() == 1:
             self.reset_btn["state"] = tk.NORMAL
-        # else:
-        #     self.reset_btn['state'] = tk.DISABLED
+        else:
+            self.reset_btn['state'] = tk.DISABLED
     
     def switchstate(self):
         self.launch_btn["state"]=tk.NORMAL

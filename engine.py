@@ -46,14 +46,14 @@ class Computing:
         self.dfwr = globaldf.drop(columns='total_pickers')
         self.middle = len(self.dfwr.columns) //2 # getting the frontier between art and ean
         self.lencolbase = len(self.dfwr.columns) 
-        self.dfwr['total_art_topick '], self.dfwr['total_ean_topick '] = [self.dfwr.iloc[:, 1 : self.middle+1].sum(axis=1), self.dfwr.iloc[:, self.middle+1 : self.lencolbase].sum(axis=1)]
+        self.dfwr['total_art_topick'], self.dfwr['total_ean_topick'] = [self.dfwr.iloc[:, 1 : self.middle+1].sum(axis=1), self.dfwr.iloc[:, self.middle+1 : self.lencolbase].sum(axis=1)]
         
         self.countblocks = len(self.dfwr.columns[1:self.middle+1])
     
         for self.block in range(0, self.countblocks):
-            self.dfwr["wartbck{}".format(self.block)] = self.dfwr["artbck{}".format(self.block)] / self.dfwr['total_art_topick ']
+            self.dfwr["wartbck{}".format(self.block)] = self.dfwr["artbck{}".format(self.block)] / self.dfwr['total_art_topick']
         for self.block in range(0, self.countblocks):
-            self.dfwr["weanbck{}".format(self.block)] = self.dfwr["eanbck{}".format(self.block)] / self.dfwr['total_ean_topick ']
+            self.dfwr["weanbck{}".format(self.block)] = self.dfwr["eanbck{}".format(self.block)] / self.dfwr['total_ean_topick']
         for self.block in range(0, self.countblocks):
             self.dfwr["ratioaebck{}".format(self.block)] = self.dfwr["artbck{}".format(self.block)] / self.dfwr["eanbck{}".format(self.block)]
 
@@ -61,19 +61,21 @@ class Computing:
 
         # reordering the column to fit to the sql table order in_weight_globpick
         self.temp_col = self.dfwr.columns.tolist()
-        self.new_col = self.temp_col[:0] + self.temp_col[3:] + self.temp_col[1:3]
+        self.new_col = self.temp_col[:1] + self.temp_col[3:] + self.temp_col[1:3]
         self.dfwr = self.dfwr[self.new_col]
 
         self.placeholdwr = ','.join(['?'] * len(self.dfwr.columns))
-        for namcol, valserie in self.dfwr.items():
-            names = list(namcol)
-            valuesgo = list(valserie)
-        print(names, valuesgo)
-        # self.columnwr = ', '.join(names)
-        # self.sqlwr = "INSERT INTO %s (%s) VALUES (%s)" % ('in_weight_globpick', self.columnwr, self.placeholdwr)
+        self.columnwr = ', '.join(self.dfwr.keys())
         
-        # self.cur.execute(self.sqlwr, values)
-        # self.conn.commit()
+        print(self.placeholdwr, '\n',self.columnwr)
+
+        self.sqlwr = "INSERT INTO %s (%s) VALUES (%s)" % ('in_weight_globpick', self.columnwr, self.placeholdwr)
+        print(self.sqlwr)
+        print(list(self.dfwr[x].iloc[-1] for x in self.dfwr))
+        print(list(self.dfwr[x].iloc[-1] for x in self.dfwr.columns))
+        self.cur.execute(self.sqlwr, tuple(self.dfwr[x].iloc[-1] for x in self.dfwr))
+        self.conn.commit()
+        self.conn.close()
 
 
     def insert_capatheo(self, dictcapat):
