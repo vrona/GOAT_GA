@@ -60,6 +60,7 @@ class CreationDB:
         self.cur.execute(self.complete)
         self.cur.execute(self.w_complete)
         self.cur.execute(self.capatheo_complete)
+        self.cur.close()
         
         # do not delete : global list of art. ean used in backbone.add_arteanpik() 
         lsartean.insert(0, "time_glob")
@@ -107,7 +108,7 @@ class UsingDB:
         self.placeholder = ','.join(['?'] * len(self.dictbase))
         self.column = ', '.join(self.dictbase.keys())
         self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('in_globalpick', self.column, self.placeholder)
-        
+
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
 

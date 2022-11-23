@@ -67,13 +67,11 @@ class Computing:
         self.placeholdwr = ','.join(['?'] * len(self.dfwr.columns))
         self.columnwr = ', '.join(self.dfwr.keys())
         
-        print(self.placeholdwr, '\n',self.columnwr)
-
         self.sqlwr = "INSERT INTO %s (%s) VALUES (%s)" % ('in_weight_globpick', self.columnwr, self.placeholdwr)
         print(self.sqlwr)
-        print(list(self.dfwr[x].iloc[-1] for x in self.dfwr))
-        print(list(self.dfwr[x].iloc[-1] for x in self.dfwr.columns))
-        self.cur.execute(self.sqlwr, tuple(self.dfwr[x].iloc[-1] for x in self.dfwr))
+        print(self.dfwr)
+        print(list(x for x in self.dfwr.columns))
+        self.cur.execute(self.sqlwr, list(self.dfwr[x].values[-1] for x in self.dfwr.columns))
         self.conn.commit()
         self.conn.close()
 
