@@ -111,7 +111,7 @@ class UsingDB:
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
 
-    def insert_weigthratio(self, dictwr):
+    def insert_wgth_rat(self, dictwr):
         self.dictwr = dictwr
         self.placeholdwr = ','.join(['?'] * len(self.dictwr))
         self.columnwr = ', '.join(self.dictwr.keys())

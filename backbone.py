@@ -12,6 +12,7 @@ import datetime
 from adminblocks import Blocks
 import adminblocks
 from engine import Computing
+import os
 
 class PickGAApp(tk.Frame):
     
@@ -60,6 +61,32 @@ class PickGAApp(tk.Frame):
 
         #Configtab(self.config).configwidget(self.selecttab)
         self.credit_widget()
+
+        # Button killing app
+        self.unlock_img = Image.open("./logo/unlock.png")
+        self.resized_img= self.unlock_img.resize((15,15))
+        self.img = ImageTk.PhotoImage(self.resized_img)
+        self.unlock_var = tk.IntVar()
+        self.unlock_btn = ttk.Checkbutton(self.admin, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn).grid(row=33, column=1)
+        self.reset_btn = ttk.Button(self.admin, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED).grid(row=33, column=3)
+
+
+    def resetapp(self):
+        if os.path.exists("./database/goatdata.db"):
+            os.remove("./database/goatdata.db")
+            print("DB removed")
+        else:
+            print("The file does not exist")
+        
+        self.root.destroy()
+
+    def unlock_killbtn(self):
+        print(self.reset_btn["state"])
+        print(self.unlock_var.get())
+        if self.unlock_var.get() == 1:
+            self.reset_btn["state"] = tk.NORMAL
+        # else:
+        #     self.reset_btn['state'] = tk.DISABLED
     
     def switchstate(self):
         self.launch_btn["state"]=tk.NORMAL
@@ -321,7 +348,6 @@ class PickGAApp(tk.Frame):
 
         self.text_itself = """Pour lancer l'activité,\nles Blocks doivent être CONFIGURES et VALIDES"""
         self.text_intro.insert(tk.END, self.text_itself)
-
 
     # def clear_text(self, nblocks):
     #     self.nblocks = nblocks

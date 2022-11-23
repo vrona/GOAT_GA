@@ -1,5 +1,5 @@
 import pandas as pd
-
+from PIL import Image, ImageTk
 import sqlite3
 import tkinter as tk
 from tkinter.ttk import *
@@ -115,9 +115,9 @@ class Blocks(tk.Frame):
         self.validsepright = Separator(self.master, bootstyle="success")
         self.validsepright.grid(row=27, column=3, sticky="nsew", columnspan=4)
 
-
-        # Bind select
+         # Bind select
         self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
+
     
     def switch(self):
         global is_on
@@ -138,9 +138,14 @@ class Blocks(tk.Frame):
             tkinter.messagebox.showerror(
                 "Champs requis", "Selectionnez un nom de la liste, svp")
             return
+        elif self.blocks_text.get() in mainlistblock:
+            tkinter.messagebox.showerror(
+                "Attention", "Ce nom existe déjà. ;-)")
+            return
         else:
             mainlistblock.append(self.blocks_text.get())
             capatheodict[self.blocks_text.get()] = 200
+            print(capatheodict)
         self.clear_text()
         self.show_block()
 
