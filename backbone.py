@@ -67,10 +67,10 @@ class PickGAApp(tk.Frame):
         self.resized_img= self.unlock_img.resize((15,15))
         self.img = ImageTk.PhotoImage(self.resized_img)
         self.unlock_var = tk.IntVar()
-        self.unlock_btn = ttk.Checkbutton(self.admin, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn)
+        self.unlock_btn = ttk.Checkbutton(self.activity, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn)
         #self.unlock_btn = ttk.Checkbutton(self.activity, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn)
         self.unlock_btn.grid(row=33, column=1)
-        self.reset_btn = ttk.Button(self.admin, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED)
+        self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.NORMAL)
         #self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED)
         self.reset_btn.grid(row=33, column=3)
 
@@ -262,6 +262,7 @@ class PickGAApp(tk.Frame):
         self.get_dictean = dict(zip(self.dkey[limit+1 : len(self.dkey)-1], self.dictean_int.values()))
         self.get_dictean = dict((key, value.get()) for key, value in self.get_dictean.items())
         self.timerecord = datetime.datetime.now()
+
         self.get_dictglobalpick = {'time_glob': self.timerecord, **self.get_dictart,**self.get_dictean, 'total_pickers':self.totalpicker_text.get()}
                
         # if (self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys()):

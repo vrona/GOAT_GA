@@ -32,27 +32,27 @@ class CreationDB:
         ls_capa_theoae = ["capa_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["capa_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
 
         for artean in lsartean:
-            self.attribute = ' '.join((artean, "INTEGER"))
+            self.attribute = " ".join((artean, "INTEGER"))
             sql_ent.append(self.attribute)
         
         for w_artean in ls_w_artean:
-            self.w_attribute = ' '.join((w_artean, "FLOAT"))
+            self.w_attribute = " ".join((w_artean, "FLOAT"))
             sql_w_ent.append(self.w_attribute)
 
         for capa_ae in ls_capa_theoae:
-            self.capa_attribute = ' '.join((capa_ae, "FLOAT"))
+            self.capa_attribute = " ".join((capa_ae, "FLOAT"))
             sql_capa_theo.append(self.capa_attribute)
 
         self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
-        self.corps = ', '.join((sql_ent))
-        self.complete = self.entete + "id INTEGER PRIMARY KEY," + "time_glob REAL" + ", " + self.corps + ", total_pickers INTEGER NOT NULL)"
+        self.corps = ", ".join((sql_ent))
+        self.complete = self.entete+"time_glob REAL PRIMARY KEY"+", "+self.corps+", total_pickers INTEGER NOT NULL)" #"id INTEGER ," + 
 
         self.w_entete = "CREATE TABLE IF NOT EXISTS in_weight_globpick ("
-        self.w_corps = ', '.join((sql_w_ent))
-        self.w_complete = self.w_entete + "time_glob REAL PRIMARY KEY" + ", " + self.w_corps + ", total_art_topick INTEGER, total_ean_topick INTEGER)"
-
+        self.w_corps = ", ".join((sql_w_ent))
+        self.w_complete = self.w_entete+"time_glob REAL PRIMARY KEY"+", "+self.w_corps+", total_art_topick INTEGER, total_ean_topick INTEGER)"
+        
         self.capatheo_entete = "CREATE TABLE IF NOT EXISTS in_capatheo ("
-        self.capatheo_corps = ', '.join((sql_capa_theo))
+        self.capatheo_corps = ", ".join((sql_capa_theo))
         self.capatheo_complete = self.capatheo_entete + self.capatheo_corps + ", capatheo_art_avg FLOAT, capatheo_ean_avg FLOAT)"
         
         self.conn = sqlite3.connect(db)
@@ -109,15 +109,6 @@ class UsingDB:
         self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('in_globalpick', self.column, self.placeholder)
 
         self.cur.execute(self.sql, list(self.dictbase.values()))
-        self.conn.commit()
-
-    def insert_wgth_rat(self, dictwr):
-        self.dictwr = dictwr
-        self.placeholdwr = ','.join(['?'] * len(self.dictwr))
-        self.columnwr = ', '.join(self.dictwr.keys())
-        self.sqlwr = "INSERT INTO %s (%s) VALUES (%s)" % ('in_weight_globpick', self.columnwr, self.placeholdwr)
-        
-        self.cur.execute(self.sqlwr, list(self.dictwr.values()))
         self.conn.commit()
 
 
