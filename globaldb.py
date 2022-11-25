@@ -2,6 +2,7 @@ import sqlite3
 import pandas as pd
 
 lsartean = []
+ls_goal_g = []
 ls_w_artean = []
 ls_capa_theoae = []
 
@@ -21,7 +22,7 @@ class CreationDB:
         self.conn.commit()
 
     def createglobalpick(self, numofblock, db):
-        global lsartean
+        global lsartean, ls_goal_g
         sql_ent = []
         sql_ent_g = []
         sql_w_ent = []
@@ -51,11 +52,11 @@ class CreationDB:
 
         self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
         self.corps = ", ".join((sql_ent))
-        self.complete = self.entete+"time_glob REAL PRIMARY KEY"+", "+self.corps+", total_pickers INTEGER NOT NULL)" #"id INTEGER ," + 
+        self.complete = self.entete+"id INTEGER PRIMARY KEY, time_glob REAL"+", "+self.corps+", total_pickers INTEGER NOT NULL)" #"" + 
 
         self.entete_g = "CREATE TABLE IF NOT EXISTS goalpick ("
         self.corps_g = ", ".join((sql_ent_g))
-        self.complete_g = self.entete_g+"time_glob REAL PRIMARY KEY"+", "+self.corps_g+")"
+        self.complete_g = self.entete_g+"id INTEGER PRIMARY KEY, time_glob REAL"+", "+self.corps_g+")"
 
         self.w_entete = "CREATE TABLE IF NOT EXISTS in_weight_globpick ("
         self.w_corps = ", ".join((sql_w_ent))
@@ -104,6 +105,36 @@ class UsingDB:
         self.cur.execute("SELECT total_picker FROM block_picker_out ORDER BY total_picker DESC LIMIT 1")
         rows = self.cur.fetchall()
         return rows
+
+    """
+    @param self: nothing
+    @return rows, rosa: 2 array of datas
+    """
+    def fetch_goal(self):
+        
+        # self.dictbase.pop('time_glob')
+        # self.dictbase.pop('total_pickers')
+        self.lsofkeys = ls_goal_g
+        #self.middle = len(self.lsofkeys) // 2
+        #self.placeholder = ','.join(['?'] * len(self.dictbase))
+        # self.artcolumn = ', '.join(self.lsofkeys[ :self.middle])
+        # self.eancolumn = ', '.join(self.lsofkeys[self.middle: ])
+        self.goalcolumn = ', '.join(self.lsofkeys)
+        # self.sqlart = "SELECT %s FROM %s ORDER BY id" % (self.artcolumn, 'goalpick')
+        # self.sqlean = "SELECT %s FROM %s ORDER BY id" % (self.eancolumn, 'goalpick')
+
+        self.sqlgoal = "SELECT %s FROM %s ORDER BY id" % (self.goalcolumn, 'goalpick')
+
+        # self.cur.execute(self.sqlart)
+        # artrow = self.cur.fetchall()
+        # self.cur.execute(self.sqlean)
+        # eanrow = self.cur.fetchall()
+        # row = list(artrow + eanrow)
+
+        self.cur.execute(self.sqlgoal)
+        rows = self.cur.fetchall()
+        return rows
+
 
     def insert_capatheo(self, capatheo_h):
         self.cur.execute("INSERT INTO capa VALUES (?)",(capatheo_h,))

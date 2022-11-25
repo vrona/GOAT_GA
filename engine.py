@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import sqlite3
+import globaldb
 from globaldb import UsingDB
 from adminblocks import Blocks
 from datetime import datetime
@@ -97,33 +98,43 @@ class Computing:
         self.conn.commit()
 
 
-    def goal(self, dictbase):
-        goaldb = UsingDB()
+    def goal(self, dictbase, master):
+        goaldb = UsingDB("./database/goatdata.db")
+        self.goalkey = globaldb.ls_goal_g # list of futur keys' dict
+
         self.dictbase = dictbase
+        self.master = master
+        self.time = self.dictbase.pop('time_glob')
+        self.dictbase.pop('total_pickers')
 
         self.sql_weight = pd.read_sql_query("SELECT * FROM in_weight_globpick ORDER BY time_glob DESC LIMIT 1", self.conn)
         self.dfweight = pd.DataFrame(self.sql_query, columns=[key for key in dictbase.keys()])
         
-        self.vol, self.percent = Blocks.goalpick()
-
-        self.time = self.dictbase.pop('time_glob')
-        self.dictbase.pop('total_pickers')
-        
+        self.vol, self.percent = Blocks(self.master).goalpick()       
     
-        if self.percent > 0:
+        if self.percent.get() > 0:
             self.percent = self.percent / 100
-            self.dictgoal = dict((key, values * self.percent) for key, values in self.dictbase)
+            self.dictgoal = dict(zip(self.goalkey, self.percent * self.dictbase.values()))
+            #self.dictgoal = dict((key, values * self.percent) for key, values in self.dictbase.items())
             self.dictgoal['time_glob'] = self.time
             goaldb.insert_goal(self.dictgoal)
-            
-        elif self.vol > 0:
+            return self.dictgoal
+
+        elif self.vol.get() > 0:
             self.weigthvol = self.vol / self.dfweight['total_art_topick']
-            self.dictgoal = dict((key, values * self.percent) for key, values in self.dictbase)
+            self.dictgoal = dict(zip(self.goalkey, self.weigthvol * self.dictbase.values()))
+            #self.dictgoal = dict((key, values * self.weigthvol) for key, values in self.dictbase.items())
             self.dictgoal['time_glob'] = self.time
             goaldb.insert_goal(self.dictgoal)
+            return self.dictgoal.items()
 
         else:
-            pass
+            self.dictgoal = dict(zip(self.goalkey, self.dictbase.values()))
+            #self.dictgoal = dict((key, value) for key, value in self.dictgoal.items())
+            #self.dictgoal = dict((key, values) for key, values in self.dictbase.items())
+            self.dictgoal['time_glob'] = self.time
+            goaldb.insert_goal(self.dictgoal)
+            return self.dictgoal
         
 
     # def insert_capatheo(self, dictcapat):

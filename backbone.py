@@ -21,6 +21,8 @@ class PickGAApp(tk.Frame):
         self.rowpart = 4
         self.dictart_int = {}
         self.dictean_int = {}
+        self.artgoal_input = {}
+        self.eangoal_input = {}
         self.get_dictglobalpick = {}
         
         self.dictblockpickerout = {}
@@ -73,7 +75,6 @@ class PickGAApp(tk.Frame):
         self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.NORMAL)
         #self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED)
         self.reset_btn.grid(row=33, column=3)
-
 
 
     def resetapp(self):
@@ -145,11 +146,11 @@ class PickGAApp(tk.Frame):
         self.ean = tk.Label(self.activity, text='EAN\nInitiaux', justify='right',font=("bold", 13), pady=10)
         self.ean.grid(row=3, column=1)
 
-        self._articlegoal = tk.Label(self.activity, text='Articles Goal', justify='right',font=("bold", 13), pady=10)
-        self._articlegoal.grid(row= self.rowpart+21, column=1)
+        self.articlegoal = tk.Label(self.activity, text='Articles Goal', justify='right',font=("bold", 13), pady=10)
+        self.articlegoal.grid(row= self.rowpart+13, column=1)
 
-        self.eangoal_input = tk.Label(self.activity, text='EAN Goal', justify='right',font=("bold", 13), pady=10)
-        self.eangoal_input.grid(row=self.rowpart+22, column=1)
+        self.eangoal = tk.Label(self.activity, text='EAN Goal', justify='right',font=("bold", 13), pady=10)
+        self.eangoal.grid(row=self.rowpart+14, column=1)
 
         self.capatheo = tk.Label(self.activity, text='Capacitif Theorique', justify='right',font=("bold", 13), pady=10)
         self.capatheo.grid(row=self.rowpart+3, column=1)
@@ -194,17 +195,18 @@ class PickGAApp(tk.Frame):
         self.pickertitle.grid(row=self.picker_row, column=4)
 
         # TOTALS PART
+        self.totrow = 21
         self._totals = tk.Label(self.activity, text='TOTALS', justify='center', font=('bold', 16), pady=10)
-        self._totals.grid(row=23, column=4)
+        self._totals.grid(row=self.totrow, column=4)
 
         self.totalprelev = tk.Label(self.activity, text='Total \nPrelev', font=("bold", 13), pady=10)
-        self.totalprelev.grid(row=24, column=3)
+        self.totalprelev.grid(row=self.totrow+1, column=3)
 
         self.deltacap = tk.Label(self.activity, text='Delta \nCapacitif', font=("bold", 13), pady=10)
-        self.deltacap.grid(row=24, column=4)
+        self.deltacap.grid(row=self.totrow+1, column=4)
 
         self.totalpredprlv = tk.Label(self.activity, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
-        self.totalpredprlv.grid(row=24, column=5)
+        self.totalpredprlv.grid(row=self.totrow+1, column=5)
 
         self.autoblock(self.lsofblock)
 
@@ -227,8 +229,8 @@ class PickGAApp(tk.Frame):
         
         for nblock in adminblocks.mainlistblock:
             
-            self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)+1] = tk.Listbox(self.activity, height=1, width=5, justify="center")
-            self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)+1].grid(row=self.hour_row, column=adminblocks.mainlistblock.index(nblock)+2)
+            self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.activity, height=1, width=5, justify="center")
+            self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.hour_row, column=adminblocks.mainlistblock.index(nblock)+2)
             
             self.totalpickerout.grid(row=self.hour_row, column=adminblocks.mainlistblock.index(adminblocks.mainlistblock[-1])+4)
 
@@ -252,8 +254,18 @@ class PickGAApp(tk.Frame):
                 self.totalpickerout.insert(tk.END, row)
                 self.theorytopick.insert(tk.END, row)
 
+    def get_goal(self):
+        # PROLBEM PROBLEM PROBLEM
+        pdb = UsingDB("./database/goatdata.db")
+        fofo = [g for g in pdb.fetch_goal()]
+        print(fofo)
+        for x in pdb.fetch_goal():
+            self.artgoal_input[idx].insert(tk.END, x)
+            # elif idx > (len(pdb.fetch_goal()) // 2):
+            #     self.eangoal_input[idx].insert(tk.END, x)
+
     def add_arteanpik(self):
-        
+
         self.dkey = globaldb.lsartean
         limit = len(self.dkey) //2 -1 # getting the frontier between art and ean      
 
@@ -263,7 +275,6 @@ class PickGAApp(tk.Frame):
         self.get_dictean = dict((key, value.get()) for key, value in self.get_dictean.items())
         self.timerecord = datetime.datetime.now()
 
-        
         self.get_dictglobalpick = {'time_glob': self.timerecord, **self.get_dictart,**self.get_dictean, 'total_pickers':self.totalpicker_text.get()}
                
         # if (self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys()):
@@ -271,7 +282,6 @@ class PickGAApp(tk.Frame):
         #         "Champs requis", "Remplissez les champs, svp")
             # print(self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys())
             # return
-        
 
         # Insert into DB
         pdb = UsingDB("./database/goatdata.db")
@@ -279,6 +289,8 @@ class PickGAApp(tk.Frame):
         pdb.insert_gpick(self.get_dictglobalpick)
 
         engindb.weightnratio(self.get_dictglobalpick)
+
+        engindb.goal(self.get_dictglobalpick, self.admin)
 
         #pdb.insert_poly(self.timerecord, self.totalpicker_text.get(), , )
             
@@ -288,13 +300,14 @@ class PickGAApp(tk.Frame):
         #     self.dictblockpickerout[self.lsofblock.index(nblock)].insert(self.dictart_int[self.lsofblock.index(nblock)].get(), self.dictean_int[self.lsofblock.index(nblock)].get(),
         #             self.totalpicker_text.get())
             #self.clear_text(nblock)
+        self.get_goal()
         self.get_timepickeroutput(len(self.dkey)-2)
 
     def autoblock(self, lsofblock):
 
         self.part_art_input = {}
         self.part_ean_input = {}
-        self.artgoal_input = {}
+
         self.capa_input = {}
         self.lsofblock = lsofblock
         
@@ -306,21 +319,20 @@ class PickGAApp(tk.Frame):
             # self.dictean_goal[self.lsofblock.index(nblock)] = tk.IntVar()
             self.capa_input[self.lsofblock.index(nblock)] = tk.IntVar()
             
-
             self.part_block = tk.Label(self.activity, text=self.lsofblock[self.lsofblock.index(nblock)], font=("bold", 12))
             self.part_block.grid(row=1, column=self.lsofblock.index(nblock)+2)
 
-            self.part_art_input[self.lsofblock.index(nblock)+1] = tk.Entry(self.activity, textvariable=self.dictart_int[self.lsofblock.index(nblock)], justify="center", width=10)
-            self.part_art_input[self.lsofblock.index(nblock)+1].grid(row=2, column=self.lsofblock.index(nblock)+2)
+            self.part_art_input[self.lsofblock.index(nblock)] = tk.Entry(self.activity, textvariable=self.dictart_int[self.lsofblock.index(nblock)], justify="center", width=10)
+            self.part_art_input[self.lsofblock.index(nblock)].grid(row=2, column=self.lsofblock.index(nblock)+2)
 
-            self.part_ean_input[self.lsofblock.index(nblock)+1] = tk.Entry(self.activity, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
-            self.part_ean_input[self.lsofblock.index(nblock)+1].grid(row=3, column=self.lsofblock.index(nblock)+2)
+            self.part_ean_input[self.lsofblock.index(nblock)] = tk.Entry(self.activity, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
+            self.part_ean_input[self.lsofblock.index(nblock)].grid(row=3, column=self.lsofblock.index(nblock)+2)
 
-            # self.artgoal_input[self.lsofblock.index(nblock)] = tk.Entry(self.activity, textvariable=self.dictart_goal[self.lsofblock.index(nblock)], justify="center", width=10, state=tk.DISABLED)
-            # self.artgoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart, column=self.lsofblock.index(nblock)+2)
+            self.artgoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.activity, justify="center",  height=1, width=5)#, textvariable=self.dictart_goal[self.lsofblock.index(nblock)], state=tk.DISABLED)
+            self.artgoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+13, column=self.lsofblock.index(nblock)+2)
 
-            # self.eangoal_input = tk.Entry(self.activity, textvariable=self.dictean_goal[self.lsofblock.index(nblock)], justify="center", width=10, state=tk.DISABLED)
-            # self.eangoal_input.grid(row= self.rowpart+1, column=self.lsofblock.index(nblock)+2)
+            self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.activity, justify="center",  height=1, width=5) #, textvariable=self.dictean_goal[self.lsofblock.index(nblock)]state=tk.DISABLED)
+            self.eangoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+14, column=self.lsofblock.index(nblock)+2)
 
             self.capatheo_input = tk.Entry(self.activity, textvariable=adminblocks.capatheodict[nblock], justify="center", width=10)
             self.capatheo_input.grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
