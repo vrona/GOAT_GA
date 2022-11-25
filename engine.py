@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np
 import sqlite3
-import globaldb
+from globaldb import UsingDB
+from adminblocks import Blocks
 from datetime import datetime
 
-globaldf = pd.DataFrame()
+globaldf = pd.DataFrame() # dataframe of input art and ean
+
 
 class Engine():
 
@@ -41,9 +43,13 @@ class Computing:
             print(f'An error occurred: {e}.')
             exit()
 
+
     def weightnratio(self, dictbase):
-        global globaldf
-        # get the data from entry data
+        """This function computes the weights of articles, eans and ration article/ean"""
+
+        global globaldf # dataframe of input article, ean data
+        
+        # get the data from entry sql table
         self.dictbase = dictbase
         self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
 
@@ -68,12 +74,13 @@ class Computing:
 
             self.dfwr = self.dfwr.drop(["artbck{}".format(self.block), "eanbck{}".format(self.block)], axis = 1)
 
-        # reordering the column to fit to the sql table order in_weight_globpick
+        # reordering the column to fit to the sql 'in_weight_globpick' table order 
         self.temp_col = self.dfwr.columns.tolist()
         self.new_col = self.temp_col[:1] + self.temp_col[3:] + self.temp_col[1:3]
 
         self.newdfwr = self.dfwr[self.new_col]
 
+        # gathering the string and data
         self.placeholdwr = ','.join(['?'] * len(self.newdfwr.columns))
         self.columnwr = ','.join(self.newdfwr.columns)
 
@@ -81,12 +88,43 @@ class Computing:
 
         self.mylist = list(self.newdfwr.iloc[-1][x] for x in self.newdfwr.columns)
 
+        # important: convert np array int64 type to plain int
         self.mylist[-2], self.mylist[-1] = np.uint32(self.mylist[-2]).item(), np.uint32(self.mylist[-1]).item()
         self.mytuple = tuple(self.mylist)
 
+        # nuture the sql 'in_weight_globpick' table
         self.cur.execute(self.sqlwr, self.mytuple)
         self.conn.commit()
 
+
+    def goal(self, dictbase):
+        goaldb = UsingDB()
+        self.dictbase = dictbase
+
+        self.sql_weight = pd.read_sql_query("SELECT * FROM in_weight_globpick ORDER BY time_glob DESC LIMIT 1", self.conn)
+        self.dfweight = pd.DataFrame(self.sql_query, columns=[key for key in dictbase.keys()])
+        
+        self.vol, self.percent = Blocks.goalpick()
+
+        self.time = self.dictbase.pop('time_glob')
+        self.dictbase.pop('total_pickers')
+        
+    
+        if self.percent > 0:
+            self.percent = self.percent / 100
+            self.dictgoal = dict((key, values * self.percent) for key, values in self.dictbase)
+            self.dictgoal['time_glob'] = self.time
+            goaldb.insert_goal(self.dictgoal)
+            
+        elif self.vol > 0:
+            self.weigthvol = self.vol / self.dfweight['total_art_topick']
+            self.dictgoal = dict((key, values * self.percent) for key, values in self.dictbase)
+            self.dictgoal['time_glob'] = self.time
+            goaldb.insert_goal(self.dictgoal)
+
+        else:
+            pass
+        
 
     # def insert_capatheo(self, dictcapat):
     #     self.dictcapat = dictcapat

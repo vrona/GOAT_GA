@@ -23,17 +23,23 @@ class CreationDB:
     def createglobalpick(self, numofblock, db):
         global lsartean
         sql_ent = []
+        sql_ent_g = []
         sql_w_ent = []
         sql_capa_theo = []
         self.numoblock = numofblock
         
         lsartean = ["artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_goal_g = ["goal_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["goal_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_w_artean = ["wartbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["weanbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["ratioaebck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_capa_theoae = ["capa_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["capa_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
 
         for artean in lsartean:
             self.attribute = " ".join((artean, "INTEGER"))
             sql_ent.append(self.attribute)
+
+        for artean_g in ls_goal_g:
+            self.attribute_g = " ".join((artean_g, "INTEGER"))
+            sql_ent_g.append(self.attribute_g)
         
         for w_artean in ls_w_artean:
             self.w_attribute = " ".join((w_artean, "FLOAT"))
@@ -47,6 +53,10 @@ class CreationDB:
         self.corps = ", ".join((sql_ent))
         self.complete = self.entete+"time_glob REAL PRIMARY KEY"+", "+self.corps+", total_pickers INTEGER NOT NULL)" #"id INTEGER ," + 
 
+        self.entete_g = "CREATE TABLE IF NOT EXISTS goalpick ("
+        self.corps_g = ", ".join((sql_ent_g))
+        self.complete_g = self.entete_g+"time_glob REAL PRIMARY KEY"+", "+self.corps_g+")"
+
         self.w_entete = "CREATE TABLE IF NOT EXISTS in_weight_globpick ("
         self.w_corps = ", ".join((sql_w_ent))
         self.w_complete = self.w_entete+"time_glob REAL PRIMARY KEY"+", "+self.w_corps+", total_art_topick INTEGER, total_ean_topick INTEGER)"
@@ -58,6 +68,7 @@ class CreationDB:
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.cur.execute(self.complete)
+        self.cur.execute(self.complete_g)
         self.cur.execute(self.w_complete)
         self.cur.execute(self.capatheo_complete)
         
@@ -107,6 +118,15 @@ class UsingDB:
         self.placeholder = ','.join(['?'] * len(self.dictbase))
         self.column = ', '.join(self.dictbase.keys())
         self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('in_globalpick', self.column, self.placeholder)
+
+        self.cur.execute(self.sql, list(self.dictbase.values()))
+        self.conn.commit()
+
+    def insert_goal(self, dictbase):
+        self.dictbase = dictbase
+        self.placeholder = ','.join(['?'] * len(self.dictbase))
+        self.column = ', '.join(self.dictbase.keys())
+        self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('goalpick', self.column, self.placeholder)
 
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()

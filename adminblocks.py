@@ -9,6 +9,7 @@ from globaldb import CreationDB
 is_on = False
 mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "E Rando/Camp", "Prio E", "V Cycle/Urban", "Prio V", "PFECA", "Implant"]
 capatheodict = {"C Chasse": 270, "C SportCo": 290, "D Glisse": 306, "D Running":290, "E Rando/Camp":220, "Prio E":200, "V Cycle/Urban":220, "Prio V":220, "PFECA":200, "Implant":200}
+vol_goal, percent_goal = 0, 0 # value of goal (volume article or %)
 
 class Blocks(tk.Frame):
     
@@ -86,12 +87,10 @@ class Blocks(tk.Frame):
         self.pilotsepright.grid(row=17, column=3, sticky="nsew", columnspan=4)
 
         # PILOTAGE PART
-
         self.volume = "Volume Art."
         self.percentage = "Pourcent. %"
         self.volbtn = Button(self.master, text=self.volume, command=self.switch, bootstyle="success-outline") #bootstyle="success-round-toggle", 
         self.volbtn.place(x=180, y=440) #grid(row=19, column=1, pady=5)
-
 
         self.target_input = tk.IntVar()
         self.percent_input = tk.IntVar()
@@ -106,7 +105,6 @@ class Blocks(tk.Frame):
         self.percent_entry = Entry(self.master, text=self.percent_input, justify='center', state=tk.DISABLED)
         self.percent_entry.grid(row=26, column=2)
 
-
         # SEPARATOR PART
         self.validsepleft = Separator(self.master, bootstyle="success")
         self.validsepleft.grid(row=27, column=0, sticky="nsew", columnspan=4)
@@ -118,7 +116,13 @@ class Blocks(tk.Frame):
          # Bind select
         self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
 
-    
+    def goalpick(self):
+        global vol_goal, percent_goal
+        vol_goal = self.target_input
+        percent_goal = self.percent_input
+
+        return vol_goal, percent_goal
+
     def switch(self):
         global is_on
 

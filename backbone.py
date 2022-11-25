@@ -263,6 +263,7 @@ class PickGAApp(tk.Frame):
         self.get_dictean = dict((key, value.get()) for key, value in self.get_dictean.items())
         self.timerecord = datetime.datetime.now()
 
+        
         self.get_dictglobalpick = {'time_glob': self.timerecord, **self.get_dictart,**self.get_dictean, 'total_pickers':self.totalpicker_text.get()}
                
         # if (self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys()):
@@ -276,6 +277,7 @@ class PickGAApp(tk.Frame):
         pdb = UsingDB("./database/goatdata.db")
         engindb = Computing("./database/goatdata.db")
         pdb.insert_gpick(self.get_dictglobalpick)
+
         engindb.weightnratio(self.get_dictglobalpick)
 
         #pdb.insert_poly(self.timerecord, self.totalpicker_text.get(), , )
