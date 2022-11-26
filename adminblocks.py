@@ -119,12 +119,12 @@ class Blocks(tk.Frame):
          # Bind select
          
 
-        # Admin widget's Validation & Launch Buttons
+        # Pilotage Validation Button
         self.validblock_btn = Button(self.master, text="Valider Pilotage", bootstyle="info", command=self.goalpick, width=12)
         self.validblock_btn.grid(row=21, column=4, pady=10)
 
 
-    def goalpick(self):
+    def goalpick(self): #DEAD DEAD DEAD
         
         setthegoal.append(self.target_input.get())
         setthegoal.append(self.percent_input.get())
