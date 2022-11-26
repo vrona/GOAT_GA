@@ -110,30 +110,23 @@ class UsingDB:
     @param self: nothing
     @return rows, rosa: 2 array of datas
     """
-    def fetch_goal(self):
+    def fetch_artgoal(self):
+          
+        self.middle = len(ls_goal_g) // 2
+        self.artcolumn = ', '.join(ls_goal_g[ : self.middle])
+        self.sqlagoal = "SELECT %s FROM %s ORDER BY id" % (self.artcolumn, 'goalpick')
+        self.cur.execute(self.sqlagoal)
+        row = self.cur.fetchone()
+        return row
+
+    def fetch_eangoal(self):
         
-        # self.dictbase.pop('time_glob')
-        # self.dictbase.pop('total_pickers')
-        self.lsofkeys = ls_goal_g
-        #self.middle = len(self.lsofkeys) // 2
-        #self.placeholder = ','.join(['?'] * len(self.dictbase))
-        # self.artcolumn = ', '.join(self.lsofkeys[ :self.middle])
-        # self.eancolumn = ', '.join(self.lsofkeys[self.middle: ])
-        self.goalcolumn = ', '.join(self.lsofkeys)
-        # self.sqlart = "SELECT %s FROM %s ORDER BY id" % (self.artcolumn, 'goalpick')
-        # self.sqlean = "SELECT %s FROM %s ORDER BY id" % (self.eancolumn, 'goalpick')
-
-        self.sqlgoal = "SELECT %s FROM %s ORDER BY id" % (self.goalcolumn, 'goalpick')
-
-        # self.cur.execute(self.sqlart)
-        # artrow = self.cur.fetchall()
-        # self.cur.execute(self.sqlean)
-        # eanrow = self.cur.fetchall()
-        # row = list(artrow + eanrow)
-
-        self.cur.execute(self.sqlgoal)
-        rows = self.cur.fetchall()
-        return rows
+        self.middle = len(ls_goal_g) // 2
+        self.eancolumn = ', '.join(ls_goal_g[self.middle: ])
+        self.sqlegoal = "SELECT %s FROM %s ORDER BY id" % (self.eancolumn, 'goalpick')
+        self.cur.execute(self.sqlegoal)
+        row = self.cur.fetchone()
+        return row
 
 
     def insert_capatheo(self, capatheo_h):

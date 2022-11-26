@@ -257,12 +257,11 @@ class PickGAApp(tk.Frame):
     def get_goal(self):
         # PROLBEM PROBLEM PROBLEM
         pdb = UsingDB("./database/goatdata.db")
-        fofo = [g for g in pdb.fetch_goal()]
-        print(fofo)
-        for x in pdb.fetch_goal():
-            self.artgoal_input[idx].insert(tk.END, x)
-            # elif idx > (len(pdb.fetch_goal()) // 2):
-            #     self.eangoal_input[idx].insert(tk.END, x)
+
+        for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
+            self.artgoal_input[ba].insert(tk.END, rowa)
+            self.eangoal_input[ba].insert(tk.END, rowe)
+  
 
     def add_arteanpik(self):
 
@@ -276,12 +275,12 @@ class PickGAApp(tk.Frame):
         self.timerecord = datetime.datetime.now()
 
         self.get_dictglobalpick = {'time_glob': self.timerecord, **self.get_dictart,**self.get_dictean, 'total_pickers':self.totalpicker_text.get()}
-               
-        # if (self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys()):
-        #     tkinter.messagebox.showerror(
-        #         "Champs requis", "Remplissez les champs, svp")
-            # print(self.get_dictglobalpick[key] == '' for key in self.get_dictglobalpick.keys())
-            # return
+        
+        for key in self.get_dictglobalpick.keys():
+            if self.get_dictglobalpick[key] == 0: 
+                tkinter.messagebox.showerror(
+                    "Champs requis", "Remplissez les champs, svp")
+                return
 
         # Insert into DB
         pdb = UsingDB("./database/goatdata.db")
@@ -301,7 +300,7 @@ class PickGAApp(tk.Frame):
         #             self.totalpicker_text.get())
             #self.clear_text(nblock)
         self.get_goal()
-        self.get_timepickeroutput(len(self.dkey)-2)
+        #self.get_timepickeroutput(len(self.dkey)-2)
 
     def autoblock(self, lsofblock):
 
