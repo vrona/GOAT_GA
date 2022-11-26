@@ -11,14 +11,17 @@ import globaldb
 is_on = False
 mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "E Rando/Camp", "Prio E", "V Cycle/Urban", "Prio V", "PFECA", "Implant"]
 capatheodict = {"C Chasse": 270, "C SportCo": 290, "D Glisse": 306, "D Running":290, "E Rando/Camp":220, "Prio E":200, "V Cycle/Urban":220, "Prio V":220, "PFECA":200, "Implant":200}
-target_input, percent_input = 0, 0
+setthegoal = []
 
 class Blocks(tk.Frame):
     
     
     def __init__(self, master):
-        
+
         self.master = master
+
+        self.target_input = tk.IntVar()
+        self.percent_input = tk.IntVar()
         self.blocdataframe()
         self.show_block()
 
@@ -28,11 +31,11 @@ class Blocks(tk.Frame):
             self.blocks_list.insert(tk.END, block)
 
     def blocdataframe(self):
-        global target_input, percent_input
 
         self.blocks_text = tk.StringVar()
         self.oldblocks_text = tk.StringVar()
         self.newblocks_text = tk.StringVar()
+
 
         self.intro_label = tk.Label(self.master, text="Configuration de l'activité", justify='center',font=('bold', 20))
         self.text_label = Label(self.master, text="Pour ajouter, supprimer ou renommer les blocks,\nselectionner les.\n\nTu connais l'objectif du jour ?\nOui, renseignes le Pilotage du jour en VOLUME ou en %.\nNon, demande à ton patron, ta patronne.\n\nPuis valides et lances l'activité.", font=18, padding=10)
@@ -95,17 +98,14 @@ class Blocks(tk.Frame):
         self.volbtn = Button(self.master, text=self.volume, command=self.switch_vp, bootstyle="success-outline") #bootstyle="success-round-toggle", 
         self.volbtn.place(x=180, y=440) #grid(row=19, column=1, pady=5)
 
-        target_input = tk.IntVar()
-        percent_input = tk.IntVar()
-
         self.target_label = Label(self.master, text="Goal Vol. Tablette Art.", justify='center', font=16)
         self.target_label.grid(row=21, column=2, pady=25)
-        self.target_entry = Entry(self.master, text=target_input, justify='center')
+        self.target_entry = tk.Entry(self.master, textvariable=self.target_input, justify='center')
         self.target_entry.grid(row=22, column=2)
 
         self.percent_label = Label(self.master, text="Goal % Tablette Art.", justify='center', font=16)
         self.percent_label.grid(row=25, column=2, pady=10)
-        self.percent_entry = Entry(self.master, text=percent_input, justify='center', state=tk.DISABLED)
+        self.percent_entry = tk.Entry(self.master, textvariable=self.percent_input, justify='center', state=tk.DISABLED)
         self.percent_entry.grid(row=26, column=2)
 
         # SEPARATOR PART
@@ -117,14 +117,18 @@ class Blocks(tk.Frame):
         self.validsepright.grid(row=27, column=3, sticky="nsew", columnspan=4)
 
          # Bind select
-        self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
+         
+
+        # Admin widget's Validation & Launch Buttons
+        self.validblock_btn = Button(self.master, text="Valider Pilotage", bootstyle="info", command=self.goalpick, width=12)
+        self.validblock_btn.grid(row=21, column=4, pady=10)
+
 
     def goalpick(self):
-        global vol_goal, percent_goal
-        vol_goal = target_input.get()
-        print("test vol:", vol_goal)
-        percent_goal = percent_input.get()
-        print("test goal:", percent_goal)
+        
+        setthegoal.append(self.target_input.get())
+        setthegoal.append(self.percent_input.get())
+        print("test:", self.target_input.get(), self.percent_input.get())
 
     def switch_vp(self):
         global is_on
@@ -134,6 +138,7 @@ class Blocks(tk.Frame):
             self.target_entry['state']=tk.DISABLED
             self.percent_entry['state']=tk.NORMAL
             is_on = False
+            
         else: 
             self.volbtn.config(text=self.volume)
             self.target_entry['state']=tk.NORMAL
@@ -189,14 +194,15 @@ class Blocks(tk.Frame):
 
 
     def validate_block(self):
-        global mainlistblock, capatheodict
+        global mainlistblock, capatheodict, setthegoal
         #self.listofids = list(mainlistblock.index(x) for x in mainlistblock)
         #self.data = {'id': self.listofids, 'name': mainlistblock}
         #self.df = pd.DataFrame(self.data, columns=['id','name'])
         self.pdb = CreationDB(len(mainlistblock),"./database/goatdata.db")
         capatheodict["capathavg"] = sum(capatheodict.values()) / len(capatheodict)
-        self.goalpick()
+
         self.iniblock(mainlistblock)
+        self.goalpick()
 
         self.add_btn['state']=tk.DISABLED
         self.remove_btn['state']=tk.DISABLED
