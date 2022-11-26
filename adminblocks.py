@@ -9,7 +9,7 @@ from globaldb import CreationDB
 is_on = False
 mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "E Rando/Camp", "Prio E", "V Cycle/Urban", "Prio V", "PFECA", "Implant"]
 capatheodict = {"C Chasse": 270, "C SportCo": 290, "D Glisse": 306, "D Running":290, "E Rando/Camp":220, "Prio E":200, "V Cycle/Urban":220, "Prio V":220, "PFECA":200, "Implant":200}
-vol_goal, percent_goal = 0, 0 # value of goal (volume article or %)
+#vol_goal, percent_goal = 0, 0 # value of goal (volume article or %)
 
 class Blocks(tk.Frame):
     
@@ -117,10 +117,10 @@ class Blocks(tk.Frame):
         self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
 
     def goalpick(self):
-        global vol_goal, percent_goal
-        vol_goal = self.target_input.get()
-        percent_goal = self.percent_input.get()
-        return vol_goal, percent_goal
+        #global vol_goal, percent_goal
+        self.vol_goal = self.target_input.get()
+        self.percent_goal = self.percent_input.get()
+        return self.vol_goal, self.percent_goal
 
     def switch_vp(self):
         global is_on

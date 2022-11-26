@@ -110,10 +110,10 @@ class Computing:
         self.sql_weight = pd.read_sql_query("SELECT * FROM in_weight_globpick ORDER BY time_glob DESC LIMIT 1", self.conn)
         self.dfweight = pd.DataFrame(self.sql_query, columns=[key for key in dictbase.keys()])
         
-        self.vol, self.percent = Blocks(self.master).goalpick()       
+        vol_goal, percent_goal = Blocks(self.master).goalpick()
         print("test vol, %", self.vol, self.percent)
-        
-        if self.percent.get() > 0:
+
+        if percent_goal > 0:
             print("percent")
             self.percent = self.percent / 100
             self.dictgoal = dict(zip(self.goalkey, self.percent * self.dictbase.values()))
@@ -122,7 +122,7 @@ class Computing:
             goaldb.insert_goal(self.dictgoal)
             return self.dictgoal
 
-        elif self.vol.get() > 0:
+        elif vol_goal > 0:
             print("volume")
             self.weigthvol = self.vol / self.dfweight['total_art_topick']
             self.dictgoal = dict(zip(self.goalkey, self.weigthvol * self.dictbase.values()))

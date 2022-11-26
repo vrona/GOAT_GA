@@ -287,7 +287,6 @@ class PickGAApp(tk.Frame):
         pdb.insert_gpick(self.get_dictglobalpick)
 
         engindb.weightnratio(self.get_dictglobalpick)
-
         engindb.goal(self.get_dictglobalpick, self.admin)
 
         #pdb.insert_poly(self.timerecord, self.totalpicker_text.get(), , )
