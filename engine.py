@@ -3,6 +3,7 @@ import numpy as np
 import sqlite3
 import globaldb
 from globaldb import UsingDB
+import adminblocks
 from adminblocks import Blocks
 from datetime import datetime
 
@@ -110,19 +111,9 @@ class Computing:
         self.sql_weight = pd.read_sql_query("SELECT * FROM in_weight_globpick ORDER BY time_glob DESC LIMIT 1", self.conn)
         self.dfweight = pd.DataFrame(self.sql_query, columns=[key for key in dictbase.keys()])
         
-        vol_goal, percent_goal = Blocks(self.master).goalpick()
-        print("test vol, %", self.vol, self.percent)
+        print("test engine vol, %",  adminblocks.vol_goal, adminblocks.percent_goal)
 
-        if percent_goal > 0:
-            print("percent")
-            self.percent = self.percent / 100
-            self.dictgoal = dict(zip(self.goalkey, self.percent * self.dictbase.values()))
-            #self.dictgoal = dict((key, values * self.percent) for key, values in self.dictbase.items())
-            self.dictgoal['time_glob'] = self.time
-            goaldb.insert_goal(self.dictgoal)
-            return self.dictgoal
-
-        elif vol_goal > 0:
+        if adminblocks.vol_goal > 0:
             print("volume")
             self.weigthvol = self.vol / self.dfweight['total_art_topick']
             self.dictgoal = dict(zip(self.goalkey, self.weigthvol * self.dictbase.values()))
@@ -130,6 +121,15 @@ class Computing:
             self.dictgoal['time_glob'] = self.time
             goaldb.insert_goal(self.dictgoal)
             return self.dictgoal.items()
+
+        elif adminblocks.percent_goal > 0:
+            print("percent")
+            self.percent = self.percent / 100
+            self.dictgoal = dict(zip(self.goalkey, self.percent * self.dictbase.values()))
+            #self.dictgoal = dict((key, values * self.percent) for key, values in self.dictbase.items())
+            self.dictgoal['time_glob'] = self.time
+            goaldb.insert_goal(self.dictgoal)
+            return self.dictgoal
 
         else:
             self.dictgoal = dict(zip(self.goalkey, self.dictbase.values()))
