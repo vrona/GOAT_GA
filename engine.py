@@ -111,8 +111,10 @@ class Computing:
         self.dfweight = pd.DataFrame(self.sql_query, columns=[key for key in dictbase.keys()])
         
         self.vol, self.percent = Blocks(self.master).goalpick()       
-    
+        print("test vol, %", self.vol, self.percent)
+        
         if self.percent.get() > 0:
+            print("percent")
             self.percent = self.percent / 100
             self.dictgoal = dict(zip(self.goalkey, self.percent * self.dictbase.values()))
             #self.dictgoal = dict((key, values * self.percent) for key, values in self.dictbase.items())
@@ -121,6 +123,7 @@ class Computing:
             return self.dictgoal
 
         elif self.vol.get() > 0:
+            print("volume")
             self.weigthvol = self.vol / self.dfweight['total_art_topick']
             self.dictgoal = dict(zip(self.goalkey, self.weigthvol * self.dictbase.values()))
             #self.dictgoal = dict((key, values * self.weigthvol) for key, values in self.dictbase.items())

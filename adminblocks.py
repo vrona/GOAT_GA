@@ -31,7 +31,7 @@ class Blocks(tk.Frame):
         self.oldblocks_text = tk.StringVar()
         self.newblocks_text = tk.StringVar()
 
-        self.intro_label = tk.Label(self.master, text="Configuration Activite", justify='center',font=('bold', 20))
+        self.intro_label = tk.Label(self.master, text="Configuration de l'activité", justify='center',font=('bold', 20))
         self.text_label = Label(self.master, text="Pour ajouter, supprimer ou renommer les blocks,\nselectionner les.\n\nTu connais l'objectif du jour ?\nOui, renseignes le Pilotage du jour en VOLUME ou en %.\nNon, demande à ton patron, ta patronne.\n\nPuis valides et lances l'activité.", font=18, padding=10)
         self.intro_label.place(x=550,y=25) #.grid(row=0, column=1, columnspan=3)
         self.text_label.place(x=550,y=75) #.grid(row=1, column=1, columnspan=3)
@@ -89,7 +89,7 @@ class Blocks(tk.Frame):
         # PILOTAGE PART
         self.volume = "Volume Art."
         self.percentage = "Pourcent. %"
-        self.volbtn = Button(self.master, text=self.volume, command=self.switch, bootstyle="success-outline") #bootstyle="success-round-toggle", 
+        self.volbtn = Button(self.master, text=self.volume, command=self.switch_vp, bootstyle="success-outline") #bootstyle="success-round-toggle", 
         self.volbtn.place(x=180, y=440) #grid(row=19, column=1, pady=5)
 
         self.target_input = tk.IntVar()
@@ -118,12 +118,11 @@ class Blocks(tk.Frame):
 
     def goalpick(self):
         global vol_goal, percent_goal
-        vol_goal = self.target_input
-        percent_goal = self.percent_input
-
+        vol_goal = self.target_input.get()
+        percent_goal = self.percent_input.get()
         return vol_goal, percent_goal
 
-    def switch(self):
+    def switch_vp(self):
         global is_on
 
         if is_on:
@@ -184,12 +183,6 @@ class Blocks(tk.Frame):
             
             self.pdb.insert_nameblock(self.listofblock.index(data)+1, "{}".format(data))
 
-
-
-    def lisfofblock(self):
-        return mainlistblock
-
-    
     def validate_block(self):
         global mainlistblock, capatheodict
         #self.listofids = list(mainlistblock.index(x) for x in mainlistblock)

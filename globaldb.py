@@ -108,7 +108,7 @@ class UsingDB:
 
     """
     @param self: nothing
-    @return rows, rosa: 2 array of datas
+    @return row: goal of art
     """
     def fetch_artgoal(self):
           
@@ -119,6 +119,10 @@ class UsingDB:
         row = self.cur.fetchone()
         return row
 
+    """
+    @param self: nothing
+    @return row: goal of ean
+    """
     def fetch_eangoal(self):
         
         self.middle = len(ls_goal_g) // 2

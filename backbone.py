@@ -1,6 +1,9 @@
 import tkinter as tk
 import tkinter.messagebox
 from tkinter import ttk
+from adminblocks import Blocks
+import adminblocks
+from engine import Computing
 import globaldb
 from globaldb import UsingDB
 from PIL import Image, ImageTk
@@ -9,9 +12,6 @@ from ttkbootstrap import Style
 #from tkinter.ttk import Style
 from ttkbootstrap.constants import *
 import datetime
-from adminblocks import Blocks
-import adminblocks
-from engine import Computing
 import os
 
 class PickGAApp(tk.Frame):
@@ -53,13 +53,13 @@ class PickGAApp(tk.Frame):
         self.tabcontrol.add(self.credit, text="Credits")
 
         # Admin widget's Validation & Launch Buttons
-        self.validblock_btn = ttk.Button(self.admin, text="Valider Blocks", bootstyle="danger", command=lambda:[Blocks(self.admin).validate_block(), self.ready(), self.switchstate()], width=12)
+        self.validblock_btn = ttk.Button(self.admin, text="Valider", bootstyle="danger", command=lambda:[Blocks(self.admin).validate_block(), Blocks(self.admin).goalpick(),self.ready(), self.switchstate()], width=12)
         self.validblock_btn.grid(row=29, column=0, pady=10)
 
         self.launch_btn = ttk.Button(self.admin, text="Lancer Activité", style='valid.btn', width=12, command=lambda:self.selecttab(1), state=tk.DISABLED)
         self.launch_btn.grid(row=29, column=2)
 
-        Blocks(self.admin)
+        Blocks(self.admin) # admin tab widget
 
         #Configtab(self.config).configwidget(self.selecttab)
         self.credit_widget()
@@ -75,7 +75,6 @@ class PickGAApp(tk.Frame):
         self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.NORMAL)
         #self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED)
         self.reset_btn.grid(row=33, column=3)
-
 
     def resetapp(self):
         if os.path.exists("./database/goatdata.db"):
@@ -255,7 +254,7 @@ class PickGAApp(tk.Frame):
                 self.theorytopick.insert(tk.END, row)
 
     def get_goal(self):
-        # PROLBEM PROBLEM PROBLEM
+
         pdb = UsingDB("./database/goatdata.db")
 
         for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
