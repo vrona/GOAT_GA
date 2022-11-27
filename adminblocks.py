@@ -125,21 +125,16 @@ class Blocks(tk.Frame):
 
 
 
-    def goalpick(self): #DEAD DEAD DEAD
+    def goalpick(self):
         
         setthegoal[0] = self.target_input.get()
         setthegoal[1] = self.percent_input.get()
 
-        # if setthegoal[0] > 0:
-        #     self.percent_entry.delete(0, tk.END)
-        #     setthegoal[1] = 0
-        # elif setthegoal[1] > 0:
-        #     self.target_entry.delete(0, tk.END)
-        #     setthegoal[0] = 0
         if self.target_input.get() > 0 and self.percent_input.get() > 0: 
                 tkinter.messagebox.showerror(
                     "Champs requis", "Soit Vol., soit Percent ou les 2 à zéro, svp")
                 return
+        
 
     def switch_vp(self):
         global is_on
@@ -168,7 +163,7 @@ class Blocks(tk.Frame):
         else:
             mainlistblock.append(self.blocks_text.get())
             capatheodict[self.blocks_text.get()] = 200
-            print(capatheodict)
+
         self.clear_text()
         self.show_block()
 

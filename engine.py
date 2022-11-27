@@ -98,8 +98,6 @@ class Computing:
         self.cur.execute(self.sqlwr, self.mytuple)
         self.conn.commit()
 
-        print(self.newdfwr)
-
 
     def goal(self, dictbase, master):
         goaldb = UsingDB("./database/goatdata.db")
@@ -114,17 +112,15 @@ class Computing:
         self.dfweight = pd.DataFrame(self.sql_weight) #, columns=[key for key in dictbase.keys()]
         
         if adminblocks.setthegoal[0] > 0:
-            print("volume")
             self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
             self.dictgoal = dict(zip(self.goalkey,  list(self.weigthvol * vals for vals in self.dictbase.values())))
             #self.dictgoal = dict((key, values * self.weigthvol) for key, values in self.dictbase.items())
-            print(self.dictgoal)
+
             self.dictgoal['time_glob'] = self.time
             goaldb.insert_goal(self.dictgoal)
             return self.dictgoal.items()
 
         elif adminblocks.setthegoal[1] > 0:
-            print("percent")
             self.percent = adminblocks.setthegoal[1] / 100
             self.dictgoal = dict(zip(self.goalkey, list(self.percent * val for val in self.dictbase.values())))
             #self.dictgoal = dict((key, values * self.percent) for key, values in self.dictbase.items())
