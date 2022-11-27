@@ -155,7 +155,8 @@ class UsingDB:
         self.placeholder = ','.join(['?'] * len(self.dictbase))
         self.column = ', '.join(self.dictbase.keys())
         self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('goalpick', self.column, self.placeholder)
-
+        
+        print(list(self.dictbase.values()))
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
 

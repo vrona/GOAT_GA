@@ -98,6 +98,8 @@ class Computing:
         self.cur.execute(self.sqlwr, self.mytuple)
         self.conn.commit()
 
+        print(self.newdfwr)
+
 
     def goal(self, dictbase, master):
         goaldb = UsingDB("./database/goatdata.db")
@@ -109,23 +111,22 @@ class Computing:
         self.dictbase.pop('total_pickers')
 
         self.sql_weight = pd.read_sql_query("SELECT * FROM in_weight_globpick ORDER BY time_glob DESC LIMIT 1", self.conn)
-        self.dfweight = pd.DataFrame(self.sql_query, columns=[key for key in dictbase.keys()])
-
-        print("from engine.py:", adminblocks.setthegoal)
+        self.dfweight = pd.DataFrame(self.sql_weight) #, columns=[key for key in dictbase.keys()]
         
         if adminblocks.setthegoal[0] > 0:
             print("volume")
-            self.weigthvol = self.vol / self.dfweight['total_art_topick']
-            self.dictgoal = dict(zip(self.goalkey, self.weigthvol * self.dictbase.values()))
+            self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
+            self.dictgoal = dict(zip(self.goalkey,  list(self.weigthvol * vals for vals in self.dictbase.values())))
             #self.dictgoal = dict((key, values * self.weigthvol) for key, values in self.dictbase.items())
+            print(self.dictgoal)
             self.dictgoal['time_glob'] = self.time
             goaldb.insert_goal(self.dictgoal)
             return self.dictgoal.items()
 
         elif adminblocks.setthegoal[1] > 0:
             print("percent")
-            self.percent = self.percent / 100
-            self.dictgoal = dict(zip(self.goalkey, self.percent * self.dictbase.values()))
+            self.percent = adminblocks.setthegoal[1] / 100
+            self.dictgoal = dict(zip(self.goalkey, list(self.percent * val for val in self.dictbase.values())))
             #self.dictgoal = dict((key, values * self.percent) for key, values in self.dictbase.items())
             self.dictgoal['time_glob'] = self.time
             goaldb.insert_goal(self.dictgoal)

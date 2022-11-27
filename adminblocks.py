@@ -11,7 +11,7 @@ import globaldb
 is_on = False
 mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "E Rando/Camp", "Prio E", "V Cycle/Urban", "Prio V", "PFECA", "Implant"]
 capatheodict = {"C Chasse": 270, "C SportCo": 290, "D Glisse": 306, "D Running":290, "E Rando/Camp":220, "Prio E":200, "V Cycle/Urban":220, "Prio V":220, "PFECA":200, "Implant":200}
-setthegoal = []
+setthegoal = [None] *2
 
 class Blocks(tk.Frame):
     
@@ -44,11 +44,11 @@ class Blocks(tk.Frame):
 
         # SEPARATOR PART
         self.blocksepleft = Separator(self.master, bootstyle="success", orient="horizontal")
-        self.blocksepleft.grid(row=2, column=0, sticky="nsew", columnspan=1)
+        self.blocksepleft.grid(row=2, column=0, sticky="nsew", columnspan=4)
         self.blockpart = Label(self.master, text="BLOCKS", justify='center', font=('bold', 16))
         self.blockpart.grid(row=2, column=2, pady=15)
         self.blocksepright = Separator(self.master, bootstyle="success")
-        self.blocksepright.grid(row=2, column=3, sticky="nsew", columnspan=1)
+        self.blocksepright.grid(row=2, column=3, sticky="nsew", columnspan=4)
         
         self.listblocktitle = Label(self.master, text="Liste de Blocks", font=('bold', 16)) #, padding=15
         self.listblocktitle.grid(row=3, column=0)
@@ -96,7 +96,7 @@ class Blocks(tk.Frame):
         self.volume = "Volume Art."
         self.percentage = "Pourcent. %"
         self.volbtn = Button(self.master, text=self.volume, command=self.switch_vp, bootstyle="success-outline") #bootstyle="success-round-toggle", 
-        self.volbtn.place(x=180, y=440) #grid(row=19, column=1, pady=5)
+        self.volbtn.grid(row=20, column=2) #place(x=180, y=440) #
 
         self.target_label = Label(self.master, text="Goal Vol. Tablette Art.", justify='center', font=16)
         self.target_label.grid(row=21, column=2, pady=25)
@@ -108,27 +108,38 @@ class Blocks(tk.Frame):
         self.percent_entry = tk.Entry(self.master, textvariable=self.percent_input, justify='center', state=tk.DISABLED)
         self.percent_entry.grid(row=26, column=2)
 
-        # SEPARATOR PART
-        self.validsepleft = Separator(self.master, bootstyle="success")
-        self.validsepleft.grid(row=27, column=0, sticky="nsew", columnspan=4)
-        self.validpart = Label(self.master, text="GO LIVE", justify='center', font=('bold', 16))
-        self.validpart.grid(row=27, column=2, pady=15)
-        self.validsepright = Separator(self.master, bootstyle="success")
-        self.validsepright.grid(row=27, column=3, sticky="nsew", columnspan=4)
-
-         # Bind select
-         
-
         # Pilotage Validation Button
         self.validblock_btn = Button(self.master, text="Valider Pilotage", bootstyle="info", command=self.goalpick, width=12)
-        self.validblock_btn.grid(row=21, column=4, pady=10)
+        self.validblock_btn.grid(row=27, column=2, pady=10)
+
+        # SEPARATOR PART
+        self.validsepleft = Separator(self.master, bootstyle="success")
+        self.validsepleft.grid(row=28, column=0, sticky="nsew", columnspan=4)
+        self.validpart = Label(self.master, text="GO LIVE", justify='center', font=('bold', 16))
+        self.validpart.grid(row=28, column=2, pady=15)
+        self.validsepright = Separator(self.master, bootstyle="success")
+        self.validsepright.grid(row=28, column=3, sticky="nsew", columnspan=4)
+
+        # Bind select
+        self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
+
 
 
     def goalpick(self): #DEAD DEAD DEAD
         
-        setthegoal.append(self.target_input.get())
-        setthegoal.append(self.percent_input.get())
-        print("test:", self.target_input.get(), self.percent_input.get())
+        setthegoal[0] = self.target_input.get()
+        setthegoal[1] = self.percent_input.get()
+
+        # if setthegoal[0] > 0:
+        #     self.percent_entry.delete(0, tk.END)
+        #     setthegoal[1] = 0
+        # elif setthegoal[1] > 0:
+        #     self.target_entry.delete(0, tk.END)
+        #     setthegoal[0] = 0
+        if self.target_input.get() > 0 and self.percent_input.get() > 0: 
+                tkinter.messagebox.showerror(
+                    "Champs requis", "Soit Vol., soit Percent ou les 2 à zéro, svp")
+                return
 
     def switch_vp(self):
         global is_on
@@ -202,7 +213,7 @@ class Blocks(tk.Frame):
         capatheodict["capathavg"] = sum(capatheodict.values()) / len(capatheodict)
 
         self.iniblock(mainlistblock)
-        self.goalpick()
+
 
         self.add_btn['state']=tk.DISABLED
         self.remove_btn['state']=tk.DISABLED
