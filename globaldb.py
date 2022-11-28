@@ -1,5 +1,4 @@
 import sqlite3
-import pandas as pd
 
 lsartean = []
 ls_goal_g = []

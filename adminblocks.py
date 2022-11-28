@@ -5,7 +5,6 @@ import tkinter as tk
 from tkinter.ttk import *
 import tkinter.messagebox
 from globaldb import CreationDB, UsingDB
-import globaldb
 
 
 is_on = False
@@ -122,7 +121,6 @@ class Blocks(tk.Frame):
 
         # Bind select
         self.blocks_list.bind('<<ListboxSelect>>', self.select_item)
-
 
 
     def goalpick(self):
