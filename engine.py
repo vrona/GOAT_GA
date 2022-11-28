@@ -99,12 +99,12 @@ class Computing:
         self.conn.commit()
 
 
-    def goal(self, dictbase, master):
+    def goal(self, dictbase):
         goaldb = UsingDB("./database/goatdata.db")
         self.goalkey = globaldb.ls_goal_g # list of futur keys' dict
 
         self.dictbase = dictbase
-        self.master = master
+
         self.time = self.dictbase.pop('time_glob')
         self.dictbase.pop('total_pickers')
 
@@ -114,8 +114,6 @@ class Computing:
         if adminblocks.setthegoal[0] > 0:
             self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
             self.dictgoal = dict(zip(self.goalkey,  list(self.weigthvol * vals for vals in self.dictbase.values())))
-            #self.dictgoal = dict((key, values * self.weigthvol) for key, values in self.dictbase.items())
-
             self.dictgoal['time_glob'] = self.time
             goaldb.insert_goal(self.dictgoal)
             return self.dictgoal.items()
@@ -123,15 +121,12 @@ class Computing:
         elif adminblocks.setthegoal[1] > 0:
             self.percent = adminblocks.setthegoal[1] / 100
             self.dictgoal = dict(zip(self.goalkey, list(self.percent * val for val in self.dictbase.values())))
-            #self.dictgoal = dict((key, values * self.percent) for key, values in self.dictbase.items())
             self.dictgoal['time_glob'] = self.time
             goaldb.insert_goal(self.dictgoal)
             return self.dictgoal
 
         else:
             self.dictgoal = dict(zip(self.goalkey, self.dictbase.values()))
-            #self.dictgoal = dict((key, value) for key, value in self.dictgoal.items())
-            #self.dictgoal = dict((key, values) for key, values in self.dictbase.items())
             self.dictgoal['time_glob'] = self.time
             goaldb.insert_goal(self.dictgoal)
             return self.dictgoal

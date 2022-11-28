@@ -3,6 +3,7 @@ import tkinter.messagebox
 from tkinter import ttk
 from adminblocks import Blocks
 import adminblocks
+from activity import Activity
 from engine import Computing
 import globaldb
 from globaldb import UsingDB
@@ -17,14 +18,7 @@ class PickGAApp(tk.Frame):
     
     def __init__(self, master):
         super().__init__(master)
-        self.rowpart = 4
-        self.dictart_int = {}
-        self.dictean_int = {}
-        self.artgoal_input = {}
-        self.eangoal_input = {}
-        self.get_dictglobalpick = {}
-        
-        self.dictblockpickerout = {}
+
         self.root = master
         #self.root = tk.Tk()
         self.root.title("GOAT Of GA (alpha)")
@@ -96,7 +90,7 @@ class PickGAApp(tk.Frame):
         self.validblock_btn["state"]=tk.DISABLED
 
     def ready(self):
-        self.task_widget(adminblocks.mainlistblock)
+        Activity(self.activity).task_widget(adminblocks.mainlistblock)
 
     def selecttab(self, tab):
         self.tab = tab

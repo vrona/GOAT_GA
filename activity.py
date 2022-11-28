@@ -14,6 +14,14 @@ class Activity():
     def __init__(self, master):
 
         self.master = master
+        self.rowpart = 4
+        self.dictart_int = {}
+        self.dictean_int = {}
+        self.artgoal_input = {}
+        self.eangoal_input = {}
+        self.get_dictglobalpick = {}
+        
+        self.dictblockpickerout = {}
 
     def task_widget(self, lsofblock):
         
@@ -174,7 +182,7 @@ class Activity():
         pdb.insert_gpick(self.get_dictglobalpick)
 
         engindb.weightnratio(self.get_dictglobalpick)
-        engindb.goal(self.get_dictglobalpick, self.admin)
+        engindb.goal(self.get_dictglobalpick)
 
         #pdb.insert_poly(self.timerecord, self.totalpicker_text.get(), , )
             
