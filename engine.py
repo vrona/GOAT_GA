@@ -131,7 +131,11 @@ class Computing:
             goaldb.insert_goal(self.dictgoal)
             return self.dictgoal
         
+    def delta_prod(self):
+        self.dfdelta = globaldf.drop(columns=['total_pickers'], axis=1)
 
+        self.lsdelta_col = list(self.dfdelta.columns)
+        print(self.lsdelta_col)
     # def insert_capatheo(self, dictcapat):
     #     self.dictcapat = dictcapat
     #     self.placeholder = ','.join(['?'] * len(self.dictcapat))

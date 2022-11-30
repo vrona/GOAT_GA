@@ -180,6 +180,7 @@ class Activity():
 
         engindb.weightnratio(self.get_dictglobalpick)
         engindb.goal(self.get_dictglobalpick)
+        engindb.delta_prod()
 
         #pdb.insert_poly(self.timerecord, self.totalpicker_text.get(), , )
             

@@ -4,6 +4,7 @@ lsartean = []
 ls_goal_g = []
 ls_w_artean = []
 ls_capa_theoae = []
+ls_delta = []
 
 class CreationDB:
     def __init__(self, numofblock, db):
@@ -26,12 +27,14 @@ class CreationDB:
         sql_ent_g = []
         sql_w_ent = []
         sql_capa_theo = []
+        sql_delta = []
         self.numoblock = numofblock
         
         lsartean = ["artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_goal_g = ["goal_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["goal_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_w_artean = ["wartbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["weanbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["ratioaebck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_capa_theoae = ["capa_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["capa_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_delta = ls_capa_theoae = ["delta_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["delta_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
 
         for artean in lsartean:
             self.attribute = " ".join((artean, "INTEGER"))
@@ -49,6 +52,10 @@ class CreationDB:
             self.capa_attribute = " ".join((capa_ae, "FLOAT"))
             sql_capa_theo.append(self.capa_attribute)
 
+        for delta in ls_delta:
+            self.attribute_delta = " ".join((delta, "INTEGER"))
+            sql_delta.append(self.attribute_delta)
+
         self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
         self.corps = ", ".join((sql_ent))
         self.complete = self.entete+"id INTEGER PRIMARY KEY, time_glob REAL"+", "+self.corps+", total_pickers INTEGER NOT NULL)" #"" + 
@@ -64,6 +71,10 @@ class CreationDB:
         self.capatheo_entete = "CREATE TABLE IF NOT EXISTS in_capatheo ("
         self.capatheo_corps = ", ".join((sql_capa_theo))
         self.capatheo_complete = self.capatheo_entete + self.capatheo_corps + ", capatheo_art_avg FLOAT, capatheo_ean_avg FLOAT)"
+
+        self.entete_delta = "CREATE TABLE IF NOT EXISTS delta_table ("
+        self.corps_delta = ", ".join((sql_delta))
+        self.complete_delta = self.entete_delta+"delta_time REAL PRIMARY KEY"+", "+self.corps_delta+")"
         
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
@@ -71,6 +82,7 @@ class CreationDB:
         self.cur.execute(self.complete_g)
         self.cur.execute(self.w_complete)
         self.cur.execute(self.capatheo_complete)
+        self.cur.execute(self.complete_delta)
         
         # do not delete : global list of art. ean used in backbone.add_arteanpik() 
         lsartean.insert(0, "time_glob")
