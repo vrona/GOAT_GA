@@ -30,7 +30,6 @@ class Activity():
         self.totalpicker_text = tk.IntVar()
 
         # BLOCKS PART
-        
         self._block = tk.Label(self.master, text='BLOCKS', justify='center', font=('bold', 20), pady=10)
         self._block.grid(row=0, column=4, )
 
@@ -74,7 +73,6 @@ class Activity():
                 meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=self.rowpart+6, column=6)
 
         # SEPARATOR PART
-        
         self.seppoly1 = ttk.Separator(self.master, bootstyle="info")
         self.seppoly2 = ttk.Separator(self.master, bootstyle="info")
         self.seppoly1.grid(row=self.rowpart+4, column=1, sticky="nsew", rowspan=2, columnspan=1)
@@ -133,7 +131,6 @@ class Activity():
         self.theorytopick.delete(0, tk.END)
         self.autohour()
         for self.block_id in range(1, block_num +1):
-        
         
         #self.dictblockpickerout[self.block_id].delete(0, tk.END)
         #self.totalpickerout.delete(0, tk.END)

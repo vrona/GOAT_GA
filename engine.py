@@ -147,21 +147,12 @@ class Dispatch():
         pass
 
     """
-    TOTAL TO PICK
-    - Sum Function:
-    Sum of articles to pick
-    Sum of ean to pick
-
     TOTAL CAPACITIF
     Total picker * capacitif goal/h * number of hours
 
     TOTAL PICKED
     Sum of articles picked up
     Sum of ean picked up
-
-    WEIGHTS DISTRIBUTION
-    Block real art / total articles to pick
-    Block real ean / total ean to pick
 
     PICKERS DISTRIBUTION
     Total Picker * Ean weights

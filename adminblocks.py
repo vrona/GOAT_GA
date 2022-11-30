@@ -18,7 +18,9 @@ class Blocks(tk.Frame):
     def __init__(self, master):
 
         self.master = master
-
+        self.index_selec = []
+        self.index_name = []
+        self.dicts_select = {}
         self.target_input = tk.IntVar()
         self.percent_input = tk.IntVar()
         self.blocdataframe()
@@ -51,14 +53,14 @@ class Blocks(tk.Frame):
         
         self.listblocktitle = Label(self.master, text="Liste de Blocks", font=('bold', 16)) #, padding=15
         self.listblocktitle.grid(row=3, column=0)
-        self.blocks_list = tk.Listbox(self.master, height=10, width=13, font=18) #, selectmode= "multiple"
+        self.blocks_list = tk.Listbox(self.master, selectmode= "multiple", height=10, width=13, font=18) #, 
         self.blocks_list.place(x=10,y=75) #padx=20, rowspan=3, columnspan=2 grid(row=4, column=1, pady=15)  #
 
         # Add Remove Blocks
         self.blocks_label = Label(self.master, text="Nom Block", justify='center', font=('bold', 14))
         self.blocks_label.grid(row=3, column=2) #.place(x=203,y=165) #
         
-        self.blocks_entry = tk.Entry(self.master, textvariable=self.blocks_text, justify='center')
+        self.blocks_entry = tk.Entry(self.master, textvariable=self.blocks_text,justify='center')
         self.blocks_entry.grid(row=4, column=2)
 
         self.add_btn = Button(self.master, text="Ajouter Block", bootstyle="success", width=12, command=self.add_block)
@@ -170,10 +172,16 @@ class Blocks(tk.Frame):
             tkinter.messagebox.showerror(
                 "Champs requis", "Selectionnez un nom de la liste, svp")
             return
+                    
         else:
-            self.indexit = mainlistblock.index(self.blocks_text.get())
-            mainlistblock.pop(self.indexit)
-            capatheodict.pop(self.blocks_text.get())
+           
+            for key, value in self.dicts_select.items():
+
+                mainlistblock.remove(value)
+                capatheodict.pop(value)
+                self.index_selec.remove(key)
+    
+            self.dicts_select.clear()
 
         self.clear_text()
         self.show_block()
@@ -222,17 +230,27 @@ class Blocks(tk.Frame):
         self.newblocks_entry.delete(0, tk.END)
 
     def select_item(self, event):
-
+        
         try:
             # Get index
-            index = self.blocks_list.curselection()
+            #index = self.blocks_list.curselection()
+            self.index_selec = list(self.blocks_list.curselection())
+
+            self.dicts_select = dict(zip(self.index_selec, list(mainlistblock[x] for x in self.index_selec)))
+            #print(x for x in self.index_selec)
+            #self.index_name.append(index)
+        
+            for idx in self.index_selec:
+        
             # Get selected item
-            self.selected_item = self.blocks_list.get(index)
+                self.selected_item = self.blocks_list.get(idx)
 
             # Add text to entries
-            self.blocks_entry.delete(0, tk.END)
-            self.blocks_entry.insert(tk.END, self.selected_item)
-            self.oldblocks_entry.delete(0, tk.END)
-            self.oldblocks_entry.insert(tk.END, self.selected_item)
+                self.blocks_entry.delete(0, tk.END)
+                self.blocks_entry.insert(tk.END, self.selected_item)
+                self.oldblocks_entry.delete(0, tk.END)
+                self.oldblocks_entry.insert(tk.END, self.selected_item)
+            # print(self.index_selec)
+            # print(self.index_name)
         except IndexError:
             pass
