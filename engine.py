@@ -8,7 +8,7 @@ from adminblocks import Blocks
 from datetime import datetime
 
 globaldf = pd.DataFrame() # dataframe of input art and ean
-
+goaldb = UsingDB("./database/goatdata.db")
 
 class Engine():
 
@@ -17,7 +17,6 @@ class Engine():
     #     self.conn = sqlite3.connect(db)
     #     self.cur = self.conn.cursor()
         pass
-        
 
     #def sumit(self, dictofnum):
     #def subit(self, goal, real):
@@ -29,11 +28,11 @@ class Engine():
     # def weights(self, dictofnum):
 
     def querygb_inputs(self):
-        #self.conn = 
 
         self.df = pd.read_sql_query("select * from in_globalpick", self.conn)
         print(self.df.head())
-        self.conn.close()
+        #self.conn.close()
+
 
 class Computing:
     def __init__(self, db, ):
@@ -100,7 +99,7 @@ class Computing:
 
 
     def goal(self, dictbase):
-        goaldb = UsingDB("./database/goatdata.db")
+        
         self.goalkey = globaldb.ls_goal_g # list of futur keys' dict
 
         self.dictbase = dictbase
@@ -132,10 +131,18 @@ class Computing:
             return self.dictgoal
         
     def delta_prod(self):
-        self.dfdelta = globaldf.drop(columns=['total_pickers'], axis=1)
+        self.dfbase = globaldf.drop(columns=['total_pickers'], axis=1)
 
-        self.lsdelta_col = list(self.dfdelta.columns)
-        print(self.lsdelta_col)
+        self.lsdelta_col = list(self.dfbase.columns)
+
+        self.sql_query_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn)
+        #self.sql_query_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY time_glob DESC LIMIT 1", self.conn)
+        
+        self.dfdelta = pd.DataFrame(self.sql_query_delta)
+        for i, j in zip(self.dfbase, self.dfdelta): #DEAD DEAD DEAD
+            if self.dfbase.iloc[-2][i]
+            self.delta = self.dfbase.iloc[-2][i] - self.dfbase.iloc[-1][i]
+            print(self.delta, j)
     # def insert_capatheo(self, dictcapat):
     #     self.dictcapat = dictcapat
     #     self.placeholder = ','.join(['?'] * len(self.dictcapat))
