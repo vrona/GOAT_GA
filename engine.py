@@ -131,18 +131,30 @@ class Computing:
             return self.dictgoal
         
     def delta_prod(self):
-        self.dfbase = globaldf.drop(columns=['total_pickers'], axis=1)
+        self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn)
+
+        self.veryglobal = pd.DataFrame(self.sql_query)
+        self.dfbase = self.veryglobal.drop(columns=['total_pickers'], axis=1)
+        # PASSER STR TIME EN DATE TIME TYPE
 
         self.lsdelta_col = list(self.dfbase.columns)
 
         self.sql_query_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn)
-        #self.sql_query_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY time_glob DESC LIMIT 1", self.conn)
+       
         
         self.dfdelta = pd.DataFrame(self.sql_query_delta)
-        for i, j in zip(self.dfbase, self.dfdelta): #DEAD DEAD DEAD
-            if self.dfbase.iloc[-2][i]
-            self.delta = self.dfbase.iloc[-2][i] - self.dfbase.iloc[-1][i]
+        print(self.dfbase)
+        #for i in self.dfbase.columns: #DEAD DEAD DEAD
+        #print(self.dfbase.iloc[0]["time_glob"])
+        print(len(self.dfbase.index))
+        if len(self.dfbase.index) > 1:
+            print(self.dfbase.diff(axis=0)) #set_index("time_glob")
+                
+        """for i, j in zip(self.dfbase, self.dfdelta): #DEAD DEAD DEAD
+            if self.dfbase.iloc[-2][i]:
+                self.delta = self.dfbase.iloc[-2][i] - self.dfbase.iloc[-1][i]
             print(self.delta, j)
+            """
     # def insert_capatheo(self, dictcapat):
     #     self.dictcapat = dictcapat
     #     self.placeholder = ','.join(['?'] * len(self.dictcapat))
