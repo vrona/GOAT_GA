@@ -135,26 +135,16 @@ class Computing:
 
         self.veryglobal = pd.DataFrame(self.sql_query)
         self.dfbase = self.veryglobal.drop(columns=['total_pickers'], axis=1)
-        # PASSER STR TIME EN DATE TIME TYPE
 
+        self.dfbase['time_glob'] = pd.to_datetime(self.dfbase['time_glob'])
         self.lsdelta_col = list(self.dfbase.columns)
 
-        self.sql_query_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn)
-       
-        
-        self.dfdelta = pd.DataFrame(self.sql_query_delta)
-        print(self.dfbase)
-        #for i in self.dfbase.columns: #DEAD DEAD DEAD
-        #print(self.dfbase.iloc[0]["time_glob"])
-        print(len(self.dfbase.index))
-        if len(self.dfbase.index) > 1:
-            print(self.dfbase.diff(axis=0)) #set_index("time_glob")
+
+        #print(self.dfbase.diff(axis=0))
+
+        goaldb.insert_delta(self.dfbase.diff(axis=0))
                 
-        """for i, j in zip(self.dfbase, self.dfdelta): #DEAD DEAD DEAD
-            if self.dfbase.iloc[-2][i]:
-                self.delta = self.dfbase.iloc[-2][i] - self.dfbase.iloc[-1][i]
-            print(self.delta, j)
-            """
+
     # def insert_capatheo(self, dictcapat):
     #     self.dictcapat = dictcapat
     #     self.placeholder = ','.join(['?'] * len(self.dictcapat))

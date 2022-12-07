@@ -1,4 +1,5 @@
 import sqlite3
+import pandas as pd
 
 lsartean = []
 ls_goal_g = []
@@ -160,6 +161,29 @@ class UsingDB:
 
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
+
+    def insert_delta(self, thedataframe):
+
+        self.sql_query_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn)
+               
+        self.dfdelta = pd.DataFrame(self.sql_query_delta)
+
+        self.data = thedataframe.drop(columns=['id'], axis=1)
+        self.cols = ','.join(self.dfdelta.columns)
+        
+        self.bang = ','.join(['?'] * len(self.dfdelta.columns))
+        print("DATABASE SIDE")
+        print(self.data)
+        print("columns:", self.cols)
+        print("columns:", self.bang)
+
+        
+        for i, row in self.data.iterrows():
+            self.sqlf = "INSERT INTO %s (%s) VALUES (%s)" % ('delta_table', self.cols, self.bang)
+
+            print(self.sqlf)
+            self.cur.execute(self.sqlf, tuple(row))
+            self.conn.commit()
 
     def insert_goal(self, dictbase):
         self.dictbase = dictbase
