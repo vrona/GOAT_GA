@@ -1,5 +1,6 @@
 import sqlite3
 import pandas as pd
+import numpy as np
 
 lsartean = []
 ls_goal_g = []
@@ -149,9 +150,11 @@ class UsingDB:
         self.cur.execute("INSERT INTO capa VALUES (?)",(capatheo_h,))
         self.conn.commit()
 
+
     def insert_poly(self, time_glob, total_picker_onsite):
         self.cur.execute("INSERT INTO poly_out VALUES (?,?)",(time_glob, total_picker_onsite))
         self.conn.commit()
+
 
     def insert_gpick(self, dictbase):
         self.dictbase = dictbase
@@ -162,28 +165,35 @@ class UsingDB:
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
 
+
     def insert_delta(self, thedataframe):
 
         self.sql_query_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn)
                
         self.dfdelta = pd.DataFrame(self.sql_query_delta)
 
-        self.data = thedataframe.drop(columns=['id'], axis=1)
+        self.data = thedataframe.drop(columns=['id'], axis=1)        
         self.cols = ','.join(self.dfdelta.columns)
-        
         self.bang = ','.join(['?'] * len(self.dfdelta.columns))
-        print("DATABASE SIDE")
-        print(self.data)
-        print("columns:", self.cols)
-        print("columns:", self.bang)
-
         
-        for i, row in self.data.iterrows():
-            self.sqlf = "INSERT INTO %s (%s) VALUES (%s)" % ('delta_table', self.cols, self.bang)
+        print("DATABASE SIDE")      
 
-            print(self.sqlf)
-            self.cur.execute(self.sqlf, tuple(row))
-            self.conn.commit()
+        self.sqlf = "INSERT INTO %s (%s) VALUES (%s)" % ('delta_table', self.cols, self.bang)
+
+        print("here:", self.sqlf)
+        self.testlist = list(self.data.iloc[-1][col] for col in self.data.columns)
+        print("secondes:", self.testlist[0].seconds)
+        self.second = self.testlist[0].seconds
+        self.minute = (self.second//60)%60
+        print(type(self.testlist[0]), self.minute)
+        self.testlist[0] = self.minute
+        #for i in range(len(self.testlist)):
+        #    self.testlist[i] = np.uint32(self.testlist[i]).item()
+        #self.testlist[-2], self.testlist[-1] = np.uint32(self.testlist[-2]).item(), np.uint32(self.testlist[-1]).item()
+        print(type(self.testlist[-2]), type(self.testlist[-1]), self.testlist[-2], self.testlist[-1])
+        self.cur.execute(self.sqlf, tuple(self.testlist))
+        self.conn.commit()
+
 
     def insert_goal(self, dictbase):
         self.dictbase = dictbase

@@ -139,11 +139,8 @@ class Computing:
         self.dfbase['time_glob'] = pd.to_datetime(self.dfbase['time_glob'])
         self.lsdelta_col = list(self.dfbase.columns)
 
-
-        #print(self.dfbase.diff(axis=0))
-
-        goaldb.insert_delta(self.dfbase.diff(axis=0))
-                
+        if len(self.dfbase) > 1:
+            goaldb.insert_delta(self.dfbase.diff(axis=0))
 
     # def insert_capatheo(self, dictcapat):
     #     self.dictcapat = dictcapat
