@@ -50,8 +50,36 @@ class Activity():
         self.capagoal = tk.Label(self.master, text='Capacitif Goal', justify='right',font=("bold", 13), pady=10)
         self.capagoal.grid(row=self.rowpart+5, column=1)
 
-
         # POLY PART
+        #self.poly_widget()
+
+
+        # SEPARATOR & PICKERS PARTS
+        #self.sep_pickers_widget()
+
+        # TOTALS PART
+        self.totrow = 21
+        self._totals = tk.Label(self.master, text='TOTALS', justify='center', font=('bold', 16), pady=10)
+        self._totals.grid(row=self.totrow, column=4)
+
+        self.totalprelev = tk.Label(self.master, text='Total \nPrelev', font=("bold", 13), pady=10)
+        self.totalprelev.grid(row=self.totrow+1, column=3)
+
+        self.deltacap = tk.Label(self.master, text='Delta \nCapacitif', font=("bold", 13), pady=10)
+        self.deltacap.grid(row=self.totrow+1, column=4)
+
+        self.totalpredprlv = tk.Label(self.master, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
+        self.totalpredprlv.grid(row=self.totrow+1, column=5)
+
+        self.autoblock(self.lsofblock)
+
+        self.totalpart()
+
+        # Navigation Button
+        self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2)).grid(row=26, column=12, pady=10)
+
+    def poly_widget(self):
+        
         self._poly = tk.Label(self.master, text='POLY', justify='center', font=('bold', 20), pady=10)
         self._poly.grid(row=self.rowpart+4, column=4)
 
@@ -74,6 +102,7 @@ class Activity():
         Meter(master=self.master, metersize=110, padding=20, amountused=-2, labeltext="Poly",
                 meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=self.rowpart+6, column=6)
 
+    def sep_pickers_widget(self):
         # SEPARATOR PART
         self.seppoly1 = ttk.Separator(self.master, bootstyle="info")
         self.seppoly2 = ttk.Separator(self.master, bootstyle="info")
@@ -87,27 +116,6 @@ class Activity():
 
         self.pickertitle = tk.Label(self.master, text='PICKERS', font=("bold", 20), pady=10)
         self.pickertitle.grid(row=self.picker_row, column=4)
-
-        # TOTALS PART
-        self.totrow = 21
-        self._totals = tk.Label(self.master, text='TOTALS', justify='center', font=('bold', 16), pady=10)
-        self._totals.grid(row=self.totrow, column=4)
-
-        self.totalprelev = tk.Label(self.master, text='Total \nPrelev', font=("bold", 13), pady=10)
-        self.totalprelev.grid(row=self.totrow+1, column=3)
-
-        self.deltacap = tk.Label(self.master, text='Delta \nCapacitif', font=("bold", 13), pady=10)
-        self.deltacap.grid(row=self.totrow+1, column=4)
-
-        self.totalpredprlv = tk.Label(self.master, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
-        self.totalpredprlv.grid(row=self.totrow+1, column=5)
-
-        self.autoblock(self.lsofblock)
-
-        self.totalpart()
-
-        # Navigation Button
-        self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2)).grid(row=26, column=12, pady=10)
 
     def input_art_ean(self):
 
@@ -166,16 +174,16 @@ class Activity():
             self.part_ean_input[self.lsofblock.index(nblock)] = tk.Entry(self.master, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_ean_input[self.lsofblock.index(nblock)].grid(row=3, column=self.lsofblock.index(nblock)+2)
 
-            self.artgoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=5)#, textvariable=self.dictart_goal[self.lsofblock.index(nblock)], state=tk.DISABLED)
+            self.artgoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)#, textvariable=self.dictart_goal[self.lsofblock.index(nblock)], state=tk.DISABLED)
             self.artgoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+13, column=self.lsofblock.index(nblock)+2)
 
-            self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=5) #, textvariable=self.dictean_goal[self.lsofblock.index(nblock)]state=tk.DISABLED)
+            self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10) #, textvariable=self.dictean_goal[self.lsofblock.index(nblock)]state=tk.DISABLED)
             self.eangoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+14, column=self.lsofblock.index(nblock)+2)
 
-            self.capatheo_input = tk.Listbox(self.master, justify="center", height=1, width=5) # textvariable=adminblocks.capatheodict[nblock], 
+            self.capatheo_input = tk.Listbox(self.master, justify="center", height=1, width=10) # textvariable=adminblocks.capatheodict[nblock], 
             self.capatheo_input.grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
 
-            self.capagoal_input = tk.Listbox(self.master, justify="center", height=1, width=5) # textvariable=adminblocks.capatheodict[nblock], 
+            self.capagoal_input = tk.Listbox(self.master, justify="center", height=1, width=10) # textvariable=adminblocks.capatheodict[nblock], 
             self.capagoal_input.grid(row=self.rowpart+5, column=self.lsofblock.index(nblock)+2)
 
             Meter(master=self.master, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
@@ -192,11 +200,11 @@ class Activity():
 
     def totalpart(self):
 
-        self.totalprelev_list = tk.Listbox(self.master, height=2, width=10, justify="center")
+        self.totalprelev_list = tk.Listbox(self.master, height=1, width=10, justify="center")
         self.totalprelev_list.grid(row=25, column=3)
 
-        self.deltacap_list = tk.Listbox(self.master, height=2, width=10, justify="center")
+        self.deltacap_list = tk.Listbox(self.master, height=1, width=10, justify="center")
         self.deltacap_list.grid(row=25, column=4)
         
-        self.totalpredprlv_list = tk.Listbox(self.master, height=2, width=10, justify="center")
+        self.totalpredprlv_list = tk.Listbox(self.master, height=1, width=10, justify="center")
         self.totalpredprlv_list.grid(row=25, column=5)
