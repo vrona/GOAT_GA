@@ -125,33 +125,6 @@ class Activity():
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.hour_row, column=adminblocks.mainlistblock.index(nblock)+2)
             
             self.totalpickerout.grid(row=self.hour_row, column=adminblocks.mainlistblock.index(adminblocks.mainlistblock[-1])+4)
-
-    def get_timepickeroutput(self, block_num):
-        pdb = UsingDB("./database/goatdata.db")
-        self.theorytopick.delete(0, tk.END)
-        self.autohour()
-        for self.block_id in range(1, block_num +1):
-        
-        #self.dictblockpickerout[self.block_id].delete(0, tk.END)
-        #self.totalpickerout.delete(0, tk.END)
-        # fetch hour
-            for row in pdb.fetch_hourout():
-                self.hourout.insert(tk.END, row)
-            # fetch picker
-            for row in pdb.fetch_picker(self.block_id):
-                self.dictblockpickerout[self.block_id].insert(tk.END, row)
-            # fetch total
-            for row in pdb.fetch_total_picker():
-                self.totalpickerout.insert(tk.END, row)
-                self.theorytopick.insert(tk.END, row)
-
-    def get_goal(self):
-
-        pdb = UsingDB("./database/goatdata.db")
-
-        for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
-            self.artgoal_input[ba].insert(tk.END, rowa)
-            self.eangoal_input[ba].insert(tk.END, rowe)
   
 
     def add_arteanpik(self):
@@ -190,8 +163,10 @@ class Activity():
         #     self.dictblockpickerout[self.lsofblock.index(nblock)].insert(self.dictart_int[self.lsofblock.index(nblock)].get(), self.dictean_int[self.lsofblock.index(nblock)].get(),
         #             self.totalpicker_text.get())
             #self.clear_text(nblock)
-        self.get_goal()
-        #self.get_timepickeroutput(len(self.dkey)-2)
+        for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
+            self.artgoal_input[ba].insert(tk.END, rowa)
+            self.eangoal_input[ba].insert(tk.END, rowe)
+    
 
     def autoblock(self, lsofblock):
 

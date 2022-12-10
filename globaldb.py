@@ -146,16 +146,6 @@ class UsingDB:
         return row
 
 
-    def insert_capatheo(self, capatheo_h):
-        self.cur.execute("INSERT INTO capa VALUES (?)",(capatheo_h,))
-        self.conn.commit()
-
-
-    def insert_poly(self, time_glob, total_picker_onsite):
-        self.cur.execute("INSERT INTO poly_out VALUES (?,?)",(time_glob, total_picker_onsite))
-        self.conn.commit()
-
-
     def insert_gpick(self, dictbase):
         self.dictbase = dictbase
         self.placeholder = ','.join(['?'] * len(self.dictbase))
@@ -165,7 +155,11 @@ class UsingDB:
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
 
-
+    """
+    @param self: nothing
+    @param thedataframe: pandas dataframe with delta time already computed 
+    @execute insertion: into 'delta_table' sql table
+    """
     def insert_delta(self, thedataframe):
 
         self.sql_query_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn)
@@ -183,7 +177,7 @@ class UsingDB:
         
         self.second = self.testlist[0].seconds
         #self.minute = (self.second//60)%60
-        print("secondes:", self.testlist[0].seconds)
+
         self.testlist[0] = self.second
         for i in range(len(self.testlist)):
             self.testlist[i] = int(self.testlist[i])
@@ -202,13 +196,7 @@ class UsingDB:
         self.conn.commit()
 
 
-    def insert_totals_out(self, id, timeofrecord, total_prelev, delta_capacitif, total_predic, capareal_h, capaavg):
-        self.cur.execute("INSERT INTO totals_out VALUES (?,?,?,?,?,?,?)",(id, timeofrecord, total_prelev, delta_capacitif, total_predic, capareal_h, capaavg))
-        self.conn.commit()
-
-    def insert_block_picker_out(self, id, timeofrecord, block_id_origin, block_id_landing, picker):
-        self.cur.execute("INSERT INTO block_picker_out VALUES (?,?,?,?,?)",(id, timeofrecord, block_id_origin, block_id_landing, picker))
-        self.conn.commit()
+   
 
     """
     def remove(self, blocks_in):

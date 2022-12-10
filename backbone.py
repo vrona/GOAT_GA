@@ -1,17 +1,12 @@
 import tkinter as tk
-import tkinter.messagebox
 from tkinter import ttk
 from adminblocks import Blocks
 import adminblocks
 from activity import Activity
-from engine import Computing
-import globaldb
-from globaldb import UsingDB
 from PIL import Image, ImageTk
-from gauge import Meter
 from ttkbootstrap import Style
 from ttkbootstrap.constants import *
-import datetime
+
 import os
 
 class PickGAApp(tk.Frame):

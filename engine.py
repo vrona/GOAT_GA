@@ -8,7 +8,6 @@ from adminblocks import Blocks
 from datetime import datetime
 
 globaldf = pd.DataFrame() # dataframe of input art and ean
-goaldb = UsingDB("./database/goatdata.db")
 
 class Engine():
 
@@ -99,7 +98,7 @@ class Computing:
 
 
     def goal(self, dictbase):
-        
+        goaldb = UsingDB("./database/goatdata.db")
         self.goalkey = globaldb.ls_goal_g # list of futur keys' dict
 
         self.dictbase = dictbase
@@ -131,6 +130,7 @@ class Computing:
             return self.dictgoal
         
     def delta_prod(self):
+        goaldb = UsingDB("./database/goatdata.db")
         self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn)
 
         self.veryglobal = pd.DataFrame(self.sql_query)
