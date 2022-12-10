@@ -176,21 +176,18 @@ class UsingDB:
         self.cols = ','.join(self.dfdelta.columns)
         self.bang = ','.join(['?'] * len(self.dfdelta.columns))
         
-        print("DATABASE SIDE")      
+        # Watch out OR IGNORE HERE in case of non recording of same amount of delta time in seconds
+        self.sqlf = "INSERT OR IGNORE INTO %s (%s) VALUES (%s)" % ('delta_table', self.cols, self.bang)
 
-        self.sqlf = "INSERT INTO %s (%s) VALUES (%s)" % ('delta_table', self.cols, self.bang)
-
-        print("here:", self.sqlf)
         self.testlist = list(self.data.iloc[-1][col] for col in self.data.columns)
-        print("secondes:", self.testlist[0].seconds)
+        
         self.second = self.testlist[0].seconds
-        self.minute = (self.second//60)%60
-        print(type(self.testlist[0]), self.minute)
-        self.testlist[0] = self.minute
-        #for i in range(len(self.testlist)):
-        #    self.testlist[i] = np.uint32(self.testlist[i]).item()
-        #self.testlist[-2], self.testlist[-1] = np.uint32(self.testlist[-2]).item(), np.uint32(self.testlist[-1]).item()
-        print(type(self.testlist[-2]), type(self.testlist[-1]), self.testlist[-2], self.testlist[-1])
+        #self.minute = (self.second//60)%60
+        print("secondes:", self.testlist[0].seconds)
+        self.testlist[0] = self.second
+        for i in range(len(self.testlist)):
+            self.testlist[i] = int(self.testlist[i])
+        
         self.cur.execute(self.sqlf, tuple(self.testlist))
         self.conn.commit()
 
