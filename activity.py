@@ -47,6 +47,9 @@ class Activity():
         self.capatheo = tk.Label(self.master, text='Capacitif Theorique', justify='right',font=("bold", 13), pady=10)
         self.capatheo.grid(row=self.rowpart+3, column=1)
 
+        self.capagoal = tk.Label(self.master, text='Capacitif Goal', justify='right',font=("bold", 13), pady=10)
+        self.capagoal.grid(row=self.rowpart+5, column=1)
+
 
         # POLY PART
         self._poly = tk.Label(self.master, text='POLY', justify='center', font=('bold', 20), pady=10)
@@ -163,14 +166,17 @@ class Activity():
             self.part_ean_input[self.lsofblock.index(nblock)] = tk.Entry(self.master, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_ean_input[self.lsofblock.index(nblock)].grid(row=3, column=self.lsofblock.index(nblock)+2)
 
-            self.artgoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center",  height=1, width=5)#, textvariable=self.dictart_goal[self.lsofblock.index(nblock)], state=tk.DISABLED)
+            self.artgoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=5)#, textvariable=self.dictart_goal[self.lsofblock.index(nblock)], state=tk.DISABLED)
             self.artgoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+13, column=self.lsofblock.index(nblock)+2)
 
-            self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center",  height=1, width=5) #, textvariable=self.dictean_goal[self.lsofblock.index(nblock)]state=tk.DISABLED)
+            self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=5) #, textvariable=self.dictean_goal[self.lsofblock.index(nblock)]state=tk.DISABLED)
             self.eangoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+14, column=self.lsofblock.index(nblock)+2)
 
-            self.capatheo_input = tk.Entry(self.master, textvariable=adminblocks.capatheodict[nblock], justify="center", width=10)
+            self.capatheo_input = tk.Listbox(self.master, justify="center", height=1, width=5) # textvariable=adminblocks.capatheodict[nblock], 
             self.capatheo_input.grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
+
+            self.capagoal_input = tk.Listbox(self.master, justify="center", height=1, width=5) # textvariable=adminblocks.capatheodict[nblock], 
+            self.capagoal_input.grid(row=self.rowpart+5, column=self.lsofblock.index(nblock)+2)
 
             Meter(master=self.master, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
                  meterstyle='success.TLabel').grid(row=22, column=self.lsofblock.index(nblock)+2)

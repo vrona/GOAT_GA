@@ -140,7 +140,6 @@ class Computing:
         if len(self.dfbase) > 1:
             goaldb.insert_delta(self.dfbase.diff(axis=0))
 
-
 class Dispatch():
 
     def __init__(self):
