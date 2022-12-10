@@ -19,6 +19,7 @@ class Activity():
         self.artgoal_input = {}
         self.eangoal_input = {}
         self.get_dictglobalpick = {}
+        self.capatheo_input = {}
         
         self.dictblockpickerout = {}
 
@@ -49,6 +50,8 @@ class Activity():
 
         self.capagoal = tk.Label(self.master, text='Capacitif Goal', justify='right',font=("bold", 13), pady=10)
         self.capagoal.grid(row=self.rowpart+5, column=1)
+
+        
 
         # POLY PART
         #self.poly_widget()
@@ -149,12 +152,17 @@ class Activity():
         for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
             self.artgoal_input[ba].insert(tk.END, rowa)
             self.eangoal_input[ba].insert(tk.END, rowe)
-    
+
+        # Displaying the capatheo
+        for k, val in adminblocks.capatheodict.items():
+            self.capatheo_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
+
+
     def autoblock(self, lsofblock):
 
         self.part_art_input = {}
         self.part_ean_input = {}
-
+        
         self.capa_input = {}
         self.lsofblock = lsofblock
         
@@ -180,10 +188,10 @@ class Activity():
             self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10) #, textvariable=self.dictean_goal[self.lsofblock.index(nblock)]state=tk.DISABLED)
             self.eangoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+14, column=self.lsofblock.index(nblock)+2)
 
-            self.capatheo_input = tk.Listbox(self.master, justify="center", height=1, width=10) # textvariable=adminblocks.capatheodict[nblock], 
-            self.capatheo_input.grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
+            self.capatheo_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
+            self.capatheo_input[self.lsofblock.index(nblock)].grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
 
-            self.capagoal_input = tk.Listbox(self.master, justify="center", height=1, width=10) # textvariable=adminblocks.capatheodict[nblock], 
+            self.capagoal_input = tk.Listbox(self.master, justify="center", height=1, width=10) # textvariable=adminblocks.capatheodict[nblock]
             self.capagoal_input.grid(row=self.rowpart+5, column=self.lsofblock.index(nblock)+2)
 
             Meter(master=self.master, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
