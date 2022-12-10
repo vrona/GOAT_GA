@@ -1,7 +1,6 @@
 import tkinter as tk
 import tkinter.messagebox
 from tkinter import ttk
-from adminblocks import Blocks
 import adminblocks
 from engine import Computing
 import globaldb
@@ -107,27 +106,7 @@ class Activity():
         # Navigation Button
         self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2)).grid(row=26, column=12, pady=10)
 
-    def autohour(self):
-        
-        # mise à jour automatique après validation Bouton des chiffres: outout -> hourout, dictblockpickerout, totalpickerout
-        #self.lines = [5,7,9,11,13,15,17,19]
-
-        self.hour_row = 9 # to merge
-        self.hourname = tk.Label(self.master, text="H", font=("bold", 13), padx=40, pady=10)
-        self.hourout = tk.Listbox(self.master, height=1, width=25, justify="center")
-        self.totalpickerout = tk.Listbox(self.master, height=1, width=5, justify="center")
-        self.hourname.grid(row=self.hour_row, column=0)
-        self.hourout.grid(row=self.hour_row, column=1)
-        
-        for nblock in adminblocks.mainlistblock:
-            
-            self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=1, width=5, justify="center")
-            self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.hour_row, column=adminblocks.mainlistblock.index(nblock)+2)
-            
-            self.totalpickerout.grid(row=self.hour_row, column=adminblocks.mainlistblock.index(adminblocks.mainlistblock[-1])+4)
-  
-
-    def add_arteanpik(self):
+    def input_art_ean(self):
 
         self.dkey = globaldb.lsartean
         limit = len(self.dkey) //2 -1 # getting the frontier between art and ean      
@@ -155,19 +134,11 @@ class Activity():
         engindb.goal(self.get_dictglobalpick)
         engindb.delta_prod()
 
-        #pdb.insert_poly(self.timerecord, self.totalpicker_text.get(), , )
-            
-        # Insert into list
-        #self.hourout.insert(self.get_dictglobalpick['time_glob'])
-
-        #     self.dictblockpickerout[self.lsofblock.index(nblock)].insert(self.dictart_int[self.lsofblock.index(nblock)].get(), self.dictean_int[self.lsofblock.index(nblock)].get(),
-        #             self.totalpicker_text.get())
-            #self.clear_text(nblock)
+        # Displaying the goals
         for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
             self.artgoal_input[ba].insert(tk.END, rowa)
             self.eangoal_input[ba].insert(tk.END, rowe)
     
-
     def autoblock(self, lsofblock):
 
         self.part_art_input = {}
@@ -210,7 +181,7 @@ class Activity():
             self.totalpicker_input = tk.Entry(self.master, textvariable=self.totalpicker_text, justify="center", width=10)
             self.totalpicker_input.grid(row=2, column=self.lsofblock.index(self.lsofblock[-1])+4)
 
-            self.buttondata = ttk.Button(self.master, text="GOAT Power", bootstyle="success", command=self.add_arteanpik)
+            self.buttondata = ttk.Button(self.master, text="GOAT Power", bootstyle="success", command=self.input_art_ean)
             self.buttondata.grid(row=3, column=self.lsofblock.index(self.lsofblock[-1])+5 , padx=10)
 
     def totalpart(self):

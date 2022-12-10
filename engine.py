@@ -34,7 +34,7 @@ class Engine():
 
 
 class Computing:
-    def __init__(self, db, ):
+    def __init__(self, db):
 
         try:
             self.conn = sqlite3.connect(db)
@@ -42,7 +42,6 @@ class Computing:
         except Exception as e:
             print(f'An error occurred: {e}.')
             exit()
-
 
     def weightnratio(self, dictbase):
         """This function computes the weights of articles, eans and ration article/ean"""
@@ -96,7 +95,6 @@ class Computing:
         self.cur.execute(self.sqlwr, self.mytuple)
         self.conn.commit()
 
-
     def goal(self, dictbase):
         goaldb = UsingDB("./database/goatdata.db")
         self.goalkey = globaldb.ls_goal_g # list of futur keys' dict
@@ -142,14 +140,6 @@ class Computing:
         if len(self.dfbase) > 1:
             goaldb.insert_delta(self.dfbase.diff(axis=0))
 
-    # def insert_capatheo(self, dictcapat):
-    #     self.dictcapat = dictcapat
-    #     self.placeholder = ','.join(['?'] * len(self.dictcapat))
-    #     self.column = ', '.join(self.dictcapat.keys())
-    #     self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('in_capatheo', self.column, self.placeholder)
-        
-    #     self.cur.execute(self.sql, list(self.dictcapat.values()))
-    #     self.conn.commit()
 
 class Dispatch():
 
@@ -159,10 +149,6 @@ class Dispatch():
     """
     TOTAL CAPACITIF
     Total picker * capacitif goal/h * number of hours
-
-    TOTAL PICKED
-    Sum of articles picked up
-    Sum of ean picked up
 
     PICKERS DISTRIBUTION
     Total Picker * Ean weights

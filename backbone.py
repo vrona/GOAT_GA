@@ -116,7 +116,6 @@ class PickGAApp(tk.Frame):
         self.rights_text = tk.Label(self.credit, text = "Copyright © VRONA SAS\nAll rights reserved. \nLicense: XXX")
         self.rights_text.place(x=750, y=690)
 
-
     def notready(self):
         # Text
         self.text_intro = tk.Text(self.activity, height=25, font=30,width= 40)

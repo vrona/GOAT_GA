@@ -1,5 +1,13 @@
 
 """concerning engine"""
+# def insert_capatheo(self, dictcapat):
+#     self.dictcapat = dictcapat
+#     self.placeholder = ','.join(['?'] * len(self.dictcapat))
+#     self.column = ', '.join(self.dictcapat.keys())
+#     self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('in_capatheo', self.column, self.placeholder)
+    
+#     self.cur.execute(self.sql, list(self.dictcapat.values()))
+#     self.conn.commit()
 
 """concerning backbone"""
 
@@ -46,3 +54,31 @@ def get_timepickeroutput(self, block_num):
         for row in pdb.fetch_total_picker():
             self.totalpickerout.insert(tk.END, row)
             self.theorytopick.insert(tk.END, row)
+
+def autohour(self):
+        
+    # mise à jour automatique après validation Bouton des chiffres: outout -> hourout, dictblockpickerout, totalpickerout
+    #self.lines = [5,7,9,11,13,15,17,19]
+
+    self.hour_row = 9 # to merge
+    self.hourname = tk.Label(self.master, text="H", font=("bold", 13), padx=40, pady=10)
+    self.hourout = tk.Listbox(self.master, height=1, width=25, justify="center")
+    self.totalpickerout = tk.Listbox(self.master, height=1, width=5, justify="center")
+    self.hourname.grid(row=self.hour_row, column=0)
+    self.hourout.grid(row=self.hour_row, column=1)
+    
+    for nblock in adminblocks.mainlistblock:
+        
+        self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=1, width=5, justify="center")
+        self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.hour_row, column=adminblocks.mainlistblock.index(nblock)+2)
+        
+        self.totalpickerout.grid(row=self.hour_row, column=adminblocks.mainlistblock.index(adminblocks.mainlistblock[-1])+4)
+
+    #pdb.insert_poly(self.timerecord, self.totalpicker_text.get(), , )
+        
+    # Insert into list
+    #self.hourout.insert(self.get_dictglobalpick['time_glob'])
+
+    #     self.dictblockpickerout[self.lsofblock.index(nblock)].insert(self.dictart_int[self.lsofblock.index(nblock)].get(), self.dictean_int[self.lsofblock.index(nblock)].get(),
+    #             self.totalpicker_text.get())
+        #self.clear_text(nblock)
