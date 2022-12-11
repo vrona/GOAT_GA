@@ -122,7 +122,7 @@ class Computing:
             return self.dictgoal
 
         else:
-            self.dictgoal = dict(zip(self.goalkey, self.dictbase.values()))
+            self.dictgoal = dict(zip(self.goalkey, self.dictbase.values())) # RECORD THE 1ST AS BASED, THEN THE FOLLOWING IS THE DIFF WITH THE PREFIOUS LINE 1ST
             self.dictgoal['time_glob'] = self.time
             goaldb.insert_goal(self.dictgoal)
             return self.dictgoal
