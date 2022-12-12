@@ -1,10 +1,7 @@
-import pandas as pd
-from PIL import Image, ImageTk
-import sqlite3
 import tkinter as tk
 from tkinter.ttk import *
 import tkinter.messagebox
-from globaldb import CreationDB, UsingDB
+from globaldb import CreationDB
 
 
 is_on = False

@@ -4,8 +4,6 @@ import sqlite3
 import globaldb
 from globaldb import UsingDB
 import adminblocks
-from adminblocks import Blocks
-from datetime import datetime
 
 globaldf = pd.DataFrame() # dataframe of input art and ean
 
@@ -96,6 +94,8 @@ class Computing:
         self.conn.commit()
 
     def goal(self, dictbase):
+        self.delta_prod()
+
         goaldb = UsingDB("./database/goatdata.db")
         self.goalkey = globaldb.ls_goal_g # list of futur keys' dict
 
@@ -114,7 +114,7 @@ class Computing:
             goaldb.insert_goal(self.dictgoal)
             return self.dictgoal.items()
 
-        elif adminblocks.setthegoal[1] > 0:
+        elif adminblocks.setthegoal[1] > 0:  # RECORD THE 1ST AS BASED, THEN THE FOLLOWING IS THE DIFF WITH THE PREFIOUS LINE 1ST
             self.percent = adminblocks.setthegoal[1] / 100
             self.dictgoal = dict(zip(self.goalkey, list(self.percent * val for val in self.dictbase.values())))
             self.dictgoal['time_glob'] = self.time
@@ -122,7 +122,7 @@ class Computing:
             return self.dictgoal
 
         else:
-            self.dictgoal = dict(zip(self.goalkey, self.dictbase.values())) # RECORD THE 1ST AS BASED, THEN THE FOLLOWING IS THE DIFF WITH THE PREFIOUS LINE 1ST
+            self.dictgoal = dict(zip(self.goalkey, self.dictbase.values()))
             self.dictgoal['time_glob'] = self.time
             goaldb.insert_goal(self.dictgoal)
             return self.dictgoal
