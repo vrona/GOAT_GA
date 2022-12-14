@@ -93,6 +93,58 @@ class Computing:
         self.cur.execute(self.sqlwr, self.mytuple)
         self.conn.commit()
 
+    def new_goal(self):
+        self.delta_prod()
+
+        goaldb = UsingDB("./database/goatdata.db") # To Simplify if necessary
+        self.goalkey = globaldb.ls_goal_g # list of futur keys' dict
+
+        self.sql_weight = pd.read_sql_query("SELECT * FROM in_weight_globpick ORDER BY time_glob DESC LIMIT 1", self.conn)
+        self.dfweight = pd.DataFrame(self.sql_weight) #, columns=[key for key in dictbase.keys()]
+
+        self.cur.execute("SELECT count(*) FROM goalpick")
+
+        if self.cur.fetchone()[0] < 1:
+             # query art, ean 1st inputs
+            self.time = globaldf['time_glob'].values[-1]
+            self.dfglobal = globaldf.drop(columns=['time_glob', 'total_pickers'], axis=1)
+            print("dataframe:", self.dfglobal)
+
+            if adminblocks.setthegoal[0] > 0:
+                self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
+                
+                self.dictgoal = dict(zip(self.goalkey,  list(self.weigthvol * self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
+                self.dictgoal['time_glob'] = self.time
+                goaldb.insert_goal(self.dictgoal)
+                return self.dictgoal.items()
+
+            elif adminblocks.setthegoal[1] > 0:
+                self.percent = adminblocks.setthegoal[1] / 100
+  
+                self.dictgoal = dict(zip(self.goalkey,  list(self.percent * self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
+                self.dictgoal['time_glob'] = self.time
+                goaldb.insert_goal(self.dictgoal)
+                return self.dictgoal
+
+            else:
+                self.dictgoal = dict(zip(self.goalkey, self.dictbase.values()))
+                self.dictgoal['time_glob'] = self.time
+                goaldb.insert_goal(self.dictgoal)
+                return self.dictgoal
+
+        else:
+            self.sql_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
+            self.sql_input = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
+            self.dfnewgoal = self.sql_goal.drop(columns=['time_glob'], axis=1)
+
+            self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
+
+            self.dictgoal = dict(zip(self.goalkey,  list(self.dfnewgoal - self.sql_delta[col].values[-1] for col in self.dfnewgoal.columns)))
+            self.dictgoal['time_glob'] = self.sql_input['time_glob'].values[-1]
+
+            goaldb.insert_goal(self.dictgoal)
+
+
     def goal(self, dictbase): # SET THE INITIAL GOAL / NEEDS ANOTHER FUNCTION FOR NEXT T >= 1 GOAl
         self.delta_prod()
 
@@ -130,6 +182,28 @@ class Computing:
                 self.dictgoal['time_glob'] = self.time
                 goaldb.insert_goal(self.dictgoal)
                 return self.dictgoal
+        
+        else:
+            if adminblocks.setthegoal[0] > 0:
+                self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
+                self.dictgoal = dict(zip(self.goalkey,  list(self.weigthvol * vals for vals in self.dictbase.values())))
+                self.dictgoal['time_glob'] = self.time
+                goaldb.insert_goal(self.dictgoal)
+                return self.dictgoal.items()
+
+            elif adminblocks.setthegoal[1] > 0:  # RECORD THE 1ST AS BASED, THEN THE FOLLOWING IS THE DIFF WITH THE PREFIOUS LINE 1ST
+                self.percent = adminblocks.setthegoal[1] / 100
+                self.dictgoal = dict(zip(self.goalkey, list(self.percent * val for val in self.dictbase.values())))
+                self.dictgoal['time_glob'] = self.time
+                goaldb.insert_goal(self.dictgoal)
+                return self.dictgoal
+
+            else:
+                self.dictgoal = dict(zip(self.goalkey, self.dictbase.values()))
+                self.dictgoal['time_glob'] = self.time
+                goaldb.insert_goal(self.dictgoal)
+                return self.dictgoal
+
         
     def delta_prod(self):
         goaldb = UsingDB("./database/goatdata.db")

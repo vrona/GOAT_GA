@@ -145,7 +145,8 @@ class Activity():
         pdb.insert_gpick(self.get_dictglobalpick)
 
         engindb.weightnratio(self.get_dictglobalpick)
-        engindb.goal(self.get_dictglobalpick)
+        engindb.new_goal()
+        #engindb.goal(self.get_dictglobalpick)
         #engindb.delta_prod()
 
         # Displaying the goals

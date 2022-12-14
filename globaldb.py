@@ -194,6 +194,22 @@ class UsingDB:
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
 
+    def insert_newgoal(self, table_col):
+        self.sql_query = pd.read_sql_query("SELECT * FROM goalpick", self.conn)
+               
+        self.dfdelta = pd.DataFrame(self.sql_query_delta)
+
+        self.data = table_col.drop(columns=['id'], axis=1)        
+        self.cols = ','.join(self.dfdelta.columns)
+        self.bang = ','.join(['?'] * len(self.dfdelta.columns))
+        
+        self.sqlf = "INSERT OR INTO %s (%s) VALUES (%s)" % ('goalpick', self.cols, self.bang)
+
+        self.testlist = list(self.data.iloc[-1][col] for col in self.data.columns)
+                
+        self.cur.execute(self.sqlf, tuple(self.testlist))
+        self.conn.commit()
+
 
    
 
