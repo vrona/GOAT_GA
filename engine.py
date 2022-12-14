@@ -108,7 +108,6 @@ class Computing:
              # query art, ean 1st inputs
             self.time = globaldf['time_glob'].values[-1]
             self.dfglobal = globaldf.drop(columns=['time_glob', 'total_pickers'], axis=1)
-            print("dataframe:", self.dfglobal)
 
             if adminblocks.setthegoal[0] > 0:
                 self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
@@ -135,13 +134,19 @@ class Computing:
         else:
             self.sql_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
             self.sql_input = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
-            self.dfnewgoal = self.sql_goal.drop(columns=['time_glob'], axis=1)
+            self.dfnewgoal = self.sql_goal.drop(columns=['id','time_glob'], axis=1)
 
             self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
+            self.sql_delta = self.sql_delta.drop(columns=['delta_time'], axis=1)
+            print(self.dfnewgoal, "\n",self.sql_delta.columns)
 
-            self.dictgoal = dict(zip(self.goalkey,  list(self.dfnewgoal - self.sql_delta[col].values[-1] for col in self.dfnewgoal.columns)))
+            self.dictgoal = dict(zip(self.goalkey,  list(self.dfnewgoal.iloc[-1][colindex] - self.sql_delta.iloc[-1][colindex] for colindex in range(len(self.sql_delta.columns)))))
+            print(self.dictgoal)
+
+            for k, v in self.dictgoal.items():
+                self.dictgoal[k] = int(v)
             self.dictgoal['time_glob'] = self.sql_input['time_glob'].values[-1]
-
+            
             goaldb.insert_goal(self.dictgoal)
 
 
