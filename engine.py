@@ -102,6 +102,7 @@ class Computing:
         self.sql_weight = pd.read_sql_query("SELECT * FROM in_weight_globpick ORDER BY time_glob DESC LIMIT 1", self.conn)
         self.dfweight = pd.DataFrame(self.sql_weight) #, columns=[key for key in dictbase.keys()]
 
+        # check the length of goalpick table
         self.cur.execute("SELECT count(*) FROM goalpick")
 
         if self.cur.fetchone()[0] < 1:
@@ -112,7 +113,7 @@ class Computing:
             if adminblocks.setthegoal[0] > 0:
                 self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
                 
-                self.dictgoal = dict(zip(self.goalkey,  list(self.weigthvol * self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
+                self.dictgoal = dict(zip(self.goalkey, list(self.weigthvol * self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
                 self.dictgoal['time_glob'] = self.time
                 goaldb.insert_goal(self.dictgoal)
                 return self.dictgoal.items()
@@ -126,7 +127,9 @@ class Computing:
                 return self.dictgoal
 
             else:
-                self.dictgoal = dict(zip(self.goalkey, self.dictbase.values()))
+                self.dictgoal = dict(zip(self.goalkey, list(self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
+                for k, v in self.dictgoal.items():
+                    self.dictgoal[k] = int(v)
                 self.dictgoal['time_glob'] = self.time
                 goaldb.insert_goal(self.dictgoal)
                 return self.dictgoal
@@ -138,19 +141,19 @@ class Computing:
 
             self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
             self.sql_delta = self.sql_delta.drop(columns=['delta_time'], axis=1)
-            print(self.dfnewgoal, "\n",self.sql_delta.columns)
+            print("2nd goal:", self.dfnewgoal, "\n",self.sql_delta.columns)
 
-            self.dictgoal = dict(zip(self.goalkey,  list(self.dfnewgoal.iloc[-1][colindex] - self.sql_delta.iloc[-1][colindex] for colindex in range(len(self.sql_delta.columns)))))
-            print(self.dictgoal)
+            self.newdictgoal = dict(zip(self.goalkey,  list(self.dfnewgoal.iloc[-1][colindex] + self.sql_delta.iloc[-1][colindex] for colindex in range(len(self.sql_delta.columns)))))
+            print(self.newdictgoal)
 
-            for k, v in self.dictgoal.items():
-                self.dictgoal[k] = int(v)
-            self.dictgoal['time_glob'] = self.sql_input['time_glob'].values[-1]
+            for k, v in self.newdictgoal.items():
+                self.newdictgoal[k] = int(v)
+            self.newdictgoal['time_glob'] = self.sql_input['time_glob'].values[-1]
             
-            goaldb.insert_goal(self.dictgoal)
+            goaldb.insert_goal(self.newdictgoal)
 
 
-    def goal(self, dictbase): # SET THE INITIAL GOAL / NEEDS ANOTHER FUNCTION FOR NEXT T >= 1 GOAl
+    def goal(self, dictbase): # TO DELETE
         self.delta_prod()
 
         goaldb = UsingDB("./database/goatdata.db") # To Simplify if necessary
