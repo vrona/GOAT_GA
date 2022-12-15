@@ -199,12 +199,7 @@ class Computing:
             self.capa_real = dict(zip(self.df_capa, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time']) for col in range(1, len(self.df_delta.columns)))))
             
             for k, v in self.capa_real.items():
-                if self.df_delta['delta_time'] == 60:
-                    self.capa_real[k] = float(v)
-                elif self.df_delta['delta_time'] < 60:
-                    self.capa_real[k] = float(v * 60)
-                else:
-                    self.capa_real[k] = float(v / 60)
+                self.capa_real[k] = float(v * 3600/ self.df_delta['delta_time'])
 
             print(self.capa_real)
             useofdb.insert_dicsql(self.capa_real, "in_capa")
