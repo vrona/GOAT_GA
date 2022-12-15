@@ -107,7 +107,7 @@ class Blocks(tk.Frame):
         self.percent_entry.grid(row=26, column=2)
 
         # Pilotage Validation Button
-        self.validblock_btn = Button(self.master, text="Valider Pilotage", bootstyle="info", command=self.goalpick, width=12)
+        self.validblock_btn = Button(self.master, text="Valider Pilotage", bootstyle="danger", command=self.goalpick, width=12)
         self.validblock_btn.grid(row=27, column=2, pady=10)
 
         # SEPARATOR PART

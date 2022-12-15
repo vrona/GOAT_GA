@@ -166,19 +166,31 @@ class Computing:
             useofdb.insert_dicsql(self.newdictgoal, "goalpick")
 
     def capacitif(self):
-        self.weight()
+        self.dictcapa = {}
+        self.df_ratio = self.weight()
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
         self.df_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
         #self.df_delta = self.sql_delta.drop(columns=['id'], axis=1) # perhaps drop ''
 
-        self.df_capa = pd.read_sql_query("SELECT * FROM in_capa", self.conn).columns
-        
+        self.df_capa = pd.read_sql_query("SELECT * FROM in_capa", self.conn)
+        print("df", self.df_capa)
         # check the length of goalpick table
         self.cur.execute("SELECT count(*) FROM in_capa")
 
+        self.lscapatheo = list(adminblocks.capatheodict.values())
+
         if self.cur.fetchone()[0] < 1:
-            print(self.df_capa, "\n", list(valcapa for valcapa in adminblocks.capatheodict.values()))
-            self.dictcapa = dict(zip(self.df_capa, list(valcapa for valcapa in adminblocks.capatheodict.values())))
+            #self.dictcapa = dict(zip(self.df_capa, self.dictcapa.values()))
+            # print("dict", self.dictcapa)
+            for ncol in range(len(adminblocks.mainlistblock)):
+                self.dictcapa["capa_artbck{}".format(ncol)] = int(self.lscapatheo[ncol])
+                self.dictcapa["capa_eanbck{}".format(ncol)] = int(self.dictcapa["capa_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)])
+                self.dictcapa["capa_art_avg"] = self.dictcapa.get("capa_art_avg", 0) + self.dictcapa["capa_artbck{}".format(ncol)]
+                self.dictcapa["capa_ean_avg"] = self.dictcapa.get("capa_ean_avg", 0) + self.dictcapa["capa_eanbck{}".format(ncol)]
+            
+            self.dictcapa["capa_art_avg"] = self.dictcapa["capa_art_avg"] / len(adminblocks.mainlistblock)
+            self.dictcapa["capa_ean_avg"] = self.dictcapa["capa_ean_avg"] / len(adminblocks.mainlistblock)
+
             useofdb.insert_dicsql(self.dictcapa, "in_capa")
 
         else:
