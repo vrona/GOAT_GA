@@ -35,7 +35,7 @@ class CreationDB:
         ls_goal_g = ["goal_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["goal_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_w_artean = ["wartbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["weanbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["ratioaebck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_capa_theoae = ["capa_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["capa_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
-        ls_delta = ls_capa_theoae = ["delta_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["delta_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_delta = ["delta_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["delta_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
 
         for artean in lsartean:
             self.attribute = " ".join((artean, "INTEGER"))
@@ -63,27 +63,27 @@ class CreationDB:
 
         self.entete_g = "CREATE TABLE IF NOT EXISTS goalpick ("
         self.corps_g = ", ".join((sql_ent_g))
-        self.complete_g = self.entete_g+"id INTEGER PRIMARY KEY, time_glob REAL"+", "+self.corps_g+")"
+        self.g_complete = self.entete_g+"id INTEGER PRIMARY KEY, time_glob REAL"+", "+self.corps_g+")"
 
-        self.w_entete = "CREATE TABLE IF NOT EXISTS in_weight_globpick ("
+        self.w_entete = "CREATE TABLE IF NOT EXISTS in_weight ("
         self.w_corps = ", ".join((sql_w_ent))
         self.w_complete = self.w_entete+"time_glob REAL PRIMARY KEY"+", "+self.w_corps+", total_art_topick INTEGER, total_ean_topick INTEGER)"
         
-        self.capatheo_entete = "CREATE TABLE IF NOT EXISTS in_capatheo ("
+        self.capatheo_entete = "CREATE TABLE IF NOT EXISTS in_capa ("
         self.capatheo_corps = ", ".join((sql_capa_theo))
-        self.capatheo_complete = self.capatheo_entete + self.capatheo_corps + ", capatheo_art_avg FLOAT, capatheo_ean_avg FLOAT)"
+        self.capa_complete = self.capatheo_entete + self.capatheo_corps + ", capa_art_avg FLOAT, capa_ean_avg FLOAT)"
 
         self.entete_delta = "CREATE TABLE IF NOT EXISTS delta_table ("
         self.corps_delta = ", ".join((sql_delta))
-        self.complete_delta = self.entete_delta+"delta_time REAL PRIMARY KEY"+", "+self.corps_delta+")"
+        self.delta_complete = self.entete_delta+"delta_time REAL PRIMARY KEY"+", "+self.corps_delta+")"
         
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.cur.execute(self.complete)
-        self.cur.execute(self.complete_g)
+        self.cur.execute(self.g_complete)
         self.cur.execute(self.w_complete)
-        self.cur.execute(self.capatheo_complete)
-        self.cur.execute(self.complete_delta)
+        self.cur.execute(self.capa_complete)
+        self.cur.execute(self.delta_complete)
         
         # do not delete : global list of art. ean used in backbone.add_arteanpik() 
         lsartean.insert(0, "time_glob")
@@ -145,14 +145,14 @@ class UsingDB:
         return row
 
 
-    def insert_gpick(self, dictbase):
-        self.dictbase = dictbase
-        self.placeholder = ','.join(['?'] * len(self.dictbase))
-        self.column = ', '.join(self.dictbase.keys())
-        self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('in_globalpick', self.column, self.placeholder)
+    # def insert_gpick(self, dictbase): # insert_dicsql() works.... then delete this function
+    #     self.dictbase = dictbase
+    #     self.placeholder = ','.join(['?'] * len(self.dictbase))
+    #     self.column = ', '.join(self.dictbase.keys())
+    #     self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('in_globalpick', self.column, self.placeholder)
 
-        self.cur.execute(self.sql, list(self.dictbase.values()))
-        self.conn.commit()
+    #     self.cur.execute(self.sql, list(self.dictbase.values()))
+    #     self.conn.commit()
 
     """
     @param self: nothing
@@ -185,33 +185,25 @@ class UsingDB:
         self.conn.commit()
 
 
-    def insert_goal(self, dictbase):
+    def insert_dicsql(self, dictbase, str_table_name):
         self.dictbase = dictbase
         self.placeholder = ','.join(['?'] * len(self.dictbase))
         self.column = ', '.join(self.dictbase.keys())
-        self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('goalpick', self.column, self.placeholder)
-        
+        self.sql = "INSERT INTO %s (%s) VALUES (%s)" % (str_table_name, self.column, self.placeholder)
+
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
 
-    def insert_newgoal(self, table_col):
-        self.sql_query = pd.read_sql_query("SELECT * FROM goalpick", self.conn)
-               
-        self.dfdelta = pd.DataFrame(self.sql_query_delta)
 
-        self.data = table_col.drop(columns=['id'], axis=1)        
-        self.cols = ','.join(self.dfdelta.columns)
-        self.bang = ','.join(['?'] * len(self.dfdelta.columns))
+    # def insert_goal(self, dictbase): # insert_dicsql() works.... then delete this function
+    #     self.dictbase = dictbase
+    #     self.placeholder = ','.join(['?'] * len(self.dictbase))
+    #     self.column = ', '.join(self.dictbase.keys())
+    #     self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('goalpick', self.column, self.placeholder)
         
-        self.sqlf = "INSERT OR INTO %s (%s) VALUES (%s)" % ('goalpick', self.cols, self.bang)
-
-        self.testlist = list(self.data.iloc[-1][col] for col in self.data.columns)
-                
-        self.cur.execute(self.sqlf, tuple(self.testlist))
-        self.conn.commit()
-
-
-   
+    #     self.cur.execute(self.sql, list(self.dictbase.values()))
+    #     self.conn.commit()
+  
 
     """
     def remove(self, blocks_in):
@@ -226,27 +218,3 @@ class UsingDB:
 
     def __del__(self):
         self.conn.close()
-
-# db = ProdDB('globaldata.db')
-# dictglob = {}
-
-# def auto(list1, list2):
-#     for k, v in zip(list1, list2):
-#         dictglob[k]= v
-#     #print(dictglob)
-
-# dval = [datetime.datetime.now(),12000,13000,14000,15000,16000,17000,2000,3000,4000,5000,6000,7000,10]
-# dkey = ['time_glob', 'art_bck1', 'art_bck2', 'art_bck3', 'art_bck4', 'art_bck5', 'art_bck6', 'ean_bck1', 'ean_bck2', 'ean_bck3', 'ean_bck4', 'ean_bck5', 'ean_bck6', 'total_pickers']
-
-# auto(dkey, dval)
-
-# db.insert_gpick(dictglob)
-# db.insert_nameblock(0, "SportCo")
-# db.insert_nameblock(1, "Chasse")
-# db.insert_nameblock(2, "Glisse")
-# db.insert_nameblock(3, "Running")
-# db.insert_nameblock(4, "Implant")
-# db.insert_nameblock(5, "PFECA")
-# db.insert_capatheo(238.3)
-
-#print(db.fetch_picker(1))

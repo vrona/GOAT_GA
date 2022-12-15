@@ -142,12 +142,11 @@ class Activity():
         # Insert into DB
         pdb = UsingDB("./database/goatdata.db")
         engindb = Computing("./database/goatdata.db")
-        pdb.insert_gpick(self.get_dictglobalpick)
+        pdb.insert_dicsql(self.get_dictglobalpick, "in_globalpick")
 
         engindb.weightnratio(self.get_dictglobalpick)
         engindb.new_goal()
-        #engindb.goal(self.get_dictglobalpick)
-        #engindb.delta_prod()
+        engindb.capacitif()
 
         # Displaying the goals
         for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):

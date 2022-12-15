@@ -71,7 +71,7 @@ class Computing:
 
             self.dfwr = self.dfwr.drop(["artbck{}".format(self.block), "eanbck{}".format(self.block)], axis = 1)
 
-        # reordering the column to fit to the sql 'in_weight_globpick' table order 
+        # reordering the column to fit to the sql 'in_weight' table order 
         self.temp_col = self.dfwr.columns.tolist()
         self.new_col = self.temp_col[:1] + self.temp_col[3:] + self.temp_col[1:3]
 
@@ -81,7 +81,7 @@ class Computing:
         self.placeholdwr = ','.join(['?'] * len(self.newdfwr.columns))
         self.columnwr = ','.join(self.newdfwr.columns)
 
-        self.sqlwr = "INSERT INTO in_weight_globpick VALUES (%s)" % (self.placeholdwr)
+        self.sqlwr = "INSERT INTO in_weight VALUES (%s)" % (self.placeholdwr)
 
         self.mylist = list(self.newdfwr.iloc[-1][x] for x in self.newdfwr.columns)
 
@@ -89,17 +89,31 @@ class Computing:
         self.mylist[-2], self.mylist[-1] = np.uint32(self.mylist[-2]).item(), np.uint32(self.mylist[-1]).item()
         self.mytuple = tuple(self.mylist)
 
-        # nuture the sql 'in_weight_globpick' table
+        # nuture the sql 'in_weight' table
         self.cur.execute(self.sqlwr, self.mytuple)
         self.conn.commit()
+
+    def delta_prod(self):
+            useofdb = UsingDB("./database/goatdata.db")
+            self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn)
+
+            self.veryglobal = pd.DataFrame(self.sql_query)
+            self.dfbase = self.veryglobal.drop(columns=['total_pickers'], axis=1)
+
+            self.dfbase['time_glob'] = pd.to_datetime(self.dfbase['time_glob'])
+            self.lsdelta_col = list(self.dfbase.columns)
+
+            if len(self.dfbase) > 1:
+                print(self.dfbase)
+                useofdb.insert_delta(self.dfbase.diff(axis=0))
 
     def new_goal(self):
         self.delta_prod()
 
-        goaldb = UsingDB("./database/goatdata.db") # To Simplify if necessary
+        useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
         self.goalkey = globaldb.ls_goal_g # list of futur keys' dict
 
-        self.sql_weight = pd.read_sql_query("SELECT * FROM in_weight_globpick ORDER BY time_glob DESC LIMIT 1", self.conn)
+        self.sql_weight = pd.read_sql_query("SELECT * FROM in_weight ORDER BY time_glob DESC LIMIT 1", self.conn)
         self.dfweight = pd.DataFrame(self.sql_weight) #, columns=[key for key in dictbase.keys()]
 
         # check the length of goalpick table
@@ -115,7 +129,7 @@ class Computing:
                 
                 self.dictgoal = dict(zip(self.goalkey, list(self.weigthvol * self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
                 self.dictgoal['time_glob'] = self.time
-                goaldb.insert_goal(self.dictgoal)
+                useofdb.insert_dicsql(self.dictgoal, "goalpick")
                 return self.dictgoal.items()
 
             elif adminblocks.setthegoal[1] > 0:
@@ -123,7 +137,7 @@ class Computing:
   
                 self.dictgoal = dict(zip(self.goalkey,  list(self.percent * self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
                 self.dictgoal['time_glob'] = self.time
-                goaldb.insert_goal(self.dictgoal)
+                useofdb.insert_dicsql(self.dictgoal, "goalpick")
                 return self.dictgoal
 
             else:
@@ -131,7 +145,7 @@ class Computing:
                 for k, v in self.dictgoal.items():
                     self.dictgoal[k] = int(v)
                 self.dictgoal['time_glob'] = self.time
-                goaldb.insert_goal(self.dictgoal)
+                useofdb.insert_dicsql(self.dictgoal, "goalpick")
                 return self.dictgoal
 
         else:
@@ -141,90 +155,46 @@ class Computing:
 
             self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
             self.sql_delta = self.sql_delta.drop(columns=['delta_time'], axis=1)
-            print("2nd goal:", self.dfnewgoal, "\n",self.sql_delta.columns)
 
             self.newdictgoal = dict(zip(self.goalkey,  list(self.dfnewgoal.iloc[-1][colindex] + self.sql_delta.iloc[-1][colindex] for colindex in range(len(self.sql_delta.columns)))))
-            print(self.newdictgoal)
 
+            # convert figures value as int
             for k, v in self.newdictgoal.items():
                 self.newdictgoal[k] = int(v)
             self.newdictgoal['time_glob'] = self.sql_input['time_glob'].values[-1]
             
-            goaldb.insert_goal(self.newdictgoal)
+            useofdb.insert_dicsql(self.newdictgoal, "goalpick")
 
+    def capacitif(self):
+        self.weight()
+        useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
+        self.df_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
+        #self.df_delta = self.sql_delta.drop(columns=['id'], axis=1) # perhaps drop ''
 
-    def goal(self, dictbase): # TO DELETE
-        self.delta_prod()
-
-        goaldb = UsingDB("./database/goatdata.db") # To Simplify if necessary
-        self.goalkey = globaldb.ls_goal_g # list of futur keys' dict
-
-        self.dictbase = dictbase
-
-        self.time = self.dictbase.pop('time_glob')
-        self.dictbase.pop('total_pickers')
-
-        self.sql_weight = pd.read_sql_query("SELECT * FROM in_weight_globpick ORDER BY time_glob DESC LIMIT 1", self.conn)
-        self.dfweight = pd.DataFrame(self.sql_weight) #, columns=[key for key in dictbase.keys()]
+        self.df_capa = pd.read_sql_query("SELECT * FROM in_capa", self.conn).columns
         
-        self.cur.execute("SELECT count(*) FROM goalpick")
-        
-        if self.cur.fetchone() < 1:
+        # check the length of goalpick table
+        self.cur.execute("SELECT count(*) FROM in_capa")
 
-            if adminblocks.setthegoal[0] > 0:
-                self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
-                self.dictgoal = dict(zip(self.goalkey,  list(self.weigthvol * vals for vals in self.dictbase.values())))
-                self.dictgoal['time_glob'] = self.time
-                goaldb.insert_goal(self.dictgoal)
-                return self.dictgoal.items()
+        if self.cur.fetchone()[0] < 1:
+            print(self.df_capa, "\n", list(valcapa for valcapa in adminblocks.capatheodict.values()))
+            self.dictcapa = dict(zip(self.df_capa, list(valcapa for valcapa in adminblocks.capatheodict.values())))
+            useofdb.insert_dicsql(self.dictcapa, "in_capa")
 
-            elif adminblocks.setthegoal[1] > 0:  # RECORD THE 1ST AS BASED, THEN THE FOLLOWING IS THE DIFF WITH THE PREFIOUS LINE 1ST
-                self.percent = adminblocks.setthegoal[1] / 100
-                self.dictgoal = dict(zip(self.goalkey, list(self.percent * val for val in self.dictbase.values())))
-                self.dictgoal['time_glob'] = self.time
-                goaldb.insert_goal(self.dictgoal)
-                return self.dictgoal
-
-            else:
-                self.dictgoal = dict(zip(self.goalkey, self.dictbase.values()))
-                self.dictgoal['time_glob'] = self.time
-                goaldb.insert_goal(self.dictgoal)
-                return self.dictgoal
-        
         else:
-            if adminblocks.setthegoal[0] > 0:
-                self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
-                self.dictgoal = dict(zip(self.goalkey,  list(self.weigthvol * vals for vals in self.dictbase.values())))
-                self.dictgoal['time_glob'] = self.time
-                goaldb.insert_goal(self.dictgoal)
-                return self.dictgoal.items()
+            # get nb picker
+            self.capa_real = dict(zip(self.df_capa, list(self.df_delta.iloc[-1][col] / self.df_delta['delta_time']for col in range(1, len(self.df_delta.columns)))))
+            for k, v in self.capa_real.items():
+                self.capa_real[k] = int(v)
+            
+            useofdb.insert_dicsql(self.capa_real, "in_capa")
 
-            elif adminblocks.setthegoal[1] > 0:  # RECORD THE 1ST AS BASED, THEN THE FOLLOWING IS THE DIFF WITH THE PREFIOUS LINE 1ST
-                self.percent = adminblocks.setthegoal[1] / 100
-                self.dictgoal = dict(zip(self.goalkey, list(self.percent * val for val in self.dictbase.values())))
-                self.dictgoal['time_glob'] = self.time
-                goaldb.insert_goal(self.dictgoal)
-                return self.dictgoal
-
-            else:
-                self.dictgoal = dict(zip(self.goalkey, self.dictbase.values()))
-                self.dictgoal['time_glob'] = self.time
-                goaldb.insert_goal(self.dictgoal)
-                return self.dictgoal
-
-        
-    def delta_prod(self):
-        goaldb = UsingDB("./database/goatdata.db")
-        self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn)
-
-        self.veryglobal = pd.DataFrame(self.sql_query)
-        self.dfbase = self.veryglobal.drop(columns=['total_pickers'], axis=1)
-
-        self.dfbase['time_glob'] = pd.to_datetime(self.dfbase['time_glob'])
-        self.lsdelta_col = list(self.dfbase.columns)
-
-        if len(self.dfbase) > 1:
-            goaldb.insert_delta(self.dfbase.diff(axis=0))
+    def weight(self):
+        #= UsingDB("./database/goatdata.db") # To Simplify if necessary
+        self.ratiocol = ", ".join(["ratioaebck{}".format(x) for x in range(len(adminblocks.mainlistblock))])
+        self.phrase = "SELECT %s FROM in_weight ORDER BY time_glob DESC LIMIT 1" % (self.ratiocol)
+        self.df_ratio = pd.read_sql_query(self.phrase, self.conn)
+        return self.df_ratio
 
 class Dispatch():
 
