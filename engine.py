@@ -104,7 +104,6 @@ class Computing:
             self.lsdelta_col = list(self.dfbase.columns)
 
             if len(self.dfbase) > 1:
-                print(self.dfbase)
                 useofdb.insert_delta(self.dfbase.diff(axis=0))
 
     def new_goal(self):
@@ -156,7 +155,7 @@ class Computing:
             self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
             self.sql_delta = self.sql_delta.drop(columns=['delta_time'], axis=1)
 
-            self.newdictgoal = dict(zip(self.goalkey,  list(self.dfnewgoal.iloc[-1][colindex] + self.sql_delta.iloc[-1][colindex] for colindex in range(len(self.sql_delta.columns)))))
+            self.newdictgoal = dict(zip(self.goalkey, list(self.dfnewgoal.iloc[-1][colindex] + self.sql_delta.iloc[-1][colindex] for colindex in range(len(self.sql_delta.columns)))))
 
             # convert figures value as int
             for k, v in self.newdictgoal.items():
@@ -169,14 +168,12 @@ class Computing:
         self.dictspeed = {}
         self.df_ratio = self.weight()
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
-        self.df_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
-        #self.df_delta = self.sql_delta.drop(columns=['id'], axis=1) # perhaps drop ''
-
+        self.df_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn)
+        
         self.df_capa = pd.read_sql_query("SELECT * FROM in_capa", self.conn)
+
         # check the length of goalpick table
         self.cur.execute("SELECT count(*) FROM in_capa")
-
-        
 
         if self.cur.fetchone()[0] < 1:
             self.lscapatheo = list(adminblocks.capatheodict.values())
@@ -194,14 +191,13 @@ class Computing:
 
         else:
             # get nb picker
-            print("real capa list", list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time']) for col in range(1, len(self.df_delta.columns))))
             
-            self.capa_real = dict(zip(self.df_capa, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time']) for col in range(1, len(self.df_delta.columns)))))
-            
+            self.capa_real = dict(zip(self.df_capa, list(abs(self.df_delta.iloc[-1][col] / self.df_delta.iloc[-1]['delta_time']) for col in range(1, len(self.df_delta.columns)))))
+            print("seconde", self.capa_real)
             for k, v in self.capa_real.items():
-                self.capa_real[k] = float(v * 3600/ self.df_delta['delta_time'])
+                self.capa_real[k] = float(v * 3600)
 
-            print(self.capa_real)
+            print("heure", self.capa_real)
             useofdb.insert_dicsql(self.capa_real, "in_capa")
 
     def weight(self):
