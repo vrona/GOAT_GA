@@ -166,39 +166,47 @@ class Computing:
             useofdb.insert_dicsql(self.newdictgoal, "goalpick")
 
     def capacitif(self):
-        self.dictcapa = {}
+        self.dictspeed = {}
         self.df_ratio = self.weight()
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
         self.df_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
         #self.df_delta = self.sql_delta.drop(columns=['id'], axis=1) # perhaps drop ''
 
         self.df_capa = pd.read_sql_query("SELECT * FROM in_capa", self.conn)
-        print("df", self.df_capa)
         # check the length of goalpick table
         self.cur.execute("SELECT count(*) FROM in_capa")
 
-        self.lscapatheo = list(adminblocks.capatheodict.values())
+        
 
         if self.cur.fetchone()[0] < 1:
-            #self.dictcapa = dict(zip(self.df_capa, self.dictcapa.values()))
-            # print("dict", self.dictcapa)
-            for ncol in range(len(adminblocks.mainlistblock)):
-                self.dictcapa["capa_artbck{}".format(ncol)] = int(self.lscapatheo[ncol])
-                self.dictcapa["capa_eanbck{}".format(ncol)] = int(self.dictcapa["capa_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)])
-                self.dictcapa["capa_art_avg"] = self.dictcapa.get("capa_art_avg", 0) + self.dictcapa["capa_artbck{}".format(ncol)]
-                self.dictcapa["capa_ean_avg"] = self.dictcapa.get("capa_ean_avg", 0) + self.dictcapa["capa_eanbck{}".format(ncol)]
+            self.lscapatheo = list(adminblocks.capatheodict.values())
             
-            self.dictcapa["capa_art_avg"] = self.dictcapa["capa_art_avg"] / len(adminblocks.mainlistblock)
-            self.dictcapa["capa_ean_avg"] = self.dictcapa["capa_ean_avg"] / len(adminblocks.mainlistblock)
+            for ncol in range(len(adminblocks.mainlistblock)):
+                self.dictspeed["capa_artbck{}".format(ncol)] = int(self.lscapatheo[ncol])
+                self.dictspeed["capa_eanbck{}".format(ncol)] = float(self.dictspeed["capa_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)])
+                self.dictspeed["capa_art_avg"] = self.dictspeed.get("capa_art_avg", 0) + self.dictspeed["capa_artbck{}".format(ncol)]
+                self.dictspeed["capa_ean_avg"] = self.dictspeed.get("capa_ean_avg", 0) + self.dictspeed["capa_eanbck{}".format(ncol)]
+            
+            self.dictspeed["capa_art_avg"] = self.dictspeed["capa_art_avg"] / len(adminblocks.mainlistblock)
+            self.dictspeed["capa_ean_avg"] = self.dictspeed["capa_ean_avg"] / len(adminblocks.mainlistblock)
 
-            useofdb.insert_dicsql(self.dictcapa, "in_capa")
+            useofdb.insert_dicsql(self.dictspeed, "in_capa")
 
         else:
             # get nb picker
-            self.capa_real = dict(zip(self.df_capa, list(self.df_delta.iloc[-1][col] / self.df_delta['delta_time']for col in range(1, len(self.df_delta.columns)))))
-            for k, v in self.capa_real.items():
-                self.capa_real[k] = int(v)
+            print("real capa list", list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time']) for col in range(1, len(self.df_delta.columns))))
             
+            self.capa_real = dict(zip(self.df_capa, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time']) for col in range(1, len(self.df_delta.columns)))))
+            
+            for k, v in self.capa_real.items():
+                if self.df_delta['delta_time'] == 60:
+                    self.capa_real[k] = float(v)
+                elif self.df_delta['delta_time'] < 60:
+                    self.capa_real[k] = float(v * 60)
+                else:
+                    self.capa_real[k] = float(v / 60)
+
+            print(self.capa_real)
             useofdb.insert_dicsql(self.capa_real, "in_capa")
 
     def weight(self):
@@ -207,6 +215,7 @@ class Computing:
         self.phrase = "SELECT %s FROM in_weight ORDER BY time_glob DESC LIMIT 1" % (self.ratiocol)
         self.df_ratio = pd.read_sql_query(self.phrase, self.conn)
         return self.df_ratio
+
 
 class Dispatch():
 
