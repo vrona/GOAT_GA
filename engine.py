@@ -4,6 +4,7 @@ import sqlite3
 import globaldb
 from globaldb import UsingDB
 import adminblocks
+import math
 
 globaldf = pd.DataFrame() # dataframe of input art and ean
 
@@ -148,6 +149,8 @@ class Computing:
                 return self.dictgoal
 
         else:
+            self.newdictgoal = {}
+            # get previous goal and picking datas
             self.sql_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
             self.sql_input = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
             self.dfnewgoal = self.sql_goal.drop(columns=['id','time_glob'], axis=1)
@@ -155,11 +158,21 @@ class Computing:
             self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
             self.sql_delta = self.sql_delta.drop(columns=['delta_time'], axis=1)
 
-            self.newdictgoal = dict(zip(self.goalkey, list(self.dfnewgoal.iloc[-1][colindex] + self.sql_delta.iloc[-1][colindex] for colindex in range(len(self.sql_delta.columns)))))
+            for colindex in range(len(self.sql_delta.columns)):
+                
+                self.goal, self.thatdelta = np.uint32(self.dfnewgoal.iloc[-1][colindex]).item(), self.sql_delta.iloc[-1][colindex]
+                self.difference = self.goal + self.thatdelta
+                self.somediff = self.dfnewgoal.iloc[-1][colindex] + self.sql_delta.iloc[-1][colindex]
+
+                print(self.dfnewgoal.iloc[-1][colindex], self.sql_delta.iloc[-1][colindex])
+                print(self.goal, self.thatdelta)
+                print(self.somediff, self.difference)
+            self.newdictgoal = dict(zip(self.goalkey, list(np.uint32(self.sql_delta.iloc[-1][colindex]).item() for colindex in range(len(self.sql_delta.columns))))) # self.dfnewgoal.iloc[-1][colindex] + 
 
             # convert figures value as int
             for k, v in self.newdictgoal.items():
                 self.newdictgoal[k] = int(v)
+
             self.newdictgoal['time_glob'] = self.sql_input['time_glob'].values[-1]
             
             useofdb.insert_dicsql(self.newdictgoal, "goalpick")
@@ -191,13 +204,11 @@ class Computing:
 
         else:
             # get nb picker
-            
             self.capa_real = dict(zip(self.df_capa, list(abs(self.df_delta.iloc[-1][col] / self.df_delta.iloc[-1]['delta_time']) for col in range(1, len(self.df_delta.columns)))))
-            print("seconde", self.capa_real)
+
             for k, v in self.capa_real.items():
                 self.capa_real[k] = float(v * 3600)
 
-            print("heure", self.capa_real)
             useofdb.insert_dicsql(self.capa_real, "in_capa")
 
     def weight(self):
