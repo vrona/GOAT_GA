@@ -99,13 +99,29 @@ class Computing:
             self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn)
 
             self.veryglobal = pd.DataFrame(self.sql_query)
-            self.dfbase = self.veryglobal.drop(columns=['total_pickers'], axis=1)
+            self.dfbase = self.veryglobal.drop(columns=['id', 'total_pickers'], axis=1)
 
             self.dfbase['time_glob'] = pd.to_datetime(self.dfbase['time_glob'])
-            self.lsdelta_col = list(self.dfbase.columns)
+            #self.lsdelta_col = list(self.dfbase.columns)
 
             if len(self.dfbase) > 1:
-                useofdb.insert_delta(self.dfbase.diff(axis=0))
+                self.deltakey = globaldb.ls_delta
+
+                self.df_diff = self.dfbase.diff(axis=0)
+                self.df_diff.dropna(inplace=True)
+
+                # self.dict_diff = self.df_diff.to_dict()
+                self.listinter = list(self.df_diff.iloc[-1][x] for x in range(len(self.df_diff.columns)))
+                self.listinter[0] = self.listinter[0].seconds
+
+                for v in range(len(self.listinter)):
+                    self.listinter[v] = int(self.listinter[v])
+                
+                self.lastdict = dict(zip(self.deltakey, list(self.listinter[val] for val in range(1, len(self.listinter)))))
+                self.lastdict['delta_time'] = self.listinter[0]
+
+                useofdb.insert_dicsql(self.lastdict, "delta_table")
+
 
     def new_goal(self):
         self.delta_prod()
@@ -154,20 +170,11 @@ class Computing:
             self.sql_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
             self.sql_input = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
             self.dfnewgoal = self.sql_goal.drop(columns=['id','time_glob'], axis=1)
-
+           
             self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
-            self.sql_delta = self.sql_delta.drop(columns=['delta_time'], axis=1)
+            self.df_delta = self.sql_delta.drop(columns=['id','delta_time'], axis=1)
 
-            for colindex in range(len(self.sql_delta.columns)):
-                
-                self.goal, self.thatdelta = np.uint32(self.dfnewgoal.iloc[-1][colindex]).item(), self.sql_delta.iloc[-1][colindex]
-                self.difference = self.goal + self.thatdelta
-                self.somediff = self.dfnewgoal.iloc[-1][colindex] + self.sql_delta.iloc[-1][colindex]
-
-                print(self.dfnewgoal.iloc[-1][colindex], self.sql_delta.iloc[-1][colindex])
-                print(self.goal, self.thatdelta)
-                print(self.somediff, self.difference)
-            self.newdictgoal = dict(zip(self.goalkey, list(np.uint32(self.sql_delta.iloc[-1][colindex]).item() for colindex in range(len(self.sql_delta.columns))))) # self.dfnewgoal.iloc[-1][colindex] + 
+            self.newdictgoal = dict(zip(self.goalkey, list(self.dfnewgoal.iloc[-1][colindex] + self.df_delta.iloc[-1][colindex] for colindex in range(len(self.df_delta.columns)))))
 
             # convert figures value as int
             for k, v in self.newdictgoal.items():
