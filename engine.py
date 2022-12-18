@@ -174,8 +174,6 @@ class Computing:
 
             self.sql_goal = self.sql_goal.drop(columns=['id','time_glob'], axis=1)
            
-            self.sql_input = self.sql_input.drop(columns=['id','time_glob', 'total_pickers'], axis=1)
-
             self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY id DESC LIMIT 1", self.conn)
             self.df_delta = self.sql_delta.drop(columns=['id','delta_time'], axis=1)
             
@@ -199,7 +197,7 @@ class Computing:
         self.dictspeed = {}
         self.df_ratio = self.weight()
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
-        self.df_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn)
+        self.df_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn).drop(columns=['id'], axis=1)
         
         self.df_capa = pd.read_sql_query("SELECT * FROM in_capa", self.conn)
 
@@ -226,6 +224,14 @@ class Computing:
 
             for k, v in self.capa_real.items():
                 self.capa_real[k] = float(v * 3600)
+            print(self.capa_real["capa_artbck0"])
+
+            for ncol in range(len(adminblocks.mainlistblock)): # DEAD DEAD
+                self.capa_real["capa_art_avg"] = self.capa_real.get("capa_art_avg",0) + self.capa_real["capa_artbck{}".format(ncol)] #self.capa_real.get("capa_art_avg", 0) +
+                self.capa_real["capa_ean_avg"] = self.capa_real.get("capa_ean_avg",0) + self.capa_real["capa_eanbck{}".format(ncol)] #self.capa_real.get("capa_ean_avg", 0) + 
+
+            self.capa_real["capa_art_avg"] = self.capa_real["capa_art_avg"] / len(adminblocks.mainlistblock)
+            self.capa_real["capa_ean_avg"] = self.capa_real["capa_ean_avg"] / len(adminblocks.mainlistblock)
 
             useofdb.insert_dicsql(self.capa_real, "in_capa")
 
