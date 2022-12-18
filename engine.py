@@ -4,7 +4,7 @@ import sqlite3
 import globaldb
 from globaldb import UsingDB
 import adminblocks
-from math import floor
+from math import ceil
 
 globaldf = pd.DataFrame() # dataframe of input art and ean
 
@@ -58,7 +58,7 @@ class Computing:
         self.dfwr = globaldf.drop(columns=['total_pickers'], axis=1)
 
         self.middle = len(self.dfwr.columns) //2 # getting the frontier between art and ean
-        self.lencolbase = len(self.dfwr.columns) 
+        self.lencolbase = len(self.dfwr.columns)
         self.dfwr['total_art_topick'], self.dfwr['total_ean_topick'] = self.dfwr.iloc[:, 1 : self.middle+1].sum(axis=1), self.dfwr.iloc[:, self.middle+1 : self.lencolbase].sum(axis=1)
 
         self.countblocks = len(self.dfwr.columns[1:self.middle+1])
@@ -102,7 +102,6 @@ class Computing:
             self.dfbase = self.veryglobal.drop(columns=['id', 'total_pickers'], axis=1)
 
             self.dfbase['time_glob'] = pd.to_datetime(self.dfbase['time_glob'])
-            #self.lsdelta_col = list(self.dfbase.columns)
 
             if len(self.dfbase) > 1:
                 self.deltakey = globaldb.ls_delta
@@ -112,11 +111,12 @@ class Computing:
 
                 # self.dict_diff = self.df_diff.to_dict()
                 self.listinter = list(self.df_diff.iloc[-1][x] for x in range(len(self.df_diff.columns))) # new list
+
                 self.listinter[0] = self.listinter[0].seconds #timedelta convert into seconds
-                
+
                 for v in range(len(self.listinter)):
                     self.listinter[v] = int(self.listinter[v])
-                
+
                 self.lastdict = dict(zip(self.deltakey, list(self.listinter[val] for val in range(1, len(self.listinter)))))  #new dict
                 self.lastdict['delta_time'] = self.listinter[0]
 
@@ -167,41 +167,31 @@ class Computing:
         else:
             self.newdictgoal = {}
             # get previous goal and picking datas
-            self.sql_input = pd.read_sql_query("SELECT time_glob FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
+            self.sql_input = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn) #time_glob
+            self.time = self.sql_input['time_glob'].values[-1]
 
-            self.goalcol = ", ".join(["goal_artbck{}, goal_eanbck{}".format(x, x) for x in range(len(adminblocks.mainlistblock))])
-            self.goalphrase = "SELECT %s FROM goalpick ORDER BY time_glob DESC LIMIT 1" % (self.goalcol)
-            self.sql_goal = pd.read_sql_query(self.goalphrase, self.conn)
-            #self.sql_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
+            self.sql_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
 
-            #self.dfnewgoal = self.sql_goal.drop(columns=['id','time_glob'], axis=1)
+            self.sql_goal = self.sql_goal.drop(columns=['id','time_glob'], axis=1)
            
-            self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
+            self.sql_input = self.sql_input.drop(columns=['id','time_glob', 'total_pickers'], axis=1)
+
+            self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY id DESC LIMIT 1", self.conn)
             self.df_delta = self.sql_delta.drop(columns=['id','delta_time'], axis=1)
             
-            print("GOAL DF:", self.sql_goal, "\n -----------", type(self.sql_goal))
+            self.addition = pd.DataFrame(columns=self.goalkey)
 
-            print("DELTA DF:", self.df_delta, "\n -----------", type(self.df_delta))
-            # self.lsgoalcol = self.sql_goal.columns
-            # self.lsdeltacol = self.df_delta.columns
-            # for go, delties in zip(self.lsgoalcol, self.lsdeltacol):
-
-                #self.addition = self.sql_goal[go].values + self.df_delta[delties].values
-            self.addition = pd.DataFrame()
             for indexofit, names in enumerate(self.goalkey):
-                print(self.sql_goal.iloc[-1][indexofit])
-                print(self.df_delta.iloc[-1][indexofit])
-                self.addition[names] = self.sql_goal.iloc[-1][indexofit] + self.df_delta.iloc[-1][indexofit]
+                 
+                self.addition.loc[0, names] = self.sql_goal.iloc[-1][indexofit].item() + self.df_delta.iloc[-1][indexofit].item()
 
-            print("ADDITION DF:", self.addition, "\n -----------")
-            self.newdictgoal = dict(zip(self.goalkey, list(self.addition.iloc[-1][colindex] for colindex in range(len(self.goalkey)))))
-            #self.newdictgoal = dict(zip(self.goalkey, list(self.sql_goal.iloc[-1][colindex] + self.df_delta.iloc[-1][colindex] for colindex in range(len(self.df_delta.columns)))))
+            self.newdictgoal = dict(zip(self.goalkey, list(self.addition[col].values[-1] for col in self.goalkey)))
 
             # convert figures value as int
             for k, v in self.newdictgoal.items():
                 self.newdictgoal[k] = int(v)
 
-            self.newdictgoal['time_glob'] = self.sql_input['time_glob'].values[-1]
+            self.newdictgoal['time_glob'] = self.time
             
             useofdb.insert_dicsql(self.newdictgoal, "goalpick")
 
@@ -232,7 +222,7 @@ class Computing:
 
         else:
             # get nb picker
-            self.capa_real = dict(zip(self.df_capa, list(abs(self.df_delta.iloc[-1][col] / self.df_delta.iloc[-1]['delta_time']) for col in range(1, len(self.df_delta.columns)))))
+            self.capa_real = dict(zip(self.df_capa, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
 
             for k, v in self.capa_real.items():
                 self.capa_real[k] = float(v * 3600)

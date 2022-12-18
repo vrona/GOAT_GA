@@ -159,7 +159,7 @@ class UsingDB:
     @param thedataframe: pandas dataframe with delta time already computed 
     @execute insertion: into 'delta_table' sql table
     """
-    def insert_delta(self, thedataframe):
+    def insert_delta(self, thedataframe): # TO DELETE
 
         self.sql_query_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn)
                
