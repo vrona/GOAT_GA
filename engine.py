@@ -4,7 +4,7 @@ import sqlite3
 import globaldb
 from globaldb import UsingDB
 import adminblocks
-import math
+from math import floor
 
 globaldf = pd.DataFrame() # dataframe of input art and ean
 
@@ -111,13 +111,13 @@ class Computing:
                 self.df_diff.dropna(inplace=True)
 
                 # self.dict_diff = self.df_diff.to_dict()
-                self.listinter = list(self.df_diff.iloc[-1][x] for x in range(len(self.df_diff.columns)))
-                self.listinter[0] = self.listinter[0].seconds
-
+                self.listinter = list(self.df_diff.iloc[-1][x] for x in range(len(self.df_diff.columns))) # new list
+                self.listinter[0] = self.listinter[0].seconds #timedelta convert into seconds
+                
                 for v in range(len(self.listinter)):
                     self.listinter[v] = int(self.listinter[v])
                 
-                self.lastdict = dict(zip(self.deltakey, list(self.listinter[val] for val in range(1, len(self.listinter)))))
+                self.lastdict = dict(zip(self.deltakey, list(self.listinter[val] for val in range(1, len(self.listinter)))))  #new dict
                 self.lastdict['delta_time'] = self.listinter[0]
 
                 useofdb.insert_dicsql(self.lastdict, "delta_table")
@@ -167,14 +167,35 @@ class Computing:
         else:
             self.newdictgoal = {}
             # get previous goal and picking datas
-            self.sql_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
-            self.sql_input = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
-            self.dfnewgoal = self.sql_goal.drop(columns=['id','time_glob'], axis=1)
+            self.sql_input = pd.read_sql_query("SELECT time_glob FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
+
+            self.goalcol = ", ".join(["goal_artbck{}, goal_eanbck{}".format(x, x) for x in range(len(adminblocks.mainlistblock))])
+            self.goalphrase = "SELECT %s FROM goalpick ORDER BY time_glob DESC LIMIT 1" % (self.goalcol)
+            self.sql_goal = pd.read_sql_query(self.goalphrase, self.conn)
+            #self.sql_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
+
+            #self.dfnewgoal = self.sql_goal.drop(columns=['id','time_glob'], axis=1)
            
             self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY delta_time DESC LIMIT 1", self.conn)
             self.df_delta = self.sql_delta.drop(columns=['id','delta_time'], axis=1)
+            
+            print("GOAL DF:", self.sql_goal, "\n -----------", type(self.sql_goal))
 
-            self.newdictgoal = dict(zip(self.goalkey, list(self.dfnewgoal.iloc[-1][colindex] + self.df_delta.iloc[-1][colindex] for colindex in range(len(self.df_delta.columns)))))
+            print("DELTA DF:", self.df_delta, "\n -----------", type(self.df_delta))
+            # self.lsgoalcol = self.sql_goal.columns
+            # self.lsdeltacol = self.df_delta.columns
+            # for go, delties in zip(self.lsgoalcol, self.lsdeltacol):
+
+                #self.addition = self.sql_goal[go].values + self.df_delta[delties].values
+            self.addition = pd.DataFrame()
+            for indexofit, names in enumerate(self.goalkey):
+                print(self.sql_goal.iloc[-1][indexofit])
+                print(self.df_delta.iloc[-1][indexofit])
+                self.addition[names] = self.sql_goal.iloc[-1][indexofit] + self.df_delta.iloc[-1][indexofit]
+
+            print("ADDITION DF:", self.addition, "\n -----------")
+            self.newdictgoal = dict(zip(self.goalkey, list(self.addition.iloc[-1][colindex] for colindex in range(len(self.goalkey)))))
+            #self.newdictgoal = dict(zip(self.goalkey, list(self.sql_goal.iloc[-1][colindex] + self.df_delta.iloc[-1][colindex] for colindex in range(len(self.df_delta.columns)))))
 
             # convert figures value as int
             for k, v in self.newdictgoal.items():
@@ -184,7 +205,7 @@ class Computing:
             
             useofdb.insert_dicsql(self.newdictgoal, "goalpick")
 
-    def capacitif(self):
+    def speedness(self):
         self.dictspeed = {}
         self.df_ratio = self.weight()
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
@@ -233,7 +254,7 @@ class Dispatch():
 
     """
     TOTAL CAPACITIF
-    Total picker * capacitif goal/h * number of hours
+    Total picker * speedness goal/h * number of hours
 
     PICKERS DISTRIBUTION
     Total Picker * Ean weights
@@ -245,8 +266,8 @@ class Dispatch():
     Forecast Picking next hour and shift  -> y = ax + b
     
     DELTA CAPACITIF
-    capacitif goal/h - real capacitif picked/h
-    Forecast : total capacitif - Trend pick/all_passed_hours
+    speedness goal/h - real speedness picked/h
+    Forecast : total speedness - Trend pick/all_passed_hours
    
     POLY FUNCTION
     delta time = time ending shift - time of record

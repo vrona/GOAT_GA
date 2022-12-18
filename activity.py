@@ -146,7 +146,7 @@ class Activity():
 
         engindb.weightnratio(self.get_dictglobalpick)
         engindb.new_goal()
-        engindb.capacitif()
+        engindb.speedness()
 
         # Displaying the goals
         for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):

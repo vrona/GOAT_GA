@@ -59,15 +59,15 @@ class CreationDB:
 
         self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
         self.corps = ", ".join((sql_ent))
-        self.complete = self.entete+"id INTEGER PRIMARY KEY, time_glob REAL"+", "+self.corps+", total_pickers INTEGER NOT NULL)"
+        self.complete = self.entete+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.corps+", total_pickers INTEGER NOT NULL)"
 
         self.entete_g = "CREATE TABLE IF NOT EXISTS goalpick ("
         self.corps_g = ", ".join((sql_ent_g))
-        self.g_complete = self.entete_g+"id INTEGER PRIMARY KEY, time_glob REAL"+", "+self.corps_g+")"
+        self.g_complete = self.entete_g+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.corps_g+")"
 
         self.w_entete = "CREATE TABLE IF NOT EXISTS in_weight ("
         self.w_corps = ", ".join((sql_w_ent))
-        self.w_complete = self.w_entete+"time_glob REAL PRIMARY KEY"+", "+self.w_corps+", total_art_topick INTEGER, total_ean_topick INTEGER)"
+        self.w_complete = self.w_entete+"time_glob REAL PRIMARY KEY, "+self.w_corps+", total_art_topick INTEGER, total_ean_topick INTEGER)"
         
         self.capatheo_entete = "CREATE TABLE IF NOT EXISTS in_capa ("
         self.capatheo_corps = ", ".join((sql_capa_theo))
@@ -75,7 +75,7 @@ class CreationDB:
 
         self.entete_delta = "CREATE TABLE IF NOT EXISTS delta_table ("
         self.corps_delta = ", ".join((sql_delta))
-        self.delta_complete = self.entete_delta+"id INTEGER PRIMARY KEY, delta_time REAL "+", "+self.corps_delta+")"
+        self.delta_complete = self.entete_delta+"id INTEGER PRIMARY KEY, delta_time REAL, "+self.corps_delta+")"
         
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
