@@ -95,32 +95,32 @@ class Computing:
         self.conn.commit()
 
     def delta_prod(self):
-            useofdb = UsingDB("./database/goatdata.db")
-            self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn)
+        useofdb = UsingDB("./database/goatdata.db")
+        self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn)
 
-            self.veryglobal = pd.DataFrame(self.sql_query)
-            self.dfbase = self.veryglobal.drop(columns=['id', 'total_pickers'], axis=1)
+        self.veryglobal = pd.DataFrame(self.sql_query)
+        self.dfbase = self.veryglobal.drop(columns=['id', 'total_pickers'], axis=1)
 
-            self.dfbase['time_glob'] = pd.to_datetime(self.dfbase['time_glob'])
+        self.dfbase['time_glob'] = pd.to_datetime(self.dfbase['time_glob'])
 
-            if len(self.dfbase) > 1:
-                self.deltakey = globaldb.ls_delta
+        if len(self.dfbase) > 1:
+            self.deltakey = globaldb.ls_delta
 
-                self.df_diff = self.dfbase.diff(axis=0)
-                self.df_diff.dropna(inplace=True)
+            self.df_diff = self.dfbase.diff(axis=0)
+            self.df_diff.dropna(inplace=True)
 
-                # self.dict_diff = self.df_diff.to_dict()
-                self.listinter = list(self.df_diff.iloc[-1][x] for x in range(len(self.df_diff.columns))) # new list
+            # self.dict_diff = self.df_diff.to_dict()
+            self.listinter = list(self.df_diff.iloc[-1][x] for x in range(len(self.df_diff.columns))) # new list
 
-                self.listinter[0] = self.listinter[0].seconds #timedelta convert into seconds
+            self.listinter[0] = self.listinter[0].seconds #timedelta convert into seconds
 
-                for v in range(len(self.listinter)):
-                    self.listinter[v] = int(self.listinter[v])
+            for v in range(len(self.listinter)):
+                self.listinter[v] = int(self.listinter[v])
 
-                self.lastdict = dict(zip(self.deltakey, list(self.listinter[val] for val in range(1, len(self.listinter)))))  #new dict
-                self.lastdict['delta_time'] = self.listinter[0]
+            self.lastdict = dict(zip(self.deltakey, list(self.listinter[val] for val in range(1, len(self.listinter)))))  #new dict
+            self.lastdict['delta_time'] = self.listinter[0]
 
-                useofdb.insert_dicsql(self.lastdict, "delta_table")
+            useofdb.insert_dicsql(self.lastdict, "delta_table")
 
 
     def new_goal(self):
@@ -209,13 +209,15 @@ class Computing:
             
             for ncol in range(len(adminblocks.mainlistblock)):
                 self.dictspeed["capa_artbck{}".format(ncol)] = int(self.lscapatheo[ncol])
-                self.dictspeed["capa_eanbck{}".format(ncol)] = float(self.dictspeed["capa_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)])
+                self.dictspeed["capa_eanbck{}".format(ncol)] = float(self.dictspeed["capa_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)].values[-1])
+
                 self.dictspeed["capa_art_avg"] = self.dictspeed.get("capa_art_avg", 0) + self.dictspeed["capa_artbck{}".format(ncol)]
                 self.dictspeed["capa_ean_avg"] = self.dictspeed.get("capa_ean_avg", 0) + self.dictspeed["capa_eanbck{}".format(ncol)]
             
             self.dictspeed["capa_art_avg"] = self.dictspeed["capa_art_avg"] / len(adminblocks.mainlistblock)
             self.dictspeed["capa_ean_avg"] = self.dictspeed["capa_ean_avg"] / len(adminblocks.mainlistblock)
 
+            
             useofdb.insert_dicsql(self.dictspeed, "in_capa")
 
         else:
@@ -223,8 +225,7 @@ class Computing:
             self.capa_real = dict(zip(self.df_capa, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
 
             for k, v in self.capa_real.items():
-                self.capa_real[k] = float(v * 3600)
-            print(self.capa_real["capa_artbck0"])
+                self.capa_real[k] = round(float(v * 3600), 3)
 
             for ncol in range(len(adminblocks.mainlistblock)): # DEAD DEAD
                 self.capa_real["capa_art_avg"] = self.capa_real.get("capa_art_avg",0) + self.capa_real["capa_artbck{}".format(ncol)] #self.capa_real.get("capa_art_avg", 0) +
@@ -233,6 +234,7 @@ class Computing:
             self.capa_real["capa_art_avg"] = self.capa_real["capa_art_avg"] / len(adminblocks.mainlistblock)
             self.capa_real["capa_ean_avg"] = self.capa_real["capa_ean_avg"] / len(adminblocks.mainlistblock)
 
+            print("dict speedness:", self.capa_real)
             useofdb.insert_dicsql(self.capa_real, "in_capa")
 
     def weight(self):
