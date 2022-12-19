@@ -144,51 +144,6 @@ class UsingDB:
         row = self.cur.fetchone()
         return row
 
-
-    # def insert_gpick(self, dictbase): # insert_dicsql() works.... then delete this function
-    #     self.dictbase = dictbase
-    #     self.placeholder = ','.join(['?'] * len(self.dictbase))
-    #     self.column = ', '.join(self.dictbase.keys())
-    #     self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('in_globalpick', self.column, self.placeholder)
-
-    #     self.cur.execute(self.sql, list(self.dictbase.values()))
-    #     self.conn.commit()
-
-    """
-    @param self: nothing
-    @param thedataframe: pandas dataframe with delta time already computed 
-    @execute insertion: into 'delta_table' sql table
-    """
-    def insert_delta(self, thedataframe): # TO DELETE
-
-        self.sql_query_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn)
-               
-        self.dfdelta = pd.DataFrame(self.sql_query_delta)
-
-        self.data = thedataframe #.drop(columns=['id'], axis=1)   
-        self.cols = ','.join(self.dfdelta.columns)
-        self.bang = ','.join(['?'] * len(self.dfdelta.columns))
-        print("insert delta func:", self.cols, self.bang)
-        # Watch out OR IGNORE HERE in case of non recording of same amount of delta time in seconds
-        self.sqlf = "INSERT INTO %s (%s) VALUES (%s)" % ('delta_table', self.cols, self.bang)
-
-        self.testlist = list(self.data.iloc[-1][col] for col in self.data.columns)
-        
-        print("LIST OF:",self.testlist)
-        self.second = self.testlist[0].seconds # index 1 for timedelta
-        #self.minute = (self.second//60)%60
-
-        self.testlist[0] = self.second # index 1 for timedelta
-        for i in range(len(self.testlist)):
-            self.testlist[i] = int(self.testlist[i])
-        
-        self.cur.execute(self.sqlf, tuple(self.testlist))
-        self.conn.commit()
-
-    def insert_newdelta(self, dadataframe):
-        self.data = dadataframe.to_dict()
-        print(self.data)
-
     def insert_dicsql(self, dictbase, str_table_name):
         self.dictbase = dictbase
         self.placeholder = ','.join(['?'] * len(self.dictbase))
@@ -198,17 +153,7 @@ class UsingDB:
 
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
-
-
-    # def insert_goal(self, dictbase): # insert_dicsql() works.... then delete this function
-    #     self.dictbase = dictbase
-    #     self.placeholder = ','.join(['?'] * len(self.dictbase))
-    #     self.column = ', '.join(self.dictbase.keys())
-    #     self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('goalpick', self.column, self.placeholder)
-        
-    #     self.cur.execute(self.sql, list(self.dictbase.values()))
-    #     self.conn.commit()
-  
+ 
 
     """
     def remove(self, blocks_in):

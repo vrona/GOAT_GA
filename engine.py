@@ -227,7 +227,7 @@ class Computing:
             for k, v in self.capa_real.items():
                 self.capa_real[k] = round(float(v * 3600), 3)
 
-            for ncol in range(len(adminblocks.mainlistblock)): # DEAD DEAD
+            for ncol in range(len(adminblocks.mainlistblock)):
                 self.capa_real["capa_art_avg"] = self.capa_real.get("capa_art_avg",0) + self.capa_real["capa_artbck{}".format(ncol)] #self.capa_real.get("capa_art_avg", 0) +
                 self.capa_real["capa_ean_avg"] = self.capa_real.get("capa_ean_avg",0) + self.capa_real["capa_eanbck{}".format(ncol)] #self.capa_real.get("capa_ean_avg", 0) + 
 
