@@ -5,6 +5,7 @@ import globaldb
 from globaldb import UsingDB
 import adminblocks
 from math import ceil
+import datetime
 
 globaldf = pd.DataFrame() # dataframe of input art and ean
 
@@ -167,7 +168,7 @@ class Computing:
         else:
             self.newdictgoal = {}
             # get previous goal and picking datas
-            self.sql_input = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn) #time_glob
+            self.sql_input = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
             self.time = self.sql_input['time_glob'].values[-1]
 
             self.sql_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
@@ -244,7 +245,28 @@ class Computing:
         self.df_ratio = pd.read_sql_query(self.phrase, self.conn)
         return self.df_ratio
 
+    def needed_speedness(self):
+        self.shiftdata = self.get_shift()
+        self.df_spgoal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
+        
+        self.shiftendtime, self.shiftname = self.shiftdata[0], self.shiftdata[1]
 
+        print(self.shiftendtime, pd.to_datetime(self.df_spgoal["time_glob"].values[-1]).time())
+        # for sgoal in range(len(adminblocks.mainlistblock)):
+        #     self.df_spgoal = 
+ 
+    def get_shift(self):
+        self.night = (datetime.time(hour= 2, minute=45, second=1), "morning")
+        self.morning = (datetime.time(hour= 12, minute=45, second=1), "morning")
+        self.afternoon = (datetime.time(hour= 19, minute=45, second=1), "morning")
+        
+        if datetime.datetime.now().time() < datetime.time(hour= 2, minute=45, second=1):
+            return self.night
+        elif datetime.time(hour= 5, minute=45, second=1) < datetime.datetime.now().time() < datetime.time(hour= 12, minute=45, second=1):
+            return self.morning
+        elif datetime.time(hour= 12, minute=45, second=2) < datetime.datetime.now().time() < datetime.time(hour= 19, minute=45, second=1):
+            return self.morning
+        
 class Dispatch():
 
     def __init__(self):
