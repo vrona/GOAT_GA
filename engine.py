@@ -281,6 +281,18 @@ class Computing:
 
         return self.speed_goal_art, self.speed_goal_ean
 
+    def optimal_speed(self, vol_todo, time_left):
+        self.vol_todo = vol_todo
+        self.time_left = time_left
+        self.opti_speed = round(float(self.vol_todo/self.time_left), 3)
+        return self.opti_speed
+    
+    def picker_needs(self, opt_speed, real_speed):
+        self.opt_speed = opt_speed
+        self.real_speed = real_speed
+        self.pickr_needs = round(float(self.opt_speed/self.real_speed), 2)
+        return self.pickr_needs
+
 
 class Dispatch():
 

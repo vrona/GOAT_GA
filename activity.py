@@ -45,10 +45,10 @@ class Activity():
         self.eangoal = tk.Label(self.master, text='EAN Goal', justify='right',font=("bold", 13), pady=10)
         self.eangoal.grid(row=self.rowpart+14, column=1)
 
-        self.speedtheo = tk.Label(self.master, text='speedcitif Theorique', justify='right',font=("bold", 13), pady=10)
+        self.speedtheo = tk.Label(self.master, text='Vitesse Theorique', justify='right',font=("bold", 13), pady=10)
         self.speedtheo.grid(row=self.rowpart+3, column=1)
 
-        self.speedgoal = tk.Label(self.master, text='speedcitif Goal', justify='right',font=("bold", 13), pady=10)
+        self.speedgoal = tk.Label(self.master, text='Vitesse Goal', justify='right',font=("bold", 13), pady=10)
         self.speedgoal.grid(row=self.rowpart+5, column=1)
 
         
@@ -68,7 +68,7 @@ class Activity():
         self.totalprelev = tk.Label(self.master, text='Total \nPrelev', font=("bold", 13), pady=10)
         self.totalprelev.grid(row=self.totrow+1, column=3)
 
-        self.deltacap = tk.Label(self.master, text='Delta \nspeedcitif', font=("bold", 13), pady=10)
+        self.deltacap = tk.Label(self.master, text='Delta \nVitesse', font=("bold", 13), pady=10)
         self.deltacap.grid(row=self.totrow+1, column=4)
 
         self.totalpredprlv = tk.Label(self.master, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
