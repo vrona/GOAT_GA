@@ -19,7 +19,7 @@ class Activity():
         self.artgoal_input = {}
         self.eangoal_input = {}
         self.get_dictglobalpick = {}
-        self.capatheo_input = {}
+        self.speedtheo_input = {}
         
         self.dictblockpickerout = {}
 
@@ -45,11 +45,11 @@ class Activity():
         self.eangoal = tk.Label(self.master, text='EAN Goal', justify='right',font=("bold", 13), pady=10)
         self.eangoal.grid(row=self.rowpart+14, column=1)
 
-        self.capatheo = tk.Label(self.master, text='Capacitif Theorique', justify='right',font=("bold", 13), pady=10)
-        self.capatheo.grid(row=self.rowpart+3, column=1)
+        self.speedtheo = tk.Label(self.master, text='speedcitif Theorique', justify='right',font=("bold", 13), pady=10)
+        self.speedtheo.grid(row=self.rowpart+3, column=1)
 
-        self.capagoal = tk.Label(self.master, text='Capacitif Goal', justify='right',font=("bold", 13), pady=10)
-        self.capagoal.grid(row=self.rowpart+5, column=1)
+        self.speedgoal = tk.Label(self.master, text='speedcitif Goal', justify='right',font=("bold", 13), pady=10)
+        self.speedgoal.grid(row=self.rowpart+5, column=1)
 
         
 
@@ -68,7 +68,7 @@ class Activity():
         self.totalprelev = tk.Label(self.master, text='Total \nPrelev', font=("bold", 13), pady=10)
         self.totalprelev.grid(row=self.totrow+1, column=3)
 
-        self.deltacap = tk.Label(self.master, text='Delta \nCapacitif', font=("bold", 13), pady=10)
+        self.deltacap = tk.Label(self.master, text='Delta \nspeedcitif', font=("bold", 13), pady=10)
         self.deltacap.grid(row=self.totrow+1, column=4)
 
         self.totalpredprlv = tk.Label(self.master, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
@@ -154,17 +154,16 @@ class Activity():
             self.artgoal_input[ba].insert(tk.END, rowa)
             self.eangoal_input[ba].insert(tk.END, rowe)
 
-        # Displaying the capatheo
-        for k, val in adminblocks.capatheodict.items():
-            self.capatheo_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
-
+        # Displaying the speedtheo
+        for k, val in adminblocks.speedtheodict.items():
+            self.speedtheo_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
 
     def autoblock(self, lsofblock):
 
         self.part_art_input = {}
         self.part_ean_input = {}
         
-        self.capa_input = {}
+        self.speed_input = {}
         self.lsofblock = lsofblock
         
         for nblock in self.lsofblock:
@@ -172,7 +171,7 @@ class Activity():
             self.dictart_int[self.lsofblock.index(nblock)] = tk.IntVar()
             self.dictean_int[self.lsofblock.index(nblock)] = tk.IntVar()
 
-            self.capa_input[self.lsofblock.index(nblock)] = tk.IntVar()
+            self.speed_input[self.lsofblock.index(nblock)] = tk.IntVar()
             
             self.part_block = tk.Label(self.master, text=self.lsofblock[self.lsofblock.index(nblock)], font=("bold", 12))
             self.part_block.grid(row=1, column=self.lsofblock.index(nblock)+2)
@@ -189,11 +188,11 @@ class Activity():
             self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10) #, textvariable=self.dictean_goal[self.lsofblock.index(nblock)]state=tk.DISABLED)
             self.eangoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+14, column=self.lsofblock.index(nblock)+2)
 
-            self.capatheo_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
-            self.capatheo_input[self.lsofblock.index(nblock)].grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
+            self.speedtheo_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
+            self.speedtheo_input[self.lsofblock.index(nblock)].grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
 
-            self.capagoal_input = tk.Listbox(self.master, justify="center", height=1, width=10) # textvariable=adminblocks.capatheodict[nblock]
-            self.capagoal_input.grid(row=self.rowpart+5, column=self.lsofblock.index(nblock)+2)
+            self.speedgoal_input = tk.Listbox(self.master, justify="center", height=1, width=10) # textvariable=adminblocks.speedtheodict[nblock]
+            self.speedgoal_input.grid(row=self.rowpart+5, column=self.lsofblock.index(nblock)+2)
 
             Meter(master=self.master, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
                  meterstyle='success.TLabel').grid(row=22, column=self.lsofblock.index(nblock)+2)

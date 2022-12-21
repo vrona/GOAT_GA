@@ -6,7 +6,7 @@ from globaldb import CreationDB
 
 is_on = False
 mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "E Rando/Camp", "Prio E", "V Cycle/Urban", "Prio V", "PFECA", "Implant"]
-capatheodict = {"C Chasse":270, "C SportCo":290, "D Glisse":306, "D Running":290, "E Rando/Camp":220, "Prio E":200, "V Cycle/Urban":220, "Prio V":220, "PFECA":200, "Implant":200}
+speedtheodict = {"C Chasse":270, "C SportCo":290, "D Glisse":306, "D Running":290, "E Rando/Camp":220, "Prio E":200, "V Cycle/Urban":220, "Prio V":220, "PFECA":200, "Implant":200}
 setthegoal = [None] *2
 
 class Blocks(tk.Frame):
@@ -159,7 +159,7 @@ class Blocks(tk.Frame):
             return
         else:
             mainlistblock.append(self.blocks_text.get())
-            capatheodict[self.blocks_text.get()] = 200
+            speedtheodict[self.blocks_text.get()] = 200
 
         self.clear_text()
         self.show_block()
@@ -175,7 +175,7 @@ class Blocks(tk.Frame):
             for key, value in self.dicts_select.items():
 
                 mainlistblock.remove(value)
-                capatheodict.pop(value)
+                speedtheodict.pop(value)
                 self.index_selec.remove(key)
     
             self.dicts_select.clear()
@@ -191,7 +191,7 @@ class Blocks(tk.Frame):
 
         self.indexold = mainlistblock.index(self.oldblocks_text.get())
         mainlistblock[self.indexold] = self.newblocks_text.get()
-        capatheodict[self.newblocks_text.get()]  = capatheodict.pop(self.oldblocks_text.get())
+        speedtheodict[self.newblocks_text.get()]  = speedtheodict.pop(self.oldblocks_text.get())
         self.clear_text()
         self.show_block()
 
@@ -203,13 +203,13 @@ class Blocks(tk.Frame):
 
 
     def validate_block(self):
-        global mainlistblock, capatheodict, setthegoal
+        global mainlistblock, speedtheodict, setthegoal
         #self.listofids = list(mainlistblock.index(x) for x in mainlistblock)
         #self.data = {'id': self.listofids, 'name': mainlistblock}
         #self.df = pd.DataFrame(self.data, columns=['id','name'])
         self.pdb = CreationDB(len(mainlistblock),"./database/goatdata.db")
         
-        # capatheodict["capathavg"] = sum(capatheodict.values()) / len(capatheodict) # TO ADD LATER
+        # speedtheodict["speedthavg"] = sum(speedtheodict.values()) / len(speedtheodict) # TO ADD LATER
 
         self.iniblock(mainlistblock)
 

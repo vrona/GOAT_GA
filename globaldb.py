@@ -4,7 +4,7 @@ import pandas as pd
 lsartean = []
 ls_goal_g = []
 ls_w_artean = []
-ls_capa_theoae = []
+ls_speed_theoae = []
 ls_delta = []
 
 class CreationDB:
@@ -15,8 +15,8 @@ class CreationDB:
         self.cur = self.conn.cursor()
         self.createglobalpick(self.numofblock, db)
         self.cur.execute("CREATE TABLE IF NOT EXISTS blocks_in (id INTEGER PRIMARY KEY, name text NOT NULL)")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS capa (capatheo_h REAL NOT NULL)")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS totals_out (id INTEGER PRIMARY KEY, timeofrecord REAL NOT NULL, total_prelev INTEGER NOT NULL, delta_capacitif INTEGER NOT NULL, total_predic INTEGER NOT NULL, capareal_h INTEGER NOT NULL, capaavg INTEGER, FOREIGN KEY (timeofrecord) REFERENCES in_globalpick (time_glob))")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS speed (speedtheo_h REAL NOT NULL)")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS totals_out (id INTEGER PRIMARY KEY, timeofrecord REAL NOT NULL, total_prelev INTEGER NOT NULL, delta_speedcitif INTEGER NOT NULL, total_predic INTEGER NOT NULL, speedreal_h INTEGER NOT NULL, speedavg INTEGER, FOREIGN KEY (timeofrecord) REFERENCES in_globalpick (time_glob))")
         self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES in_globalpick (total_pickers))")
         self.cur.execute("CREATE TABLE IF NOT EXISTS pickers_out (id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, time_block_arrival record REAL NOT NULL, time_block_departure REAL NOT NULL, block_id_origin INTEGER, block_id_landing INTEGER, FOREIGN KEY (block_id_origin) REFERENCES blocks_in (id))")
         self.cur.execute("CREATE TABLE IF NOT EXISTS poly_out (time_glob REAL PRIMARY KEY, total_picker_onsite INTEGER NOT NULL, total_pick_goal INTEGER NOT NULL, poly_status INTEGER, FOREIGN KEY (total_picker_onsite) REFERENCES in_globalpick (time_glob), FOREIGN KEY (time_glob) REFERENCES in_globalpick (total_pickers))")
@@ -27,14 +27,14 @@ class CreationDB:
         sql_ent = []
         sql_ent_g = []
         sql_w_ent = []
-        sql_capa_theo = []
+        sql_speed_theo = []
         sql_delta = []
         self.numoblock = numofblock
         
         lsartean = ["artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_goal_g = ["goal_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["goal_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_w_artean = ["wartbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["weanbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["ratioaebck{}".format(nblock) for nblock in range(0, self.numofblock)]
-        ls_capa_theoae = ["capa_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["capa_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_speed_theoae = ["speed_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["speed_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_delta = ["delta_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["delta_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
 
         for artean in lsartean:
@@ -49,9 +49,9 @@ class CreationDB:
             self.w_attribute = " ".join((w_artean, "FLOAT"))
             sql_w_ent.append(self.w_attribute)
 
-        for capa_ae in ls_capa_theoae:
-            self.capa_attribute = " ".join((capa_ae, "FLOAT"))
-            sql_capa_theo.append(self.capa_attribute)
+        for speed_ae in ls_speed_theoae:
+            self.speed_attribute = " ".join((speed_ae, "FLOAT"))
+            sql_speed_theo.append(self.speed_attribute)
 
         for delta in ls_delta:
             self.attribute_delta = " ".join((delta, "INTEGER"))
@@ -63,15 +63,15 @@ class CreationDB:
 
         self.entete_g = "CREATE TABLE IF NOT EXISTS goalpick ("
         self.corps_g = ", ".join((sql_ent_g))
-        self.g_complete = self.entete_g+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.corps_g+")"
+        self.g_complete = self.entete_g+"id INTEGER PRIMARY KEY, time_left REAL, "+self.corps_g+")"
 
         self.w_entete = "CREATE TABLE IF NOT EXISTS in_weight ("
         self.w_corps = ", ".join((sql_w_ent))
         self.w_complete = self.w_entete+"time_glob REAL PRIMARY KEY, "+self.w_corps+", total_art_topick INTEGER, total_ean_topick INTEGER)"
         
-        self.capatheo_entete = "CREATE TABLE IF NOT EXISTS in_capa ("
-        self.capatheo_corps = ", ".join((sql_capa_theo))
-        self.capa_complete = self.capatheo_entete + self.capatheo_corps + ", capa_art_avg FLOAT, capa_ean_avg FLOAT)"
+        self.speedtheo_entete = "CREATE TABLE IF NOT EXISTS in_speed ("
+        self.speedtheo_corps = ", ".join((sql_speed_theo))
+        self.speed_complete = self.speedtheo_entete + self.speedtheo_corps + ", speed_art_avg FLOAT, speed_ean_avg FLOAT)"
 
         self.entete_delta = "CREATE TABLE IF NOT EXISTS delta_table ("
         self.corps_delta = ", ".join((sql_delta))
@@ -82,7 +82,7 @@ class CreationDB:
         self.cur.execute(self.complete)
         self.cur.execute(self.g_complete)
         self.cur.execute(self.w_complete)
-        self.cur.execute(self.capa_complete)
+        self.cur.execute(self.speed_complete)
         self.cur.execute(self.delta_complete)
         
         # do not delete : global list of art. ean used in backbone.add_arteanpik() 
