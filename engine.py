@@ -203,6 +203,14 @@ class Computing:
             
             useofdb.insert_dicsql(self.newdictgoal, "goalpick")
 
+    def weight(self):
+        #= UsingDB("./database/goatdata.db") # To Simplify if necessary
+        self.ratiocol = ", ".join(["ratioaebck{}".format(x) for x in range(len(adminblocks.mainlistblock))])
+        self.phrase = "SELECT %s FROM in_weight ORDER BY time_glob DESC LIMIT 1" % (self.ratiocol)
+        self.df_ratio = pd.read_sql_query(self.phrase, self.conn)
+        return self.df_ratio
+ 
+
     def speedness(self):
         self.dictspeed = {}
         self.df_ratio = self.weight()
@@ -219,7 +227,7 @@ class Computing:
             
             for ncol in range(len(adminblocks.mainlistblock)):
                 self.dictspeed["speed_artbck{}".format(ncol)] = int(self.lsspeedtheo[ncol])
-                self.dictspeed["speed_eanbck{}".format(ncol)] = float(self.dictspeed["speed_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)].values[-1])
+                self.dictspeed["speed_eanbck{}".format(ncol)] = round(float(self.dictspeed["speed_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)].values[-1]), 3)
 
                 self.dictspeed["speed_goal_artbck{}".format(ncol)], self.dictspeed["speed_goal_eanbck{}".format(ncol)] = self.speedtocatch(ncol)
 
@@ -241,7 +249,7 @@ class Computing:
             for ncol in range(len(adminblocks.mainlistblock)):
                 self.speed_real["speed_art_avg"] = self.speed_real.get("speed_art_avg",0) + self.speed_real["speed_artbck{}".format(ncol)]
                 self.speed_real["speed_ean_avg"] = self.speed_real.get("speed_ean_avg",0) + self.speed_real["speed_eanbck{}".format(ncol)]
-                self.dictspeed["speed_goal_artbck{}".format(ncol)], self.dictspeed["speed_goal_eanbck{}".format(ncol)] = self.speedtocatch(ncol)
+                self.speed_real["speed_goal_artbck{}".format(ncol)], self.speed_real["speed_goal_eanbck{}".format(ncol)] = self.speedtocatch(ncol)
 
             self.speed_real["speed_art_avg"] = self.speed_real["speed_art_avg"] / len(adminblocks.mainlistblock)
             self.speed_real["speed_ean_avg"] = self.speed_real["speed_ean_avg"] / len(adminblocks.mainlistblock)
@@ -249,14 +257,7 @@ class Computing:
             print("dict speedness:", self.speed_real)
             useofdb.insert_dicsql(self.speed_real, "in_speed")
 
-    def weight(self):
-        #= UsingDB("./database/goatdata.db") # To Simplify if necessary
-        self.ratiocol = ", ".join(["ratioaebck{}".format(x) for x in range(len(adminblocks.mainlistblock))])
-        self.phrase = "SELECT %s FROM in_weight ORDER BY time_glob DESC LIMIT 1" % (self.ratiocol)
-        self.df_ratio = pd.read_sql_query(self.phrase, self.conn)
-        return self.df_ratio
- 
- 
+
     def get_shift(self):
         today = datetime.datetime.today()
         self.night = (datetime.time(2, 45,0), "night")
@@ -270,11 +271,13 @@ class Computing:
         elif datetime.time(12, 45, 1) < datetime.datetime.now().time() < datetime.time(19, 45, 0):
             return self.afternoon
 
+
     def speedtocatch(self, ncol):
 
         self.df_spgoal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
-        self.speed_goal_art = round(float(self.df_spgoal.iloc[-1]["speed_goal_artbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
-        self.speed_goal_ean = round(float(self.df_spgoal.iloc[-1]["speed_goal_eanbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
+
+        self.speed_goal_art = round(float(self.df_spgoal.iloc[-1]["goal_artbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
+        self.speed_goal_ean = round(float(self.df_spgoal.iloc[-1]["goal_eanbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
 
         return self.speed_goal_art, self.speed_goal_ean
 
