@@ -6,6 +6,7 @@ from globaldb import UsingDB
 import adminblocks
 from math import ceil
 import datetime
+#import time
 
 globaldf = pd.DataFrame() # dataframe of input art and ean
 
@@ -125,7 +126,13 @@ class Computing:
 
 
     def new_goal(self):
+        format = "%a %b %d %H:%M:%S %Y"
         self.delta_prod()
+        self.shiftdata = self.get_shift()
+        self.shiftendtime = self.shiftdata[0] # limit of shift recall [1] is the shift's name
+        
+        self.getgoaltime = self.shiftendtime - pd.to_datetime(globaldf['time_glob'].values[-1])
+        self.getgoaltime = self.getgoaltime.seconds
 
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
         self.goalkey = globaldb.ls_goal_g # list of futur keys' dict
@@ -138,14 +145,16 @@ class Computing:
 
         if self.cur.fetchone()[0] < 1:
              # query art, ean 1st inputs
-            self.time = globaldf['time_glob'].values[-1]
+
+            
+
             self.dfglobal = globaldf.drop(columns=['time_glob', 'total_pickers'], axis=1)
 
             if adminblocks.setthegoal[0] > 0:
                 self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
                 
                 self.dictgoal = dict(zip(self.goalkey, list(self.weigthvol * self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
-                self.dictgoal['time_glob'] = self.time
+                self.dictgoal['time_left'] = self.getgoaltime
                 useofdb.insert_dicsql(self.dictgoal, "goalpick")
                 return self.dictgoal.items()
 
@@ -153,7 +162,7 @@ class Computing:
                 self.percent = adminblocks.setthegoal[1] / 100
   
                 self.dictgoal = dict(zip(self.goalkey,  list(self.percent * self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
-                self.dictgoal['time_glob'] = self.time
+                self.dictgoal['time_left'] = self.getgoaltime
                 useofdb.insert_dicsql(self.dictgoal, "goalpick")
                 return self.dictgoal
 
@@ -161,7 +170,7 @@ class Computing:
                 self.dictgoal = dict(zip(self.goalkey, list(self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
                 for k, v in self.dictgoal.items():
                     self.dictgoal[k] = int(v)
-                self.dictgoal['time_glob'] = self.time
+                self.dictgoal['time_left'] = self.getgoaltime
                 useofdb.insert_dicsql(self.dictgoal, "goalpick")
                 return self.dictgoal
 
@@ -169,11 +178,11 @@ class Computing:
             self.newdictgoal = {}
             # get previous goal and picking datas
             self.sql_input = pd.read_sql_query("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
-            self.time = self.sql_input['time_glob'].values[-1]
+            #self.time = self.sql_input['time_glob'].values[-1]
 
-            self.sql_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn)
+            self.sql_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_left DESC LIMIT 1", self.conn)
 
-            self.sql_goal = self.sql_goal.drop(columns=['id','time_glob'], axis=1)
+            self.sql_goal = self.sql_goal.drop(columns=['id','time_left'], axis=1)
            
             self.sql_delta = pd.read_sql_query("SELECT * FROM delta_table ORDER BY id DESC LIMIT 1", self.conn)
             self.df_delta = self.sql_delta.drop(columns=['id','delta_time'], axis=1)
@@ -190,7 +199,7 @@ class Computing:
             for k, v in self.newdictgoal.items():
                 self.newdictgoal[k] = int(v)
 
-            self.newdictgoal['time_glob'] = self.time
+            self.newdictgoal['time_left'] = self.getgoaltime
             
             useofdb.insert_dicsql(self.newdictgoal, "goalpick")
 
@@ -200,43 +209,43 @@ class Computing:
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
         self.df_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn).drop(columns=['id'], axis=1)
         
-        self.df_capa = pd.read_sql_query("SELECT * FROM in_capa", self.conn)
+        self.df_speed = pd.read_sql_query("SELECT * FROM in_speed", self.conn)
 
         # check the length of goalpick table
-        self.cur.execute("SELECT count(*) FROM in_capa")
+        self.cur.execute("SELECT count(*) FROM in_speed")
 
         if self.cur.fetchone()[0] < 1:
-            self.lscapatheo = list(adminblocks.capatheodict.values())
+            self.lsspeedtheo = list(adminblocks.speedtheodict.values())
             
             for ncol in range(len(adminblocks.mainlistblock)):
-                self.dictspeed["capa_artbck{}".format(ncol)] = int(self.lscapatheo[ncol])
-                self.dictspeed["capa_eanbck{}".format(ncol)] = float(self.dictspeed["capa_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)].values[-1])
+                self.dictspeed["speed_artbck{}".format(ncol)] = int(self.lsspeedtheo[ncol])
+                self.dictspeed["speed_eanbck{}".format(ncol)] = float(self.dictspeed["speed_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)].values[-1])
 
-                self.dictspeed["capa_art_avg"] = self.dictspeed.get("capa_art_avg", 0) + self.dictspeed["capa_artbck{}".format(ncol)]
-                self.dictspeed["capa_ean_avg"] = self.dictspeed.get("capa_ean_avg", 0) + self.dictspeed["capa_eanbck{}".format(ncol)]
+                self.dictspeed["speed_art_avg"] = self.dictspeed.get("speed_art_avg", 0) + self.dictspeed["speed_artbck{}".format(ncol)]
+                self.dictspeed["speed_ean_avg"] = self.dictspeed.get("speed_ean_avg", 0) + self.dictspeed["speed_eanbck{}".format(ncol)]
             
-            self.dictspeed["capa_art_avg"] = self.dictspeed["capa_art_avg"] / len(adminblocks.mainlistblock)
-            self.dictspeed["capa_ean_avg"] = self.dictspeed["capa_ean_avg"] / len(adminblocks.mainlistblock)
+            self.dictspeed["speed_art_avg"] = self.dictspeed["speed_art_avg"] / len(adminblocks.mainlistblock)
+            self.dictspeed["speed_ean_avg"] = self.dictspeed["speed_ean_avg"] / len(adminblocks.mainlistblock)
 
             
-            useofdb.insert_dicsql(self.dictspeed, "in_capa")
+            useofdb.insert_dicsql(self.dictspeed, "in_speed")
 
         else:
             # get nb picker
-            self.capa_real = dict(zip(self.df_capa, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
+            self.speed_real = dict(zip(self.df_speed, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
 
-            for k, v in self.capa_real.items():
-                self.capa_real[k] = round(float(v * 3600), 3)
+            for k, v in self.speed_real.items():
+                self.speed_real[k] = round(float(v * 3600), 3)
 
             for ncol in range(len(adminblocks.mainlistblock)):
-                self.capa_real["capa_art_avg"] = self.capa_real.get("capa_art_avg",0) + self.capa_real["capa_artbck{}".format(ncol)] #self.capa_real.get("capa_art_avg", 0) +
-                self.capa_real["capa_ean_avg"] = self.capa_real.get("capa_ean_avg",0) + self.capa_real["capa_eanbck{}".format(ncol)] #self.capa_real.get("capa_ean_avg", 0) + 
+                self.speed_real["speed_art_avg"] = self.speed_real.get("speed_art_avg",0) + self.speed_real["speed_artbck{}".format(ncol)]
+                self.speed_real["speed_ean_avg"] = self.speed_real.get("speed_ean_avg",0) + self.speed_real["speed_eanbck{}".format(ncol)]
 
-            self.capa_real["capa_art_avg"] = self.capa_real["capa_art_avg"] / len(adminblocks.mainlistblock)
-            self.capa_real["capa_ean_avg"] = self.capa_real["capa_ean_avg"] / len(adminblocks.mainlistblock)
+            self.speed_real["speed_art_avg"] = self.speed_real["speed_art_avg"] / len(adminblocks.mainlistblock)
+            self.speed_real["speed_ean_avg"] = self.speed_real["speed_ean_avg"] / len(adminblocks.mainlistblock)
 
-            print("dict speedness:", self.capa_real)
-            useofdb.insert_dicsql(self.capa_real, "in_capa")
+            print("dict speedness:", self.speed_real)
+            useofdb.insert_dicsql(self.speed_real, "in_speed")
 
     def weight(self):
         #= UsingDB("./database/goatdata.db") # To Simplify if necessary
@@ -244,36 +253,44 @@ class Computing:
         self.phrase = "SELECT %s FROM in_weight ORDER BY time_glob DESC LIMIT 1" % (self.ratiocol)
         self.df_ratio = pd.read_sql_query(self.phrase, self.conn)
         return self.df_ratio
-
-    def needed_speedness(self):
-        self.shiftdata = self.get_shift()
-        self.df_spgoal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
-        
-        self.shiftendtime, self.shiftname = self.shiftdata[0], self.shiftdata[1]
-
-        print(self.shiftendtime, pd.to_datetime(self.df_spgoal["time_glob"].values[-1]).time())
-        # for sgoal in range(len(adminblocks.mainlistblock)):
-        #     self.df_spgoal = 
+ 
  
     def get_shift(self):
-        self.night = (datetime.time(hour= 2, minute=45, second=1), "morning")
-        self.morning = (datetime.time(hour= 12, minute=45, second=1), "morning")
-        self.afternoon = (datetime.time(hour= 19, minute=45, second=1), "morning")
+        today = datetime.datetime.today()
+        self.night = (datetime.time(2, 45,0), "night")
+        self.morning = (datetime.time(12, 45, 0), "morning")
+        self.afternoon = (datetime.datetime(today.year, today.month, today.day, 19, 45, 1), "afternoon")
         
-        if datetime.datetime.now().time() < datetime.time(hour= 2, minute=45, second=1):
+        if datetime.datetime.now().time() < datetime.time(2, 5, 0):
             return self.night
-        elif datetime.time(hour= 5, minute=45, second=1) < datetime.datetime.now().time() < datetime.time(hour= 12, minute=45, second=1):
+        elif datetime.time(5, 5, 0) < datetime.datetime.now().time() < datetime.time(12, 45, 0):
             return self.morning
-        elif datetime.time(hour= 12, minute=45, second=2) < datetime.datetime.now().time() < datetime.time(hour= 19, minute=45, second=1):
-            return self.morning
+        elif datetime.time(12, 45, 1) < datetime.datetime.now().time() < datetime.time(19, 45, 0):
+            return self.afternoon
+
+    def need_speedness(self):
+        self.shiftdata = self.get_shift()
+        self.df_spgoal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
+        self.shiftendtime, self.shiftname = self.shiftdata[0], self.shiftdata[1]
+
+        self.timetodelta = datetime.timedelta(hours=self.shiftendtime.hour,minutes=self.shiftendtime.minute, seconds=self.shiftendtime.second)
+        self.deltatime = datetime.datetime.now() - self.timetodelta
         
+        print(self.shiftendtime, self.shiftname, self.timetodelta, self.deltatime)
+
+        #self.getdiff = self.shiftendtime - pd.to_datetime(self.df_spgoal["time_glob"].values[-1]).time()
+        self.goaltime = pd.to_datetime(self.df_spgoal["time_glob"].values[-1]).time()
+
+        # for sgoal in range(len(adminblocks.mainlistblock)):
+        #     self.df_spgoal =
+
 class Dispatch():
 
     def __init__(self):
         pass
 
     """
-    TOTAL CAPACITIF
+    TOTAL speedCITIF
     Total picker * speedness goal/h * number of hours
 
     PICKERS DISTRIBUTION
@@ -285,7 +302,7 @@ class Dispatch():
     - Trend pick/all_passed_hours
     Forecast Picking next hour and shift  -> y = ax + b
     
-    DELTA CAPACITIF
+    DELTA speedCITIF
     speedness goal/h - real speedness picked/h
     Forecast : total speedness - Trend pick/all_passed_hours
    
