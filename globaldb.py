@@ -4,7 +4,7 @@ import pandas as pd
 lsartean = []
 ls_goal_g = []
 ls_w_artean = []
-ls_speed_theoae = []
+ls_speed_artean = []
 ls_delta = []
 
 class CreationDB:
@@ -34,7 +34,7 @@ class CreationDB:
         lsartean = ["artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_goal_g = ["goal_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["goal_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_w_artean = ["wartbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["weanbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["ratioaebck{}".format(nblock) for nblock in range(0, self.numofblock)]
-        ls_speed_theoae = ["speed_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["speed_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_speed_artean = ["speed_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["speed_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["speed_goal_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["speed_goal_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_delta = ["delta_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["delta_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
 
         for artean in lsartean:
@@ -49,7 +49,7 @@ class CreationDB:
             self.w_attribute = " ".join((w_artean, "FLOAT"))
             sql_w_ent.append(self.w_attribute)
 
-        for speed_ae in ls_speed_theoae:
+        for speed_ae in ls_speed_artean:
             self.speed_attribute = " ".join((speed_ae, "FLOAT"))
             sql_speed_theo.append(self.speed_attribute)
 

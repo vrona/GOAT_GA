@@ -126,7 +126,7 @@ class Computing:
 
 
     def new_goal(self):
-        format = "%a %b %d %H:%M:%S %Y"
+        
         self.delta_prod()
         self.shiftdata = self.get_shift()
         self.shiftendtime = self.shiftdata[0] # limit of shift recall [1] is the shift's name
@@ -221,13 +221,14 @@ class Computing:
                 self.dictspeed["speed_artbck{}".format(ncol)] = int(self.lsspeedtheo[ncol])
                 self.dictspeed["speed_eanbck{}".format(ncol)] = float(self.dictspeed["speed_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)].values[-1])
 
+                self.dictspeed["speed_goal_artbck{}".format(ncol)], self.dictspeed["speed_goal_eanbck{}".format(ncol)] = self.speedtocatch(ncol)
+
                 self.dictspeed["speed_art_avg"] = self.dictspeed.get("speed_art_avg", 0) + self.dictspeed["speed_artbck{}".format(ncol)]
                 self.dictspeed["speed_ean_avg"] = self.dictspeed.get("speed_ean_avg", 0) + self.dictspeed["speed_eanbck{}".format(ncol)]
             
             self.dictspeed["speed_art_avg"] = self.dictspeed["speed_art_avg"] / len(adminblocks.mainlistblock)
             self.dictspeed["speed_ean_avg"] = self.dictspeed["speed_ean_avg"] / len(adminblocks.mainlistblock)
 
-            
             useofdb.insert_dicsql(self.dictspeed, "in_speed")
 
         else:
@@ -240,6 +241,7 @@ class Computing:
             for ncol in range(len(adminblocks.mainlistblock)):
                 self.speed_real["speed_art_avg"] = self.speed_real.get("speed_art_avg",0) + self.speed_real["speed_artbck{}".format(ncol)]
                 self.speed_real["speed_ean_avg"] = self.speed_real.get("speed_ean_avg",0) + self.speed_real["speed_eanbck{}".format(ncol)]
+                self.dictspeed["speed_goal_artbck{}".format(ncol)], self.dictspeed["speed_goal_eanbck{}".format(ncol)] = self.speedtocatch(ncol)
 
             self.speed_real["speed_art_avg"] = self.speed_real["speed_art_avg"] / len(adminblocks.mainlistblock)
             self.speed_real["speed_ean_avg"] = self.speed_real["speed_ean_avg"] / len(adminblocks.mainlistblock)
@@ -268,21 +270,14 @@ class Computing:
         elif datetime.time(12, 45, 1) < datetime.datetime.now().time() < datetime.time(19, 45, 0):
             return self.afternoon
 
-    def need_speedness(self):
-        self.shiftdata = self.get_shift()
-        self.df_spgoal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY time_glob DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
-        self.shiftendtime, self.shiftname = self.shiftdata[0], self.shiftdata[1]
+    def speedtocatch(self, ncol):
 
-        self.timetodelta = datetime.timedelta(hours=self.shiftendtime.hour,minutes=self.shiftendtime.minute, seconds=self.shiftendtime.second)
-        self.deltatime = datetime.datetime.now() - self.timetodelta
-        
-        print(self.shiftendtime, self.shiftname, self.timetodelta, self.deltatime)
+        self.df_spgoal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
+        self.speed_goal_art = round(float(self.df_spgoal.iloc[-1]["speed_goal_artbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
+        self.speed_goal_ean = round(float(self.df_spgoal.iloc[-1]["speed_goal_eanbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
 
-        #self.getdiff = self.shiftendtime - pd.to_datetime(self.df_spgoal["time_glob"].values[-1]).time()
-        self.goaltime = pd.to_datetime(self.df_spgoal["time_glob"].values[-1]).time()
+        return self.speed_goal_art, self.speed_goal_ean
 
-        # for sgoal in range(len(adminblocks.mainlistblock)):
-        #     self.df_spgoal =
 
 class Dispatch():
 
