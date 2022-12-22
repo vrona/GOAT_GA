@@ -55,7 +55,7 @@ class Computing:
 
         globaldf = pd.DataFrame(self.sql_query, columns=[key for key in dictbase.keys()])
         
-        # doing some maths to get total, weight
+        # doing some maths to get total, get_weight
 
         self.dfwr = globaldf.drop(columns=['total_pickers'], axis=1)
 
@@ -124,6 +124,18 @@ class Computing:
 
             useofdb.insert_dicsql(self.lastdict, "delta_table")
 
+    def get_shift(self):
+        today = datetime.datetime.today()
+        self.night = (datetime.time(2, 45,0), "night")
+        self.morning = (datetime.time(12, 45, 0), "morning")
+        self.afternoon = (datetime.datetime(today.year, today.month, today.day, 19, 45, 1), "afternoon")
+        
+        if datetime.datetime.now().time() < datetime.time(2, 5, 0):
+            return self.night
+        elif datetime.time(5, 5, 0) < datetime.datetime.now().time() < datetime.time(12, 45, 0):
+            return self.morning
+        elif datetime.time(12, 45, 1) < datetime.datetime.now().time() < datetime.time(19, 45, 0):
+            return self.afternoon
 
     def new_goal(self):
         
@@ -145,8 +157,6 @@ class Computing:
 
         if self.cur.fetchone()[0] < 1:
              # query art, ean 1st inputs
-
-            
 
             self.dfglobal = globaldf.drop(columns=['time_glob', 'total_pickers'], axis=1)
 
@@ -203,17 +213,16 @@ class Computing:
             
             useofdb.insert_dicsql(self.newdictgoal, "goalpick")
 
-    def weight(self):
+    def get_weight(self):
         #= UsingDB("./database/goatdata.db") # To Simplify if necessary
         self.ratiocol = ", ".join(["ratioaebck{}".format(x) for x in range(len(adminblocks.mainlistblock))])
         self.phrase = "SELECT %s FROM in_weight ORDER BY time_glob DESC LIMIT 1" % (self.ratiocol)
         self.df_ratio = pd.read_sql_query(self.phrase, self.conn)
         return self.df_ratio
  
-
     def speedness(self):
         self.dictspeed = {}
-        self.df_ratio = self.weight()
+        self.df_ratio = self.get_weight()
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
         self.df_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn).drop(columns=['id'], axis=1)
         
@@ -257,21 +266,6 @@ class Computing:
             print("dict speedness:", self.speed_real)
             useofdb.insert_dicsql(self.speed_real, "in_speed")
 
-
-    def get_shift(self):
-        today = datetime.datetime.today()
-        self.night = (datetime.time(2, 45,0), "night")
-        self.morning = (datetime.time(12, 45, 0), "morning")
-        self.afternoon = (datetime.datetime(today.year, today.month, today.day, 19, 45, 1), "afternoon")
-        
-        if datetime.datetime.now().time() < datetime.time(2, 5, 0):
-            return self.night
-        elif datetime.time(5, 5, 0) < datetime.datetime.now().time() < datetime.time(12, 45, 0):
-            return self.morning
-        elif datetime.time(12, 45, 1) < datetime.datetime.now().time() < datetime.time(19, 45, 0):
-            return self.afternoon
-
-
     def speedtocatch(self, ncol):
 
         self.df_spgoal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
@@ -286,23 +280,29 @@ class Computing:
         self.time_left = time_left
         self.opti_speed = round(float(self.vol_todo/self.time_left), 3)
         return self.opti_speed
+
+    def truck_time(self):
+        pass
     
+
+class Dispatch():
+
+    def __init__(self, db):
+
+        try:
+            self.conn = sqlite3.connect(db)
+            self.cur = self.conn.cursor()
+        except Exception as e:
+            print(f'An error occurred: {e}.')
+            exit()
+
     def picker_needs(self, opt_speed, real_speed):
         self.opt_speed = opt_speed
         self.real_speed = real_speed
         self.pickr_needs = round(float(self.opt_speed/self.real_speed), 2)
         return self.pickr_needs
 
-
-class Dispatch():
-
-    def __init__(self):
-        pass
-
     """
-    TOTAL speedCITIF
-    Total picker * speedness goal/h * number of hours
-
     PICKERS DISTRIBUTION
     Total Picker * Ean weights
     Total Picker * Articles weights

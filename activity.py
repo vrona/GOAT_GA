@@ -51,8 +51,6 @@ class Activity():
         self.speedgoal = tk.Label(self.master, text='Vitesse Goal', justify='right',font=("bold", 13), pady=10)
         self.speedgoal.grid(row=self.rowpart+5, column=1)
 
-        
-
         # POLY PART
         #self.poly_widget()
 
