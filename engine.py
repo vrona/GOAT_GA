@@ -258,14 +258,11 @@ class Computing:
 
         else:
             self.df_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn).drop(columns=['id'], axis=1)
-            print("DF DELTA:", self.df_delta)
             self.df_speed = pd.read_sql_query("SELECT * FROM in_speed", self.conn).drop(columns=['id'], axis=1)
-            print("DF SPEED:", self.df_speed)
 
             # get nb picker
-
             self.speed_real = dict(zip(globaldb.ls_speed_artean, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
-            print("DICT REAL SPEED:", self.speed_real)
+
             for k, v in self.speed_real.items():
                 self.speed_real[k] = round(float(v * 3600), 3)
 
@@ -277,7 +274,6 @@ class Computing:
             self.speed_real["speed_art_avg"] = self.speed_real["speed_art_avg"] / len(adminblocks.mainlistblock)
             self.speed_real["speed_ean_avg"] = self.speed_real["speed_ean_avg"] / len(adminblocks.mainlistblock)
 
-            print("dict speedness:", self.speed_real)
             useofdb.insert_dicsql(self.speed_real, "in_speed")
 
     def total(self):
@@ -319,18 +315,22 @@ class Dispatch():
         self.pickr_needs = round(float(self.opt_speed/self.real_speed), 2)
         return self.pickr_needs
 
-    def get_pickerneed(self, ncol):
+
+    def get_picker_bck_need(self):
+        self.gogo = []
+        self.dictpkrneed_ean = {}
         self.df_speed = pd.read_sql_query("SELECT * FROM in_speed ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
         
-        self.opti_speedart = round(float(self.df_speed.iloc[-1]["speed_goal_artbck{}".format(ncol)]), 2)
-        self.real_speedart = round(float(self.df_speed.iloc[-1]["speed_artbck{}".format(ncol)]), 2)
+        for ncol in range(len(adminblocks.mainlistblock)):
+            # self.opti_speedart = round(float(self.df_speed.iloc[-1]["speed_goal_artbck{}".format(ncol)]), 2)
+            # self.real_speedart = round(float(self.df_speed.iloc[-1]["speed_artbck{}".format(ncol)]), 2)
 
-        self.opti_speedean = round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2)
-        self.real_speedean = round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2)
-
-        self.pickr_need_art = self.picker_needs(self.opti_speedart, self.real_speedart)
-        self.pickr_need_ean= self.picker_needs(self.opti_speedean, self.real_speedean)
-        return self.pickr_need_art, self.pickr_need_ean
+            #self.pickr_need_art = self.picker_needs(self.opti_speedart, self.real_speedart)
+            self.dictpkrneed_ean["pkreanbck{}".format(ncol)]= self.picker_needs(round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2), round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2))
+            self.gogo.append(self.dictpkrneed_ean["pkreanbck{}".format(ncol)])
+        
+        self.totalprkneed = sum(self.dictpkrneed_ean.values())
+        return self.gogo, self.totalprkneed #self.pickr_need_art, 
 
     def weights(self, pickers, totalpickers, ncol):
         self.pickers = pickers

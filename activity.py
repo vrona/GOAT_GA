@@ -148,8 +148,8 @@ class Activity():
         engindb.new_goal()
         engindb.speedness()
 
-        for n in range(len(adminblocks.mainlistblock)):
-            print(dispatch.get_pickerneed(n))
+        
+        print(dispatch.get_picker_bck_need())
         # Displaying the goals
         for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
             self.artgoal_input[ba].insert(tk.END, rowa)
