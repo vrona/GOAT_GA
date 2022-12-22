@@ -219,14 +219,22 @@ class Computing:
         self.phrase = "SELECT %s FROM in_weight ORDER BY time_glob DESC LIMIT 1" % (self.ratiocol)
         self.df_ratio = pd.read_sql_query(self.phrase, self.conn)
         return self.df_ratio
- 
+
+    def speedtocatch(self, ncol):
+
+        self.df_spgoal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
+
+        self.speed_goal_art = round(float(self.df_spgoal.iloc[-1]["goal_artbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
+        self.speed_goal_ean = round(float(self.df_spgoal.iloc[-1]["goal_eanbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
+
+        return self.speed_goal_art, self.speed_goal_ean
+
+
     def speedness(self):
         self.dictspeed = {}
         self.df_ratio = self.get_weight()
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
-        self.df_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn).drop(columns=['id'], axis=1)
-        
-        self.df_speed = pd.read_sql_query("SELECT * FROM in_speed", self.conn)
+
 
         # check the length of goalpick table
         self.cur.execute("SELECT count(*) FROM in_speed")
@@ -249,9 +257,15 @@ class Computing:
             useofdb.insert_dicsql(self.dictspeed, "in_speed")
 
         else:
-            # get nb picker
-            self.speed_real = dict(zip(self.df_speed, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
+            self.df_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn).drop(columns=['id'], axis=1)
+            print("DF DELTA:", self.df_delta)
+            self.df_speed = pd.read_sql_query("SELECT * FROM in_speed", self.conn).drop(columns=['id'], axis=1)
+            print("DF SPEED:", self.df_speed)
 
+            # get nb picker
+
+            self.speed_real = dict(zip(globaldb.ls_speed_artean, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
+            print("DICT REAL SPEED:", self.speed_real)
             for k, v in self.speed_real.items():
                 self.speed_real[k] = round(float(v * 3600), 3)
 
@@ -266,14 +280,17 @@ class Computing:
             print("dict speedness:", self.speed_real)
             useofdb.insert_dicsql(self.speed_real, "in_speed")
 
-    def speedtocatch(self, ncol):
+    def total(self):
+        'totals_out'
 
-        self.df_spgoal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
-
-        self.speed_goal_art = round(float(self.df_spgoal.iloc[-1]["goal_artbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
-        self.speed_goal_ean = round(float(self.df_spgoal.iloc[-1]["goal_eanbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
-
-        return self.speed_goal_art, self.speed_goal_ean
+        """
+        id 
+        timeofrecord == FOREIGN KEY (timeofrecord) REFERENCES in_globalpick (time_glob))
+        total_prelev == sum_delta
+        delta_speed == diff speed goal - speed real
+        block_predic == ax + b
+        total_predic == sum block_predic
+        """
 
     def optimal_speed(self, vol_todo, time_left):
         self.vol_todo = vol_todo
@@ -295,12 +312,35 @@ class Dispatch():
         except Exception as e:
             print(f'An error occurred: {e}.')
             exit()
-
+    
     def picker_needs(self, opt_speed, real_speed):
         self.opt_speed = opt_speed
         self.real_speed = real_speed
         self.pickr_needs = round(float(self.opt_speed/self.real_speed), 2)
         return self.pickr_needs
+
+    def get_pickerneed(self, ncol):
+        self.df_speed = pd.read_sql_query("SELECT * FROM in_speed ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
+        
+        self.opti_speedart = round(float(self.df_speed.iloc[-1]["speed_goal_artbck{}".format(ncol)]), 2)
+        self.real_speedart = round(float(self.df_speed.iloc[-1]["speed_artbck{}".format(ncol)]), 2)
+
+        self.opti_speedean = round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2)
+        self.real_speedean = round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2)
+
+        self.pickr_need_art = self.picker_needs(self.opti_speedart, self.real_speedart)
+        self.pickr_need_ean= self.picker_needs(self.opti_speedean, self.real_speedean)
+        return self.pickr_need_art, self.pickr_need_ean
+
+    def weights(self, pickers, totalpickers, ncol):
+        self.pickers = pickers
+        self.totalpickers = totalpickers
+
+
+
+
+
+
 
     """
     PICKERS DISTRIBUTION

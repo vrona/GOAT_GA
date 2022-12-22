@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.messagebox
 from tkinter import ttk
 import adminblocks
-from engine import Computing
+from engine import Computing, Dispatch
 import globaldb
 from globaldb import UsingDB
 from gauge import Meter
@@ -140,12 +140,16 @@ class Activity():
         # Insert into DB
         pdb = UsingDB("./database/goatdata.db")
         engindb = Computing("./database/goatdata.db")
+        dispatch = Dispatch("./database/goatdata.db")
+
         pdb.insert_dicsql(self.get_dictglobalpick, "in_globalpick")
 
         engindb.weightnratio(self.get_dictglobalpick)
         engindb.new_goal()
         engindb.speedness()
 
+        for n in range(len(adminblocks.mainlistblock)):
+            print(dispatch.get_pickerneed(n))
         # Displaying the goals
         for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
             self.artgoal_input[ba].insert(tk.END, rowa)

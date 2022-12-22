@@ -15,7 +15,6 @@ class CreationDB:
         self.cur = self.conn.cursor()
         self.createglobalpick(self.numofblock, db)
         self.cur.execute("CREATE TABLE IF NOT EXISTS blocks_in (id INTEGER PRIMARY KEY, name text NOT NULL)")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS speed (speedtheo_h REAL NOT NULL)")
         self.cur.execute("CREATE TABLE IF NOT EXISTS totals_out (id INTEGER PRIMARY KEY, timeofrecord REAL NOT NULL, total_prelev INTEGER NOT NULL, delta_speedcitif INTEGER NOT NULL, total_predic INTEGER NOT NULL, speedreal_h INTEGER NOT NULL, speedavg INTEGER, FOREIGN KEY (timeofrecord) REFERENCES in_globalpick (time_glob))")
         self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES in_globalpick (total_pickers))")
         self.cur.execute("CREATE TABLE IF NOT EXISTS pickers_out (id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, time_block_arrival record REAL NOT NULL, time_block_departure REAL NOT NULL, block_id_origin INTEGER, block_id_landing INTEGER, FOREIGN KEY (block_id_origin) REFERENCES blocks_in (id))")
@@ -23,7 +22,7 @@ class CreationDB:
         self.conn.commit()
 
     def createglobalpick(self, numofblock, db):
-        global lsartean, ls_goal_g, ls_delta
+        global lsartean, ls_goal_g, ls_delta, ls_speed_artean
         sql_ent = []
         sql_ent_g = []
         sql_w_ent = []
@@ -57,22 +56,27 @@ class CreationDB:
             self.attribute_delta = " ".join((delta, "INTEGER"))
             sql_delta.append(self.attribute_delta)
 
+        # Table 1 input vol article ean
         self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
         self.corps = ", ".join((sql_ent))
         self.complete = self.entete+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.corps+", total_pickers INTEGER NOT NULL)"
 
+        # Table 2 computed goal article ean
         self.entete_g = "CREATE TABLE IF NOT EXISTS goalpick ("
         self.corps_g = ", ".join((sql_ent_g))
         self.g_complete = self.entete_g+"id INTEGER PRIMARY KEY, time_left REAL, "+self.corps_g+")"
 
+        # Table 3 computed weights article ean
         self.w_entete = "CREATE TABLE IF NOT EXISTS in_weight ("
         self.w_corps = ", ".join((sql_w_ent))
         self.w_complete = self.w_entete+"time_glob REAL PRIMARY KEY, "+self.w_corps+", total_art_topick INTEGER, total_ean_topick INTEGER)"
         
+        # Table 4 computed speed article ean
         self.speedtheo_entete = "CREATE TABLE IF NOT EXISTS in_speed ("
         self.speedtheo_corps = ", ".join((sql_speed_theo))
-        self.speed_complete = self.speedtheo_entete + self.speedtheo_corps + ", speed_art_avg FLOAT, speed_ean_avg FLOAT)"
+        self.speed_complete = self.speedtheo_entete + "id INTEGER PRIMARY KEY, "+self.speedtheo_corps+", speed_art_avg FLOAT, speed_ean_avg FLOAT)"
 
+        # Table 5 computed delta article ean
         self.entete_delta = "CREATE TABLE IF NOT EXISTS delta_table ("
         self.corps_delta = ", ".join((sql_delta))
         self.delta_complete = self.entete_delta+"id INTEGER PRIMARY KEY, delta_time REAL, "+self.corps_delta+")"
