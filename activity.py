@@ -31,32 +31,32 @@ class Activity():
 
         # BLOCKS PART
         self._block = tk.Label(self.master, text='BLOCKS', justify='center', font=('bold', 20), pady=10)
-        self._block.grid(row=0, column=4, )
+        self._block.grid(row=0, column= len(adminblocks.mainlistblock)//2 +2)
 
-        self._article = tk.Label(self.master, text='Articles\nInitiaux', justify='right',font=("bold", 13), pady=10)
+        self._article = tk.Label(self.master, text='Articles\nInitiaux', justify='center',font=("bold", 13), pady=10)
         self._article.grid(row=2, column=1)
 
-        self.ean = tk.Label(self.master, text='EAN\nInitiaux', justify='right',font=("bold", 13), pady=10)
+        self.ean = tk.Label(self.master, text='EAN\nInitiaux', justify='center',font=("bold", 13), pady=10)
         self.ean.grid(row=3, column=1)
 
-        self.articlegoal = tk.Label(self.master, text='Articles Goal', justify='right',font=("bold", 13), pady=10)
+        self.articlegoal = tk.Label(self.master, text='Articles Goal', justify='center',font=("bold", 13), pady=10)
         self.articlegoal.grid(row= self.rowpart+13, column=1)
 
-        self.eangoal = tk.Label(self.master, text='EAN Goal', justify='right',font=("bold", 13), pady=10)
+        self.eangoal = tk.Label(self.master, text='EAN Goal', justify='center',font=("bold", 13), pady=10)
         self.eangoal.grid(row=self.rowpart+14, column=1)
 
-        self.speedtheo = tk.Label(self.master, text='Vitesse Theorique', justify='right',font=("bold", 13), pady=10)
+        self.speedtheo = tk.Label(self.master, text='Vitesse Initiale', justify='center',font=("bold", 13), pady=10)
         self.speedtheo.grid(row=self.rowpart+3, column=1)
 
-        self.speedgoal = tk.Label(self.master, text='Vitesse Goal', justify='right',font=("bold", 13), pady=10)
-        self.speedgoal.grid(row=self.rowpart+5, column=1)
+        self.speedgoal = tk.Label(self.master, text='Vitesse Goal', justify='center',font=("bold", 13), pady=10)
+        self.speedgoal.grid(row=self.rowpart+15, column=1)
 
         # POLY PART
-        #self.poly_widget()
+        self.poly_widget()
 
 
         # SEPARATOR & PICKERS PARTS
-        #self.sep_pickers_widget()
+        self.sep_pickers_widget()
 
         # TOTALS PART
         self.totrow = 21
@@ -74,15 +74,17 @@ class Activity():
 
         self.autoblock(self.lsofblock)
 
-        self.totalpart()
+        # self.totalpart()
 
         # Navigation Button
         self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2)).grid(row=26, column=12, pady=10)
 
     def poly_widget(self):
+        # SEPARATOR PART
+        self.sep_widget(4)
         
         self._poly = tk.Label(self.master, text='POLY', justify='center', font=('bold', 20), pady=10)
-        self._poly.grid(row=self.rowpart+4, column=4)
+        self._poly.grid(row=self.rowpart+4, column=len(adminblocks.mainlistblock)//2 +2)
 
         self._currentopick = tk.Label(self.master, text='TP \nPresent', justify='center', font=('bold', 16), pady=10)
         self._currentopick.grid(row=self.rowpart+5, column=2)
@@ -91,32 +93,35 @@ class Activity():
         self.currentopick.grid(row=self.rowpart+6, column=2)
 
         self._theorytopick = tk.Label(self.master, text='TP \nTheorique', justify='center', font=('bold', 16), pady=10)
-        self._theorytopick.grid(row=self.rowpart+5, column=4)
+        self._theorytopick.grid(row=self.rowpart+5, column=3)
 
         self.theorytopick = tk.Listbox(self.master, height=5, width=10, justify="center")
-        self.theorytopick.grid(row=self.rowpart+6, column=4)
+        self.theorytopick.grid(row=self.rowpart+6, column=3)
 
         self._polystatus = tk.Label(self.master, text='Poly \nStatus', justify='center', font=('bold', 16), pady=10)
-        self._polystatus.grid(row=self.rowpart+5, column=6)
+        self._polystatus.grid(row=self.rowpart+5, column=4)
 
         self.polystatus = tk.Listbox(self.master, height=5, width=10, justify="center")
         Meter(master=self.master, metersize=110, padding=20, amountused=-2, labeltext="Poly",
-                meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=self.rowpart+6, column=6)
+                meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=self.rowpart+6, column=4)
 
-    def sep_pickers_widget(self):
+    def sep_widget(self, location):
         # SEPARATOR PART
         self.seppoly1 = ttk.Separator(self.master, bootstyle="info")
         self.seppoly2 = ttk.Separator(self.master, bootstyle="info")
-        self.seppoly1.grid(row=self.rowpart+4, column=1, sticky="nsew", rowspan=2, columnspan=1)
-        self.seppoly2.grid(row=self.rowpart+4, column=5, sticky="nsew", rowspan=2, columnspan=3)
+        self.seppoly1.grid(row=self.rowpart+location, column=1, sticky="nsew", columnspan= len(adminblocks.mainlistblock)//2 +1)
+        self.seppoly2.grid(row=self.rowpart+location, column=len(adminblocks.mainlistblock)//2 +1, sticky="nsew", columnspan= len(adminblocks.mainlistblock)//2 +3)
+
+    def sep_pickers_widget(self):
+        # SEPARATOR PART
+        self.sep_widget(7)
         
         # PICKERS PART
-        self.picker_row = 10 # to merge
         self.hours = tk.Label(self.master, text='HEURE', font=("bold", 20), pady=10)
-        self.hours.grid(row=self.picker_row, column=1)
+        self.hours.grid(row=self.rowpart+8, column=1)
 
         self.pickertitle = tk.Label(self.master, text='PICKERS', font=("bold", 20), pady=10)
-        self.pickertitle.grid(row=self.picker_row, column=4)
+        self.pickertitle.grid(row=self.rowpart+7, column=len(adminblocks.mainlistblock)//2 +2)
 
     def input_art_ean(self):
 
@@ -150,6 +155,8 @@ class Activity():
 
         
         print(dispatch.get_picker_bck_need())
+
+
         # Displaying the goals
         for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
             self.artgoal_input[ba].insert(tk.END, rowa)
@@ -193,10 +200,10 @@ class Activity():
             self.speedtheo_input[self.lsofblock.index(nblock)].grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
 
             self.speedgoal_input = tk.Listbox(self.master, justify="center", height=1, width=10) # textvariable=adminblocks.speedtheodict[nblock]
-            self.speedgoal_input.grid(row=self.rowpart+5, column=self.lsofblock.index(nblock)+2)
+            self.speedgoal_input.grid(row=self.rowpart+15, column=self.lsofblock.index(nblock)+2)
 
-            Meter(master=self.master, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
-                 meterstyle='success.TLabel').grid(row=22, column=self.lsofblock.index(nblock)+2)
+            # Meter(master=self.master, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
+            #      meterstyle='success.TLabel').grid(row=22, column=self.lsofblock.index(nblock)+2)
             
             self.totalpicker = tk.Label(self.master, text='Total Pickers', font=("bold", 13), pady=10)
             self.totalpicker.grid(row=1, column=self.lsofblock.index(self.lsofblock[-1])+4)
