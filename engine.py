@@ -317,20 +317,18 @@ class Dispatch():
 
 
     def get_picker_bck_need(self):
-        self.gogo = []
+
         self.dictpkrneed_ean = {}
         self.df_speed = pd.read_sql_query("SELECT * FROM in_speed ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
         
         for ncol in range(len(adminblocks.mainlistblock)):
             # self.opti_speedart = round(float(self.df_speed.iloc[-1]["speed_goal_artbck{}".format(ncol)]), 2)
             # self.real_speedart = round(float(self.df_speed.iloc[-1]["speed_artbck{}".format(ncol)]), 2)
-
-            #self.pickr_need_art = self.picker_needs(self.opti_speedart, self.real_speedart)
+            # self.pickr_need_art = self.picker_needs(self.opti_speedart, self.real_speedart)
             self.dictpkrneed_ean["pkreanbck{}".format(ncol)]= self.picker_needs(round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2), round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2))
-            self.gogo.append(self.dictpkrneed_ean["pkreanbck{}".format(ncol)])
-        
+
         self.totalprkneed = sum(self.dictpkrneed_ean.values())
-        return self.gogo, self.totalprkneed #self.pickr_need_art, 
+        return self.dictpkrneed_ean, self.totalprkneed #self.pickr_need_art, 
 
     def weights(self, pickers, totalpickers, ncol):
         self.pickers = pickers
