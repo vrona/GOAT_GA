@@ -54,23 +54,8 @@ class Activity():
         # POLY PART
         self.poly_widget()
 
-
         # SEPARATOR & PICKERS PARTS
         self.sep_pickers_widget()
-
-        # TOTALS PART
-        self.totrow = 21
-        self._totals = tk.Label(self.master, text='TOTALS', justify='center', font=('bold', 16), pady=10)
-        self._totals.grid(row=self.totrow, column=4)
-
-        self.totalprelev = tk.Label(self.master, text='Total \nPrelev', font=("bold", 13), pady=10)
-        self.totalprelev.grid(row=self.totrow+1, column=3)
-
-        self.deltacap = tk.Label(self.master, text='Delta \nVitesse', font=("bold", 13), pady=10)
-        self.deltacap.grid(row=self.totrow+1, column=4)
-
-        self.totalpredprlv = tk.Label(self.master, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
-        self.totalpredprlv.grid(row=self.totrow+1, column=5)
 
         self.autoblock(self.lsofblock)
 
@@ -190,16 +175,16 @@ class Activity():
             self.part_ean_input[self.lsofblock.index(nblock)] = tk.Entry(self.master, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_ean_input[self.lsofblock.index(nblock)].grid(row=3, column=self.lsofblock.index(nblock)+2)
 
-            self.artgoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)#, textvariable=self.dictart_goal[self.lsofblock.index(nblock)], state=tk.DISABLED)
+            self.artgoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
             self.artgoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+13, column=self.lsofblock.index(nblock)+2, padx=15)
 
-            self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10) #, textvariable=self.dictean_goal[self.lsofblock.index(nblock)]state=tk.DISABLED)
+            self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
             self.eangoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+14, column=self.lsofblock.index(nblock)+2)
 
             self.speedtheo_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
             self.speedtheo_input[self.lsofblock.index(nblock)].grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
 
-            self.speedgoal_input = tk.Listbox(self.master, justify="center", height=1, width=10) # textvariable=adminblocks.speedtheodict[nblock]
+            self.speedgoal_input = tk.Listbox(self.master, justify="center", height=1, width=10)
             self.speedgoal_input.grid(row=self.rowpart+15, column=self.lsofblock.index(nblock)+2)
 
             # Meter(master=self.master, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
@@ -214,7 +199,21 @@ class Activity():
             self.buttondata = ttk.Button(self.master, text="GOAT Power", bootstyle="success", command=self.input_art_ean)
             self.buttondata.grid(row=3, column=self.lsofblock.index(self.lsofblock[-1])+5 , padx=10)
 
+    # TOTALS PART 
     def totalpart(self):
+         
+        self.totrow = 21
+        self._totals = tk.Label(self.master, text='TOTALS', justify='center', font=('bold', 16), pady=10)
+        self._totals.grid(row=self.totrow, column=4)
+
+        self.totalprelev = tk.Label(self.master, text='Total \nPrelev', font=("bold", 13), pady=10)
+        self.totalprelev.grid(row=self.totrow+1, column=3)
+
+        self.deltacap = tk.Label(self.master, text='Delta \nVitesse', font=("bold", 13), pady=10)
+        self.deltacap.grid(row=self.totrow+1, column=4)
+
+        self.totalpredprlv = tk.Label(self.master, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
+        self.totalpredprlv.grid(row=self.totrow+1, column=5)
 
         self.totalprelev_list = tk.Listbox(self.master, height=1, width=10, justify="center")
         self.totalprelev_list.grid(row=25, column=3)
