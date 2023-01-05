@@ -139,7 +139,7 @@ class Activity():
         engindb.speedness()
 
         
-        print(dispatch.get_picker_bck_need())
+        print(dispatch.weightsofpkr())
 
 
         # Displaying the goals
@@ -188,7 +188,7 @@ class Activity():
             self.speedgoal_input.grid(row=self.rowpart+15, column=self.lsofblock.index(nblock)+2)
 
             # Meter(master=self.master, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
-            #      meterstyle='success.TLabel').grid(row=22, column=self.lsofblock.index(nblock)+2)
+            # meterstyle='success.TLabel').grid(row=22, column=self.lsofblock.index(nblock)+2)
             
             self.totalpicker = tk.Label(self.master, text='Total Pickers', font=("bold", 13), pady=10)
             self.totalpicker.grid(row=1, column=self.lsofblock.index(self.lsofblock[-1])+4)

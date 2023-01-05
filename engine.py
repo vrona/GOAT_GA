@@ -138,12 +138,12 @@ class Computing:
             return self.afternoon
 
     def new_goal(self):
-        
+
         self.delta_prod()
         self.shiftdata = self.get_shift()
         self.shiftendtime = self.shiftdata[0] # limit of shift recall [1] is the shift's name
-        
-        self.getgoaltime = self.shiftendtime - pd.to_datetime(globaldf['time_glob'].values[-1])
+
+        self.getgoaltime = self.shiftendtime - pd.to_datetime(globaldf['time_glob'].values[-1]) # DANGER HERE
         self.getgoaltime = self.getgoaltime.seconds
 
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
@@ -315,24 +315,38 @@ class Dispatch():
         self.pickr_needs = round(float(self.opt_speed/self.real_speed), 2)
         return self.pickr_needs
 
-
+    # computation of number of picker needed for each block and based on EAN ONLY
     def get_picker_bck_need(self):
 
         self.dictpkrneed_ean = {}
         self.df_speed = pd.read_sql_query("SELECT * FROM in_speed ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
-        
+
         for ncol in range(len(adminblocks.mainlistblock)):
             # self.opti_speedart = round(float(self.df_speed.iloc[-1]["speed_goal_artbck{}".format(ncol)]), 2)
             # self.real_speedart = round(float(self.df_speed.iloc[-1]["speed_artbck{}".format(ncol)]), 2)
             # self.pickr_need_art = self.picker_needs(self.opti_speedart, self.real_speedart)
             self.dictpkrneed_ean["pkreanbck{}".format(ncol)]= self.picker_needs(round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2), round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2))
 
-        self.totalprkneed = sum(self.dictpkrneed_ean.values())
-        return self.dictpkrneed_ean, self.totalprkneed #self.pickr_need_art, 
+        self.totalpkrneed = sum(self.dictpkrneed_ean.values())
+        return self.dictpkrneed_ean, self.totalpkrneed #self.pickr_need_art
 
-    def weights(self, pickers, totalpickers, ncol):
-        self.pickers = pickers
-        self.totalpickers = totalpickers
+    def weightsofpkr(self):
+        self.weighted = {}
+        self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
+        self.declaredtp = round(float(self.df_declaredtp.iloc[-1][0]),2)
+        self.optimalpkr, self.totaloptipkr = self.get_picker_bck_need()
+        if self.declaredtp < self.totaloptipkr:
+            for ncol in range(len(self.optimalpkr)):
+                print(self.optimalpkr[ncol])
+                self.weighted["weightpkr{}".format(ncol)] = (self.optimalpkr[ncol] / self.totaloptipkr) * self.declaredtp
+                return self.weighted, self.totaloptipkr
+        else:
+            return self.optimalpkr, self.totaloptipkr
+
+
+
+
+
 
 
 
