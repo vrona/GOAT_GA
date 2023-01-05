@@ -129,18 +129,22 @@ class Computing:
         self.night = (datetime.time(2, 45,0), "night")
         self.morning = (datetime.time(12, 45, 0), "morning")
         self.afternoon = (datetime.datetime(today.year, today.month, today.day, 19, 45, 1), "afternoon")
-        
+        self.eve = (datetime.datetime(today.year, today.month, today.day, 19, 45, 2), "evening")
+
         if datetime.datetime.now().time() < datetime.time(2, 5, 0):
             return self.night
         elif datetime.time(5, 5, 0) < datetime.datetime.now().time() < datetime.time(12, 45, 0):
             return self.morning
         elif datetime.time(12, 45, 1) < datetime.datetime.now().time() < datetime.time(19, 45, 0):
             return self.afternoon
+        elif datetime.time(19, 45, 2) < datetime.datetime.now().time() < datetime.time(23, 59, 59):
+            return self.eve
 
     def new_goal(self):
 
         self.delta_prod()
         self.shiftdata = self.get_shift()
+        
         self.shiftendtime = self.shiftdata[0] # limit of shift recall [1] is the shift's name
 
         self.getgoaltime = self.shiftendtime - pd.to_datetime(globaldf['time_glob'].values[-1]) # DANGER HERE
@@ -333,15 +337,18 @@ class Dispatch():
     def weightsofpkr(self):
         self.weighted = {}
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
-        self.declaredtp = round(float(self.df_declaredtp.iloc[-1][0]),2)
+        self.declaredtp = self.df_declaredtp.iloc[-1][0]
         self.optimalpkr, self.totaloptipkr = self.get_picker_bck_need()
+        
         if self.declaredtp < self.totaloptipkr:
             for ncol in range(len(self.optimalpkr)):
-                print(self.optimalpkr[ncol])
-                self.weighted["weightpkr{}".format(ncol)] = (self.optimalpkr[ncol] / self.totaloptipkr) * self.declaredtp
-                return self.weighted, self.totaloptipkr
+                
+                self.weighted["weightpkr{}".format(ncol)] = (self.optimalpkr["pkreanbck{}".format(ncol)] / self.totaloptipkr) * self.declaredtp
+                self.polyneeded = self.declaredtp - self.totaloptipkr
+                return self.weighted, self.totaloptipkr, self.polyneeded
         else:
-            return self.optimalpkr, self.totaloptipkr
+            self.polyneeded = self.declaredtp - self.totaloptipkr
+            return self.optimalpkr, self.totaloptipkr, self.polyneeded
 
 
 
