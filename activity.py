@@ -62,8 +62,7 @@ class Activity():
         
         # self.totalpart()
 
-        # Navigation Button
-        self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2)).grid(row=26, column=12, pady=10)
+
 
     def poly_widget(self):
         # SEPARATOR PART
@@ -75,21 +74,21 @@ class Activity():
         self._currentopick = tk.Label(self.master, text='Total Pickers \nprésents', justify='center', font=('bold', 16), pady=10)
         self._currentopick.grid(row=self.rowpart+5, column=2)
 
-        self.currentopick = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 14))
+        self.currentopick = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 15))
         self.currentopick.grid(row=self.rowpart+6, column=2)
 
         self._neededpickr = tk.Label(self.master, text='Total Pickers \nnécessaires', justify='center', font=('bold', 16), pady=10)
         self._neededpickr.grid(row=self.rowpart+5, column=3)
 
-        self.neededpickr = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 14))
+        self.neededpickr = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 15))
         self.neededpickr.grid(row=self.rowpart+6, column=3)
 
         self._polystatus = tk.Label(self.master, text='Poly \nStatus', justify='center', font=('bold', 16), pady=10)
         self._polystatus.grid(row=self.rowpart+5, column=4)
 
-        #self.polystatus = tk.Listbox(self.master, height=5, width=10, justify="center")
-        
-        
+        self.polystatus = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 15))
+        self.polystatus.grid(row=self.rowpart+6, column=4)
+
 
     def sep_widget(self, location):
         # SEPARATOR PART
@@ -112,15 +111,13 @@ class Activity():
         self.hours.grid(row=self.rowpart+8, column=1)
      
         self.hourofdispatch = tk.Listbox(self.master, height=1, width=25, justify="center", font=14)
-        self.totalpickr = tk.Listbox(self.master, height=1, width=8, justify="center", font=14)
         self.hourofdispatch.grid(row=self.rowpart+9, column=1)
         
         for nblock in adminblocks.mainlistblock:
-            
+
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=1, width=5, justify="center")
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(nblock)+2)
-            
-            self.totalpickr.grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(adminblocks.mainlistblock[-1])+4)
+
         # for k, val in adminblocks.speedtheodict.items():
         # self.speedtheo_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
 
@@ -169,7 +166,13 @@ class Activity():
         # Displaying TP Necessaire
         self.neededpickr.insert(tk.END, self.tot_opti_pkr)
         
-        self.polystatus = ttk.Progressbar(self.master, bootstyle= "striped", value=self.poly_value) #height=5, width=10, justify="center", 
+        # Displaying Poly num
+        self.polystatus.insert(tk.END, self.poly_value)
+        if self.poly_value < 0:
+            self.polystatus.itemconfig(0, {'bg' : '#ED2939'})
+        else:
+            self.polystatus.itemconfig(0, {'bg' : '#00A86B'})
+
         # Meter(master=self.master, metersize=80, padding=20, amountused=self.poly_value,
         #         meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=self.rowpart+6, column=4)
         
@@ -223,14 +226,22 @@ class Activity():
             self.buttondata = ttk.Button(self.master, text="GOAT Power", bootstyle="success", command=self.input_art_ean)
             self.buttondata.grid(row=3, column=self.lsofblock.index(self.lsofblock[-1])+5 , padx=10)
 
+            # Navigation Button
+            self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2))
+            self.navbutton.grid(row=26, column=self.lsofblock.index(self.lsofblock[-1])+5, pady=10)
+            
+            # Gauge
             Meter(master=self.master, metersize=100, padding=15, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%', textfont= 'Helvetica 13 bold',
             meterstyle='success.TLabel').grid(row=self.rowpart+15, column=self.lsofblock.index(nblock)+2)
 
     # Clear all listbox
     def clear_listbox(self):
+        self.currentopick.delete(0, tk.END)
         self.neededpickr.delete(0, tk.END)
-        self.neededpickr.delete(0, tk.END)
-        (self.dictblockpickerout[k].delete(0, tk.END) for k in self.dictblockpickerout.keys())
+        self.polystatus.delete(0, tk.END)
+        self.hourofdispatch.delete(0, tk.END)
+        for k in self.dictblockpickerout.keys():
+            self.dictblockpickerout[k].delete(0, tk.END)
 
     
     # TOTALS PART 

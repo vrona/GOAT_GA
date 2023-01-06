@@ -62,7 +62,7 @@ class PickGAApp(tk.Frame):
         self.unlock_btn.grid(row=33, column=1)
         self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.NORMAL)
         #self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED)
-        self.reset_btn.grid(row=33, column=3)
+        self.reset_btn.grid(row=34, column=1, pady=5)
 
     def resetapp(self):
         if os.path.exists("./database/goatdata.db"):
