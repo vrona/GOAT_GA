@@ -58,7 +58,7 @@ class Activity():
         self.sep_pickers_widget()
 
         self.autoblock(self.lsofblock)
-
+        self.pickrhour()
         
         # self.totalpart()
 
@@ -103,11 +103,26 @@ class Activity():
         self.sep_widget(7)
         
         # PICKERS PART
-        self.hours = tk.Label(self.master, text='HEURE', font=("bold", 20), pady=10)
-        self.hours.grid(row=self.rowpart+8, column=1)
+    def pickrhour(self):
 
         self.pickertitle = tk.Label(self.master, text='PICKERS', font=("bold", 20), pady=10)
         self.pickertitle.grid(row=self.rowpart+7, column=len(adminblocks.mainlistblock)//2 +2)
+
+        self.hours = tk.Label(self.master, text='HEURE', font=("bold", 12), pady=10)
+        self.hours.grid(row=self.rowpart+8, column=1)
+     
+        self.hourofdispatch = tk.Listbox(self.master, height=1, width=25, justify="center")
+        self.totalpickr = tk.Listbox(self.master, height=1, width=5, justify="center")
+        self.hourofdispatch.grid(row=self.rowpart+9, column=1)
+        
+        for nblock in adminblocks.mainlistblock:
+            
+            self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=1, width=5, justify="center")
+            self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(nblock)+2)
+            
+            self.totalpickr.grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(adminblocks.mainlistblock[-1])+4)
+        # # for k, val in adminblocks.speedtheodict.items():
+        #     self.speedtheo_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
 
     def input_art_ean(self):
 
@@ -138,7 +153,7 @@ class Activity():
         engindb.weightnratio(self.get_dictglobalpick)
         engindb.new_goal()
         engindb.speedness()
-        a, b, c = dispatch.pkrandpoly()
+        dispatchpkr, totoptipkr, polyvalue = dispatch.pkrandpoly()
         print(a)
         # Displaying the goals
         for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
@@ -184,9 +199,6 @@ class Activity():
 
             self.speedgoal_input = tk.Listbox(self.master, justify="center", height=1, width=10)
             self.speedgoal_input.grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
-
-            # Meter(master=self.master, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
-            # meterstyle='success.TLabel').grid(row=22, column=self.lsofblock.index(nblock)+2)
             
             self.totalpicker = tk.Label(self.master, text='Total Pickers', font=("bold", 13), pady=10)
             self.totalpicker.grid(row=1, column=self.lsofblock.index(self.lsofblock[-1])+4)
@@ -197,6 +209,10 @@ class Activity():
             self.buttondata = ttk.Button(self.master, text="GOAT Power", bootstyle="success", command=self.input_art_ean)
             self.buttondata.grid(row=3, column=self.lsofblock.index(self.lsofblock[-1])+5 , padx=10)
 
+            Meter(master=self.master, metersize=100, padding=15, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%', textfont= 'Helvetica 13 bold',
+            meterstyle='success.TLabel').grid(row=self.rowpart+15, column=self.lsofblock.index(nblock)+2)
+
+    
     # TOTALS PART 
     def totalpart(self):
          
