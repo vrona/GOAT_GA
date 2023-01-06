@@ -144,11 +144,8 @@ class Computing:
 
         self.delta_prod()
         self.shiftdata = self.get_shift()
-        print(datetime.datetime.now().time())
-        
+         
         self.shiftendtime = self.shiftdata[0] # limit of shift recall [1] is the shift's name
-        # self.goalrectime = pd.to_datetime(globaldf['time_glob'].values[-1]).to_pydatetime().date() # DANGER HERE
-        # self.getgoaltime = self.shiftendtime - self.goalrectime
         self.getgoaltime = self.shiftendtime - pd.to_datetime(globaldf['time_glob'].values[-1])
         self.getgoaltime = self.getgoaltime.seconds
 
@@ -241,7 +238,6 @@ class Computing:
         self.df_ratio = self.get_weight()
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
 
-
         # check the length of goalpick table
         self.cur.execute("SELECT count(*) FROM in_speed")
 
@@ -261,6 +257,7 @@ class Computing:
             self.dictspeed["speed_ean_avg"] = self.dictspeed["speed_ean_avg"] / len(adminblocks.mainlistblock)
 
             useofdb.insert_dicsql(self.dictspeed, "in_speed")
+            return self.dictspeed
 
         else:
             self.df_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn).drop(columns=['id'], axis=1)
@@ -281,6 +278,7 @@ class Computing:
             self.speed_real["speed_ean_avg"] = self.speed_real["speed_ean_avg"] / len(adminblocks.mainlistblock)
 
             useofdb.insert_dicsql(self.speed_real, "in_speed")
+            return self.speed_real
 
     def total(self):
         'totals_out'
@@ -328,12 +326,15 @@ class Dispatch():
         self.df_speed = pd.read_sql_query("SELECT * FROM in_speed ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
         print(self.df_speed)
         for ncol in range(len(adminblocks.mainlistblock)):
+
             # self.opti_speedart = round(float(self.df_speed.iloc[-1]["speed_goal_artbck{}".format(ncol)]), 2)
             # self.real_speedart = round(float(self.df_speed.iloc[-1]["speed_artbck{}".format(ncol)]), 2)
             # self.pickr_need_art = self.picker_needs(self.opti_speedart, self.real_speedart)
-            self.dictpkrneed_ean["pkreanbck{}".format(ncol)]= self.picker_needs(round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2), round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2))
+            
+            #self.dictpkrneed_ean["pkreanbck{}".format(ncol)]= self.picker_needs(round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2), round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2))
+            self.dictpkrneed_ean[adminblocks.mainlistblock[ncol]]= self.picker_needs(round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2), round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2))
 
-        self.totalpkrneed = sum(self.dictpkrneed_ean.values())
+        self.totalpkrneed = round(float(sum(self.dictpkrneed_ean.values())), 2)
         return self.dictpkrneed_ean, self.totalpkrneed #self.pickr_need_art
 
     def pkrandpoly(self):
@@ -343,13 +344,14 @@ class Dispatch():
         self.optimalpkr, self.totaloptipkr = self.get_picker_bck_need()
         
         if self.declaredtp < self.totaloptipkr:
-            for ncol in range(len(self.optimalpkr)):
+            for ncol in range(len(adminblocks.mainlistblock)):
                 
-                self.optimalpkr["pkreanbck{}".format(ncol)] = round(float((self.optimalpkr["pkreanbck{}".format(ncol)] / self.totaloptipkr) * self.declaredtp), 2)
-                self.polyneeded = self.declaredtp - self.totaloptipkr
+                #self.optimalpkr["pkreanbck{}".format(ncol)] = round(float((self.optimalpkr["pkreanbck{}".format(ncol)] / self.totaloptipkr) * self.declaredtp), 2)
+                self.optimalpkr[adminblocks.mainlistblock[ncol]] = round(float((self.optimalpkr[adminblocks.mainlistblock[ncol]] / self.totaloptipkr) * self.declaredtp), 2)
+                self.polyneeded = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polyneeded
         else:
-            self.polyneeded = self.declaredtp - self.totaloptipkr
+            self.polyneeded = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polyneeded
 
 

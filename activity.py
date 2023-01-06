@@ -72,24 +72,24 @@ class Activity():
         self._poly = tk.Label(self.master, text='POLY', justify='center', font=('bold', 20), pady=10)
         self._poly.grid(row=self.rowpart+4, column=len(adminblocks.mainlistblock)//2 +2)
 
-        self._currentopick = tk.Label(self.master, text='Total Pkr \nPresent', justify='center', font=('bold', 16), pady=10)
+        self._currentopick = tk.Label(self.master, text='Total Pickers \nprésents', justify='center', font=('bold', 16), pady=10)
         self._currentopick.grid(row=self.rowpart+5, column=2)
 
-        self.currentopick = tk.Listbox(self.master, height=2, width=10, justify="center")
+        self.currentopick = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 14))
         self.currentopick.grid(row=self.rowpart+6, column=2)
 
-        self._theorytopick = tk.Label(self.master, text='Total Pkr \nTheorique', justify='center', font=('bold', 16), pady=10)
-        self._theorytopick.grid(row=self.rowpart+5, column=3)
+        self._neededpickr = tk.Label(self.master, text='Total Pickers \nnécessaires', justify='center', font=('bold', 16), pady=10)
+        self._neededpickr.grid(row=self.rowpart+5, column=3)
 
-        self.theorytopick = tk.Listbox(self.master, height=2, width=10, justify="center")
-        self.theorytopick.grid(row=self.rowpart+6, column=3)
+        self.neededpickr = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 14))
+        self.neededpickr.grid(row=self.rowpart+6, column=3)
 
         self._polystatus = tk.Label(self.master, text='Poly \nStatus', justify='center', font=('bold', 16), pady=10)
         self._polystatus.grid(row=self.rowpart+5, column=4)
 
-        self.polystatus = tk.Listbox(self.master, height=5, width=10, justify="center")
-        Meter(master=self.master, metersize=110, padding=20, amountused=-2, labeltext="Poly",
-                meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=self.rowpart+6, column=4)
+        #self.polystatus = tk.Listbox(self.master, height=5, width=10, justify="center")
+        
+        
 
     def sep_widget(self, location):
         # SEPARATOR PART
@@ -111,8 +111,8 @@ class Activity():
         self.hours = tk.Label(self.master, text='HEURE', font=("bold", 12), pady=10)
         self.hours.grid(row=self.rowpart+8, column=1)
      
-        self.hourofdispatch = tk.Listbox(self.master, height=1, width=25, justify="center")
-        self.totalpickr = tk.Listbox(self.master, height=1, width=5, justify="center")
+        self.hourofdispatch = tk.Listbox(self.master, height=1, width=25, justify="center", font=14)
+        self.totalpickr = tk.Listbox(self.master, height=1, width=8, justify="center", font=14)
         self.hourofdispatch.grid(row=self.rowpart+9, column=1)
         
         for nblock in adminblocks.mainlistblock:
@@ -121,11 +121,11 @@ class Activity():
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(nblock)+2)
             
             self.totalpickr.grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(adminblocks.mainlistblock[-1])+4)
-        # # for k, val in adminblocks.speedtheodict.items():
-        #     self.speedtheo_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
+        # for k, val in adminblocks.speedtheodict.items():
+        # self.speedtheo_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
 
     def input_art_ean(self):
-
+        self.clear_listbox()
         self.dkey = globaldb.lsartean
         limit = len(self.dkey) //2 -1 # getting the frontier between art and ean      
 
@@ -149,20 +149,34 @@ class Activity():
         dispatch = Dispatch("./database/goatdata.db")
 
         pdb.insert_dicsql(self.get_dictglobalpick, "in_globalpick")
-
         engindb.weightnratio(self.get_dictglobalpick)
         engindb.new_goal()
-        engindb.speedness()
-        dispatchpkr, totoptipkr, polyvalue = dispatch.pkrandpoly()
-        print(a)
+        self.speedpkr = engindb.speedness()
+        self.dispatch_pkr, self.tot_opti_pkr, self.poly_value = dispatch.pkrandpoly()
+
         # Displaying the goals
         for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
             self.artgoal_input[ba].insert(tk.END, rowa)
             self.eangoal_input[ba].insert(tk.END, rowe)
 
-        # Displaying the speedtheo
+        # Displaying the initial_speed
         for k, val in adminblocks.speedtheodict.items():
             self.speedtheo_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
+
+        # Displaying TP Present
+        self.currentopick.insert(tk.END, self.get_dictglobalpick['total_pickers'])
+
+        # Displaying TP Necessaire
+        self.neededpickr.insert(tk.END, self.tot_opti_pkr)
+        
+        self.polystatus = ttk.Progressbar(self.master, bootstyle= "striped", value=self.poly_value) #height=5, width=10, justify="center", 
+        # Meter(master=self.master, metersize=80, padding=20, amountused=self.poly_value,
+        #         meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=self.rowpart+6, column=4)
+        
+        # Displaying hour and pickers per block
+        self.hourofdispatch.insert(tk.END, self.get_dictglobalpick['time_glob'])
+        for keys, vals in self.dispatch_pkr.items():
+            self.dictblockpickerout[adminblocks.mainlistblock.index(keys)].insert(tk.END, vals)
 
     def autoblock(self, lsofblock):
 
@@ -211,6 +225,12 @@ class Activity():
 
             Meter(master=self.master, metersize=100, padding=15, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%', textfont= 'Helvetica 13 bold',
             meterstyle='success.TLabel').grid(row=self.rowpart+15, column=self.lsofblock.index(nblock)+2)
+
+    # Clear all listbox
+    def clear_listbox(self):
+        self.neededpickr.delete(0, tk.END)
+        self.neededpickr.delete(0, tk.END)
+        (self.dictblockpickerout[k].delete(0, tk.END) for k in self.dictblockpickerout.keys())
 
     
     # TOTALS PART 
