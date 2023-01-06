@@ -39,17 +39,17 @@ class Activity():
         self.ean = tk.Label(self.master, text='EAN\nInitiaux', justify='center',font=("bold", 13), pady=10)
         self.ean.grid(row=3, column=1)
 
+        self.speedtheo = tk.Label(self.master, text='Vitesse Initiale', justify='center',font=("bold", 13), pady=10)
+        self.speedtheo.grid(row=self.rowpart, column=1)
+        
         self.articlegoal = tk.Label(self.master, text='Articles Goal', justify='center',font=("bold", 13), pady=10)
-        self.articlegoal.grid(row= self.rowpart+13, column=1)
+        self.articlegoal.grid(row= self.rowpart+1, column=1)
 
         self.eangoal = tk.Label(self.master, text='EAN Goal', justify='center',font=("bold", 13), pady=10)
-        self.eangoal.grid(row=self.rowpart+14, column=1)
-
-        self.speedtheo = tk.Label(self.master, text='Vitesse Initiale', justify='center',font=("bold", 13), pady=10)
-        self.speedtheo.grid(row=self.rowpart+3, column=1)
+        self.eangoal.grid(row=self.rowpart+2, column=1)
 
         self.speedgoal = tk.Label(self.master, text='Vitesse Goal', justify='center',font=("bold", 13), pady=10)
-        self.speedgoal.grid(row=self.rowpart+15, column=1)
+        self.speedgoal.grid(row=self.rowpart+3, column=1)
 
         # POLY PART
         self.poly_widget()
@@ -59,6 +59,7 @@ class Activity():
 
         self.autoblock(self.lsofblock)
 
+        
         # self.totalpart()
 
         # Navigation Button
@@ -71,16 +72,16 @@ class Activity():
         self._poly = tk.Label(self.master, text='POLY', justify='center', font=('bold', 20), pady=10)
         self._poly.grid(row=self.rowpart+4, column=len(adminblocks.mainlistblock)//2 +2)
 
-        self._currentopick = tk.Label(self.master, text='TP \nPresent', justify='center', font=('bold', 16), pady=10)
+        self._currentopick = tk.Label(self.master, text='Total Pkr \nPresent', justify='center', font=('bold', 16), pady=10)
         self._currentopick.grid(row=self.rowpart+5, column=2)
 
-        self.currentopick = tk.Listbox(self.master, height=5, width=10, justify="center")
+        self.currentopick = tk.Listbox(self.master, height=2, width=10, justify="center")
         self.currentopick.grid(row=self.rowpart+6, column=2)
 
-        self._theorytopick = tk.Label(self.master, text='TP \nTheorique', justify='center', font=('bold', 16), pady=10)
+        self._theorytopick = tk.Label(self.master, text='Total Pkr \nTheorique', justify='center', font=('bold', 16), pady=10)
         self._theorytopick.grid(row=self.rowpart+5, column=3)
 
-        self.theorytopick = tk.Listbox(self.master, height=5, width=10, justify="center")
+        self.theorytopick = tk.Listbox(self.master, height=2, width=10, justify="center")
         self.theorytopick.grid(row=self.rowpart+6, column=3)
 
         self._polystatus = tk.Label(self.master, text='Poly \nStatus', justify='center', font=('bold', 16), pady=10)
@@ -137,11 +138,8 @@ class Activity():
         engindb.weightnratio(self.get_dictglobalpick)
         engindb.new_goal()
         engindb.speedness()
-
-        
-        print(dispatch.weightsofpkr())
-
-
+        a, b, c = dispatch.pkrandpoly()
+        print(a)
         # Displaying the goals
         for ba, rowa, rowe in zip(range(0, len(globaldb.ls_goal_g)//2), pdb.fetch_artgoal(), pdb.fetch_eangoal()):
             self.artgoal_input[ba].insert(tk.END, rowa)
@@ -175,17 +173,17 @@ class Activity():
             self.part_ean_input[self.lsofblock.index(nblock)] = tk.Entry(self.master, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_ean_input[self.lsofblock.index(nblock)].grid(row=3, column=self.lsofblock.index(nblock)+2)
 
+            self.speedtheo_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
+            self.speedtheo_input[self.lsofblock.index(nblock)].grid(row=self.rowpart, column=self.lsofblock.index(nblock)+2)
+
             self.artgoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
-            self.artgoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+13, column=self.lsofblock.index(nblock)+2, padx=15)
+            self.artgoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+1, column=self.lsofblock.index(nblock)+2, padx=15)
 
             self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
-            self.eangoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+14, column=self.lsofblock.index(nblock)+2)
-
-            self.speedtheo_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
-            self.speedtheo_input[self.lsofblock.index(nblock)].grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
+            self.eangoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+2, column=self.lsofblock.index(nblock)+2)
 
             self.speedgoal_input = tk.Listbox(self.master, justify="center", height=1, width=10)
-            self.speedgoal_input.grid(row=self.rowpart+15, column=self.lsofblock.index(nblock)+2)
+            self.speedgoal_input.grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
 
             # Meter(master=self.master, metersize=130, padding=20, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%',
             # meterstyle='success.TLabel').grid(row=22, column=self.lsofblock.index(nblock)+2)

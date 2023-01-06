@@ -41,7 +41,7 @@ class PickGAApp(tk.Frame):
         self.tabcontrol.add(self.credit, text="Credits")
 
         # Admin widget's Validation & Launch Buttons
-        self.validblock_btn = ttk.Button(self.admin, text="      Valider\n Configuration", bootstyle="danger", command=lambda:[Blocks(self.admin).validate_block(),self.ready(), self.switchstate()], width=12)
+        self.validblock_btn = ttk.Button(self.admin, text="Valider\n Configuration", bootstyle="danger", command=lambda:[Blocks(self.admin).validate_block(),self.ready(), self.switchstate()], width=12)
         self.validblock_btn.grid(row=30, column=1, pady=10)
 
         self.launch_btn = ttk.Button(self.admin, text="Lancer Activité", style='valid.btn', width=12, command=lambda:self.selecttab(1), state=tk.DISABLED)

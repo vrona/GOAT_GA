@@ -336,7 +336,7 @@ class Dispatch():
         self.totalpkrneed = sum(self.dictpkrneed_ean.values())
         return self.dictpkrneed_ean, self.totalpkrneed #self.pickr_need_art
 
-    def weightsofpkr(self):
+    def pkrandpoly(self):
         self.weighted = {}
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
@@ -345,17 +345,12 @@ class Dispatch():
         if self.declaredtp < self.totaloptipkr:
             for ncol in range(len(self.optimalpkr)):
                 
-                self.weighted["weightpkr{}".format(ncol)] = (self.optimalpkr["pkreanbck{}".format(ncol)] / self.totaloptipkr) * self.declaredtp
+                self.optimalpkr["pkreanbck{}".format(ncol)] = round(float((self.optimalpkr["pkreanbck{}".format(ncol)] / self.totaloptipkr) * self.declaredtp), 2)
                 self.polyneeded = self.declaredtp - self.totaloptipkr
-            return self.weighted, self.totaloptipkr, self.polyneeded
+            return self.optimalpkr, self.totaloptipkr, self.polyneeded
         else:
             self.polyneeded = self.declaredtp - self.totaloptipkr
             return self.optimalpkr, self.totaloptipkr, self.polyneeded
-
-
-
-
-
 
 
 
