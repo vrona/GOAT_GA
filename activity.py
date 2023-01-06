@@ -60,7 +60,7 @@ class Activity():
         self.autoblock(self.lsofblock)
         self.pickrhour()
         
-        # self.totalpart()
+        self.totalpart()
 
 
 
@@ -172,9 +172,6 @@ class Activity():
             self.polystatus.itemconfig(0, {'bg' : '#ED2939'})
         else:
             self.polystatus.itemconfig(0, {'bg' : '#00A86B'})
-
-        # Meter(master=self.master, metersize=80, padding=20, amountused=self.poly_value,
-        #         meterstyle='warning.TLabel', metertype='semi', textfont=20).grid(row=self.rowpart+6, column=4)
         
         # Displaying hour and pickers per block
         self.hourofdispatch.insert(tk.END, self.get_dictglobalpick['time_glob'])
@@ -240,8 +237,7 @@ class Activity():
         self.neededpickr.delete(0, tk.END)
         self.polystatus.delete(0, tk.END)
         self.hourofdispatch.delete(0, tk.END)
-        for k in self.dictblockpickerout.keys():
-            self.dictblockpickerout[k].delete(0, tk.END)
+        (self.dictblockpickerout[k].delete(0, tk.END) for k in self.dictblockpickerout.keys())
 
     
     # TOTALS PART 
