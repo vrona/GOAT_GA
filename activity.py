@@ -237,7 +237,8 @@ class Activity():
         self.neededpickr.delete(0, tk.END)
         self.polystatus.delete(0, tk.END)
         self.hourofdispatch.delete(0, tk.END)
-        (self.dictblockpickerout[k].delete(0, tk.END) for k in self.dictblockpickerout.keys())
+        for k in self.dictblockpickerout.keys():
+            self.dictblockpickerout[k].delete(0, tk.END) 
 
     
     # TOTALS PART 
