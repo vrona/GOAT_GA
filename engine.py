@@ -127,7 +127,7 @@ class Computing:
     def get_shift(self):
         today = datetime.datetime.today()
         self.night = (datetime.time(2, 45,0), "night")
-        self.morning = (datetime.time(12, 45, 0), "morning")
+        self.morning = (datetime.datetime(today.year, today.month, today.day, 12, 45, 0), "morning")
         self.afternoon = (datetime.datetime(today.year, today.month, today.day, 19, 45, 1), "afternoon")
         self.eve = (datetime.datetime(today.year, today.month, today.day, 19, 45, 2), "evening")
 
@@ -137,17 +137,19 @@ class Computing:
             return self.morning
         elif datetime.time(12, 45, 1) < datetime.datetime.now().time() < datetime.time(19, 45, 0):
             return self.afternoon
-        elif datetime.time(19, 45, 2) < datetime.datetime.now().time() < datetime.time(23, 59, 59):
+        elif datetime.time(19, 45, 0) < datetime.datetime.now().time() < datetime.time(23, 59, 59):
             return self.eve
 
     def new_goal(self):
 
         self.delta_prod()
         self.shiftdata = self.get_shift()
+        print(datetime.datetime.now().time())
         
         self.shiftendtime = self.shiftdata[0] # limit of shift recall [1] is the shift's name
-
-        self.getgoaltime = self.shiftendtime - pd.to_datetime(globaldf['time_glob'].values[-1]) # DANGER HERE
+        # self.goalrectime = pd.to_datetime(globaldf['time_glob'].values[-1]).to_pydatetime().date() # DANGER HERE
+        # self.getgoaltime = self.shiftendtime - self.goalrectime
+        self.getgoaltime = self.shiftendtime - pd.to_datetime(globaldf['time_glob'].values[-1])
         self.getgoaltime = self.getgoaltime.seconds
 
         useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
@@ -324,7 +326,7 @@ class Dispatch():
 
         self.dictpkrneed_ean = {}
         self.df_speed = pd.read_sql_query("SELECT * FROM in_speed ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
-
+        print(self.df_speed)
         for ncol in range(len(adminblocks.mainlistblock)):
             # self.opti_speedart = round(float(self.df_speed.iloc[-1]["speed_goal_artbck{}".format(ncol)]), 2)
             # self.real_speedart = round(float(self.df_speed.iloc[-1]["speed_artbck{}".format(ncol)]), 2)
@@ -345,7 +347,7 @@ class Dispatch():
                 
                 self.weighted["weightpkr{}".format(ncol)] = (self.optimalpkr["pkreanbck{}".format(ncol)] / self.totaloptipkr) * self.declaredtp
                 self.polyneeded = self.declaredtp - self.totaloptipkr
-                return self.weighted, self.totaloptipkr, self.polyneeded
+            return self.weighted, self.totaloptipkr, self.polyneeded
         else:
             self.polyneeded = self.declaredtp - self.totaloptipkr
             return self.optimalpkr, self.totaloptipkr, self.polyneeded
