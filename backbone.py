@@ -9,7 +9,7 @@ from ttkbootstrap.constants import *
 
 import os
 
-class PickGAApp(tk.Frame):
+class PickGAApp(ttk.Frame): # perhaps tk is enough vs ttk
     
     def __init__(self, master):
         super().__init__(master)
@@ -136,7 +136,7 @@ class PickGAApp(tk.Frame):
 
 
 root = tk.Tk()
-style = Style('flatly')
+style = Style('flatly') #
 style.master
 app = PickGAApp(master = root) #, master=root listofcell=listofoutdoor
 

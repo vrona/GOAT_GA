@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox
-from tkinter import ttk
+#from tkinter import ttk
+import ttkbootstrap as ttk
 import adminblocks
 from engine import Computing, Dispatch
 import globaldb

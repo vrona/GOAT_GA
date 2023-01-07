@@ -1,3 +1,5 @@
+"""ttkbootstrap demo"""
+# python -m ttkbootstrap
 
 """concerning engine"""
 # def insert_capatheo(self, dictcapat):
