@@ -52,43 +52,12 @@ class Activity():
         self.speedgoal = tk.Label(self.master, text='Vitesse Goal', justify='center',font=("bold", 13), pady=10)
         self.speedgoal.grid(row=self.rowpart+3, column=1)
 
-        # POLY PART
-        self.poly_widget()
-
         # SEPARATOR & PICKERS PARTS
         self.sep_pickers_widget()
 
         self.autoblock(self.lsofblock)
         self.pickrhour()
-        
         self.totalpart()
-
-
-
-    def poly_widget(self):
-        # SEPARATOR PART
-        self.sep_widget(4)
-        
-        self._poly = tk.Label(self.master, text='POLY', justify='center', font=('bold', 20), pady=10)
-        self._poly.grid(row=self.rowpart+4, column=len(adminblocks.mainlistblock)//2 +2)
-
-        self._currentopick = tk.Label(self.master, text='Total Pickers \nprésents', justify='center', font=('bold', 16), pady=10)
-        self._currentopick.grid(row=self.rowpart+5, column=2)
-
-        self.currentopick = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 15))
-        self.currentopick.grid(row=self.rowpart+6, column=2)
-
-        self._neededpickr = tk.Label(self.master, text='Total Pickers \nnécessaires', justify='center', font=('bold', 16), pady=10)
-        self._neededpickr.grid(row=self.rowpart+5, column=3)
-
-        self.neededpickr = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 15))
-        self.neededpickr.grid(row=self.rowpart+6, column=3)
-
-        self._polystatus = tk.Label(self.master, text='Poly \nStatus', justify='center', font=('bold', 16), pady=10)
-        self._polystatus.grid(row=self.rowpart+5, column=4)
-
-        self.polystatus = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 15))
-        self.polystatus.grid(row=self.rowpart+6, column=4)
 
 
     def sep_widget(self, location):
@@ -162,7 +131,7 @@ class Activity():
             self.speedtheo_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
 
         # Displaying TP Present
-        self.currentopick.insert(tk.END, self.get_dictglobalpick['total_pickers'])
+        #self.currentopick.insert(tk.END, self.get_dictglobalpick['total_pickers'])
 
         # Displaying TP Necessaire
         self.neededpickr.insert(tk.END, self.tot_opti_pkr)
@@ -221,8 +190,26 @@ class Activity():
             self.totalpicker_input = tk.Entry(self.master, textvariable=self.totalpicker_text, justify="center", width=10)
             self.totalpicker_input.grid(row=2, column=self.lsofblock.index(self.lsofblock[-1])+4)
 
+            # self._currentopick = tk.Label(self.master, text='Total Pickers \nprésents', justify='center', font=('bold', 16), pady=10)
+            # self._currentopick.grid(row=self.rowpart+5, column=2)
+
+            # self.currentopick = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 15))
+            # self.currentopick.grid(row=self.rowpart+6, column=2)
+
+            self._neededpickr = tk.Label(self.master, text='Total Pickers \nnécessaires', justify='center', font=('bold', 13), pady=10)
+            self._neededpickr.grid(row=3, column=self.lsofblock.index(self.lsofblock[-1])+4)
+
+            self.neededpickr = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 14))
+            self.neededpickr.grid(row=4, column=self.lsofblock.index(self.lsofblock[-1])+4)
+
+            self._polystatus = tk.Label(self.master, text='Poly \nStatus', justify='center', font=('bold', 13), pady=10)
+            self._polystatus.grid(row=5, column=self.lsofblock.index(self.lsofblock[-1])+4)
+
+            self.polystatus = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 14))
+            self.polystatus.grid(row=6, column=self.lsofblock.index(self.lsofblock[-1])+4)
+
             self.buttondata = ttk.Button(self.master, text="GOAT Power", bootstyle="success", command=self.input_art_ean)
-            self.buttondata.grid(row=3, column=self.lsofblock.index(self.lsofblock[-1])+5 , padx=10)
+            self.buttondata.grid(row=2, column=self.lsofblock.index(self.lsofblock[-1])+6 , padx=10)
 
             # Navigation Button
             self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2))
@@ -234,7 +221,7 @@ class Activity():
 
     # Clear all listbox
     def clear_listbox(self):
-        self.currentopick.delete(0, tk.END)
+        # self.currentopick.delete(0, tk.END)
         self.neededpickr.delete(0, tk.END)
         self.polystatus.delete(0, tk.END)
         self.hourofdispatch.delete(0, tk.END)
