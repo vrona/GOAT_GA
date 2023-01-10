@@ -169,7 +169,6 @@ class Computing:
                 self.dictgoal = dict(zip(self.goalkey, list(int(self.weigthvol * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
                 self.dictgoal['time_left'] = self.getgoaltime
                 useofdb.insert_dicsql(self.dictgoal, "goalpick")
-                return self.dictgoal.items()
 
             elif adminblocks.setthegoal[1] > 0:
                 self.percent = adminblocks.setthegoal[1] / 100
@@ -177,7 +176,6 @@ class Computing:
                 self.dictgoal = dict(zip(self.goalkey,  list(int(self.percent * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
                 self.dictgoal['time_left'] = self.getgoaltime
                 useofdb.insert_dicsql(self.dictgoal, "goalpick")
-                return self.dictgoal
 
             else:
                 self.dictgoal = dict(zip(self.goalkey, list(self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
@@ -185,7 +183,6 @@ class Computing:
                     self.dictgoal[k] = int(v)
                 self.dictgoal['time_left'] = self.getgoaltime
                 useofdb.insert_dicsql(self.dictgoal, "goalpick")
-                return self.dictgoal
 
         else:
             self.newdictgoal = {}
@@ -215,6 +212,7 @@ class Computing:
             self.newdictgoal['time_left'] = self.getgoaltime
             
             useofdb.insert_dicsql(self.newdictgoal, "goalpick")
+            
 
     def get_weight(self):
         #= UsingDB("./database/goatdata.db") # To Simplify if necessary

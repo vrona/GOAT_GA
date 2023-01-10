@@ -147,6 +147,9 @@ class Activity():
         self.hourofdispatch.insert(tk.END, self.get_dictglobalpick['time_glob'])
         for keys, vals in self.dispatch_pkr.items():
             self.dictblockpickerout[adminblocks.mainlistblock.index(keys)].insert(tk.END, vals)
+        
+        for speed in range(len(adminblocks.mainlistblock)):
+            self.speed_input[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
 
     def autoblock(self, lsofblock):
 
@@ -161,7 +164,7 @@ class Activity():
             self.dictart_int[self.lsofblock.index(nblock)] = tk.IntVar()
             self.dictean_int[self.lsofblock.index(nblock)] = tk.IntVar()
 
-            self.speed_input[self.lsofblock.index(nblock)] = tk.IntVar()
+            #self.speed_input[self.lsofblock.index(nblock)] = tk.IntVar()
             
             self.part_block = tk.Label(self.master, text=self.lsofblock[self.lsofblock.index(nblock)], font=("bold", 12))
             self.part_block.grid(row=1, column=self.lsofblock.index(nblock)+2)
@@ -181,8 +184,8 @@ class Activity():
             self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
             self.eangoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+2, column=self.lsofblock.index(nblock)+2)
 
-            self.speedgoal_input = tk.Listbox(self.master, justify="center", height=1, width=10)
-            self.speedgoal_input.grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
+            self.speed_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
+            self.speed_input[self.lsofblock.index(nblock)].grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
             
             self.totalpicker = tk.Label(self.master, text='Total Pickers', font=("bold", 13), pady=10)
             self.totalpicker.grid(row=1, column=self.lsofblock.index(self.lsofblock[-1])+4)
@@ -226,7 +229,8 @@ class Activity():
         self.polystatus.delete(0, tk.END)
         self.hourofdispatch.delete(0, tk.END)
         for k in self.dictblockpickerout.keys():
-            self.dictblockpickerout[k].delete(0, tk.END) 
+            self.dictblockpickerout[k].delete(0, tk.END)
+            self.speed_input[k].delete(0, tk.END)
 
     
     # TOTALS PART 
