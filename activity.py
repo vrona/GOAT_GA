@@ -187,7 +187,7 @@ class Activity():
             self.speed_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
             self.speed_input[self.lsofblock.index(nblock)].grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
             
-            self.totalpicker = tk.Label(self.master, text='Total Pickers', font=("bold", 13), pady=10)
+            self.totalpicker = tk.Label(self.master, text='Pickers \nPresents', font=("bold", 13), pady=10)
             self.totalpicker.grid(row=1, column=self.lsofblock.index(self.lsofblock[-1])+4)
 
             self.totalpicker_input = tk.Entry(self.master, textvariable=self.totalpicker_text, justify="center", width=10)
@@ -199,7 +199,7 @@ class Activity():
             # self.currentopick = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 15))
             # self.currentopick.grid(row=self.rowpart+6, column=2)
 
-            self._neededpickr = tk.Label(self.master, text='Total Pickers \nnécessaires', justify='center', font=('bold', 13), pady=10)
+            self._neededpickr = tk.Label(self.master, text='Pickers \nnécessaires', justify='center', font=('bold', 13), pady=10)
             self._neededpickr.grid(row=3, column=self.lsofblock.index(self.lsofblock[-1])+4)
 
             self.neededpickr = tk.Listbox(self.master, height=1, width=8, justify="center", font=('bold', 14))

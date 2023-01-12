@@ -322,7 +322,7 @@ class Dispatch():
 
         self.dictpkrneed_ean = {}
         self.df_speed = pd.read_sql_query("SELECT * FROM in_speed ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
-        print(self.df_speed)
+
         for ncol in range(len(adminblocks.mainlistblock)):
 
             # self.opti_speedart = round(float(self.df_speed.iloc[-1]["speed_goal_artbck{}".format(ncol)]), 2)
