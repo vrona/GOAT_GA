@@ -124,6 +124,19 @@ class Computing:
 
             useofdb.insert_dicsql(self.lastdict, "delta_table")
 
+            print(useofdb.compute_totals())
+
+    # def computationOf(self, thedb, deltadict):
+    #     self.deltadict = deltadict
+    #     self.columns_total = pd.read_sql_query("SELECT * FROM total_out", self.conn).columns
+
+    #     self.deltadict["delta_artbck{}".format()] = 
+    #     self.totaldict = dict(self.columns_total, list())
+
+    #     thedb.insert_dicsql(self.totaldict, "total_out")
+
+
+
     def get_shift(self):
         today = datetime.datetime.today()
         self.night = (datetime.time(2, 45,0), "night")

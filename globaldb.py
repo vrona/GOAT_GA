@@ -6,6 +6,7 @@ ls_goal_g = []
 ls_w_artean = []
 ls_speed_artean = []
 ls_delta = []
+ls_total = []
 
 class CreationDB:
     def __init__(self, numofblock, db):
@@ -15,10 +16,10 @@ class CreationDB:
         self.cur = self.conn.cursor()
         self.createglobalpick(self.numofblock, db)
         self.cur.execute("CREATE TABLE IF NOT EXISTS blocks_in (id INTEGER PRIMARY KEY, name text NOT NULL)")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS totals_out (id INTEGER PRIMARY KEY, timeofrecord REAL NOT NULL, total_prelev INTEGER NOT NULL, delta_speedcitif INTEGER NOT NULL, total_predic INTEGER NOT NULL, speedreal_h INTEGER NOT NULL, speedavg INTEGER, FOREIGN KEY (timeofrecord) REFERENCES in_globalpick (time_glob))")
         self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES in_globalpick (total_pickers))")
         self.cur.execute("CREATE TABLE IF NOT EXISTS pickers_out (id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, time_block_arrival record REAL NOT NULL, time_block_departure REAL NOT NULL, block_id_origin INTEGER, block_id_landing INTEGER, FOREIGN KEY (block_id_origin) REFERENCES blocks_in (id))")
         self.cur.execute("CREATE TABLE IF NOT EXISTS poly_out (time_glob REAL PRIMARY KEY, total_picker_onsite INTEGER NOT NULL, total_pick_goal INTEGER NOT NULL, poly_status INTEGER, FOREIGN KEY (total_picker_onsite) REFERENCES in_globalpick (time_glob), FOREIGN KEY (time_glob) REFERENCES in_globalpick (total_pickers))")
+        self.createtotalpick(self.numofblock, db)
         self.conn.commit()
 
     def createglobalpick(self, numofblock, db):
@@ -26,7 +27,7 @@ class CreationDB:
         sql_ent = []
         sql_ent_g = []
         sql_w_ent = []
-        sql_speed_theo = []
+        sql_speed = []
         sql_delta = []
         self.numoblock = numofblock
         
@@ -50,7 +51,7 @@ class CreationDB:
 
         for speed_ae in ls_speed_artean:
             self.speed_attribute = " ".join((speed_ae, "FLOAT"))
-            sql_speed_theo.append(self.speed_attribute)
+            sql_speed.append(self.speed_attribute)
 
         for delta in ls_delta:
             self.attribute_delta = " ".join((delta, "INTEGER"))
@@ -73,7 +74,7 @@ class CreationDB:
         
         # Table 4 computed speed article ean
         self.speedtheo_entete = "CREATE TABLE IF NOT EXISTS in_speed ("
-        self.speedtheo_corps = ", ".join((sql_speed_theo))
+        self.speedtheo_corps = ", ".join((sql_speed))
         self.speed_complete = self.speedtheo_entete + "id INTEGER PRIMARY KEY, "+self.speedtheo_corps+", speed_art_avg FLOAT, speed_ean_avg FLOAT)"
 
         # Table 5 computed delta article ean
@@ -92,6 +93,26 @@ class CreationDB:
         # do not delete : global list of art. ean used in backbone.add_arteanpik() 
         lsartean.insert(0, "time_glob")
         lsartean.insert(len(lsartean), "total_pickers")
+
+    def createtotalpick(self, numofblock, db):
+
+        sql_total = []
+        self.numoblock = numofblock
+
+        ls_total = ["total_picked_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["total_picked_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
+
+        for artean_picked in ls_total:
+            self.attrib_total = " ".join((artean_picked, "INTEGER"))
+            sql_total.append(self.attrib_total)
+
+        # Table 6 input total vol article ean picked
+        self.begin = "CREATE TABLE IF NOT EXISTS total_out ("
+        self.body = ", ".join((sql_total))
+        self.completed = self.begin+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.body+", total_allart INTEGER, total_allean INTEGER, FOREIGN KEY (time_glob) REFERENCES in_globalpick (time_glob))"
+
+        self.conn = sqlite3.connect(db)
+        self.cur = self.conn.cursor()
+        self.cur.execute(self.completed)
 
     def insert_nameblock(self, id, name):
         self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(id, name))
@@ -121,7 +142,7 @@ class UsingDB:
         self.cur.execute("SELECT total_picker FROM block_picker_out ORDER BY total_picker DESC LIMIT 1")
         rows = self.cur.fetchall()
         return rows
-
+    
     """
     @param self: nothing
     @return row: goal of art
@@ -158,6 +179,13 @@ class UsingDB:
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
  
+    def compute_totals(self):
+        self.deltacolumns = ', '.join(ls_delta)
+        self.totalcolumns = ', '.join(ls_total)
+        self.sqltotal = "SELECT SUM(%s) as %s FROM %s" % (self.totalcolumns, self.deltacolumns, 'total_out') #ORDER BY id _SELECT SUM(score) as sum_score FROM game;
+        self.cur.execute(self.sqltotal)
+        row = self.cur.fetchone()
+        return row
 
     """
     def remove(self, blocks_in):

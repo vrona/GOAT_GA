@@ -34,13 +34,13 @@ class Activity():
         self._block = tk.Label(self.master, text='BLOCKS', justify='center', font=('bold', 20), pady=10)
         self._block.grid(row=0, column= len(adminblocks.mainlistblock)//2 +2)
 
-        self._article = tk.Label(self.master, text='Articles\nInitiaux', justify='center',font=("bold", 13), pady=10)
+        self._article = tk.Label(self.master, text='Articles\nTablette', justify='center',font=("bold", 13), pady=10)
         self._article.grid(row=2, column=1)
 
-        self.ean = tk.Label(self.master, text='EAN\nInitiaux', justify='center',font=("bold", 13), pady=10)
+        self.ean = tk.Label(self.master, text='EAN\nTablette', justify='center',font=("bold", 13), pady=10)
         self.ean.grid(row=3, column=1)
 
-        self.speedtheo = tk.Label(self.master, text='Vitesse Initiale', justify='center',font=("bold", 13), pady=10)
+        self.speedtheo = tk.Label(self.master, text='Vitesse Initiale \nart./picker/h.', justify='center',font=("bold", 13), pady=10)
         self.speedtheo.grid(row=self.rowpart, column=1)
         
         self.articlegoal = tk.Label(self.master, text='Articles Goal', justify='center',font=("bold", 13), pady=10)
@@ -49,15 +49,18 @@ class Activity():
         self.eangoal = tk.Label(self.master, text='EAN Goal', justify='center',font=("bold", 13), pady=10)
         self.eangoal.grid(row=self.rowpart+2, column=1)
 
-        self.speedgoal = tk.Label(self.master, text='Vitesse Goal', justify='center',font=("bold", 13), pady=10)
+        self.speedgoal = tk.Label(self.master, text='Vitesse Goal\nart./h.', justify='center',font=("bold", 13), pady=10)
         self.speedgoal.grid(row=self.rowpart+3, column=1)
+
+        self.speedrealt = tk.Label(self.master, text='Vitesse réelle\nart./h.', justify='center',font=("bold", 13), pady=10)
+        self.speedrealt.grid(row=self.rowpart+4, column=1)
 
         # SEPARATOR & PICKERS PARTS
         self.sep_pickers_widget()
 
         self.autoblock(self.lsofblock)
         self.pickrhour()
-        self.totalpart()
+        #self.totalpart()
 
 
     def sep_widget(self, location):
@@ -88,8 +91,6 @@ class Activity():
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=1, width=5, justify="center")
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(nblock)+2)
 
-        # for k, val in adminblocks.speedtheodict.items():
-        # self.speedtheo_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
 
     def input_art_ean(self):
         self.clear_listbox()
@@ -149,14 +150,15 @@ class Activity():
             self.dictblockpickerout[adminblocks.mainlistblock.index(keys)].insert(tk.END, vals)
         
         for speed in range(len(adminblocks.mainlistblock)):
-            self.speed_input[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
+            self.speed_goal[speed].insert(tk.END,  self.speedpkr['speed_goal_artbck{}'.format(speed)])
+            self.speed_realtime[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
 
     def autoblock(self, lsofblock):
 
         self.part_art_input = {}
         self.part_ean_input = {}
-        
-        self.speed_input = {}
+        self.speed_goal = {}
+        self.speed_realtime = {}
         self.lsofblock = lsofblock
         
         for nblock in self.lsofblock:
@@ -164,7 +166,7 @@ class Activity():
             self.dictart_int[self.lsofblock.index(nblock)] = tk.IntVar()
             self.dictean_int[self.lsofblock.index(nblock)] = tk.IntVar()
 
-            #self.speed_input[self.lsofblock.index(nblock)] = tk.IntVar()
+            #self.speed_realtime[self.lsofblock.index(nblock)] = tk.IntVar()
             
             self.part_block = tk.Label(self.master, text=self.lsofblock[self.lsofblock.index(nblock)], font=("bold", 12))
             self.part_block.grid(row=1, column=self.lsofblock.index(nblock)+2)
@@ -184,8 +186,11 @@ class Activity():
             self.eangoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
             self.eangoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+2, column=self.lsofblock.index(nblock)+2)
 
-            self.speed_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
-            self.speed_input[self.lsofblock.index(nblock)].grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
+            self.speed_goal[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
+            self.speed_goal[self.lsofblock.index(nblock)].grid(row=self.rowpart+3, column=self.lsofblock.index(nblock)+2)
+
+            self.speed_realtime[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
+            self.speed_realtime[self.lsofblock.index(nblock)].grid(row=self.rowpart+4, column=self.lsofblock.index(nblock)+2)
             
             self.totalpicker = tk.Label(self.master, text='Pickers \nPresents', font=("bold", 13), pady=10)
             self.totalpicker.grid(row=1, column=self.lsofblock.index(self.lsofblock[-1])+4)
@@ -219,8 +224,8 @@ class Activity():
             self.navbutton.grid(row=26, column=self.lsofblock.index(self.lsofblock[-1])+5, pady=10)
             
             # Gauge
-            Meter(master=self.master, metersize=100, padding=15, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%', textfont= 'Helvetica 13 bold',
-            meterstyle='success.TLabel').grid(row=self.rowpart+15, column=self.lsofblock.index(nblock)+2)
+            Meter(master=self.master, metersize=98, padding=15, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%', textfont= 'Helvetica 12 bold',
+            meterstyle='success.TLabel').grid(row=self.rowpart+16, column=self.lsofblock.index(nblock)+8)
 
     # Clear all listbox
     def clear_listbox(self):
@@ -230,7 +235,8 @@ class Activity():
         self.hourofdispatch.delete(0, tk.END)
         for k in self.dictblockpickerout.keys():
             self.dictblockpickerout[k].delete(0, tk.END)
-            self.speed_input[k].delete(0, tk.END)
+            self.speed_goal[k].delete(0, tk.END)
+            self.speed_realtime[k].delete(0, tk.END)
 
     
     # TOTALS PART 
