@@ -152,6 +152,8 @@ class Activity():
         for speed in range(len(adminblocks.mainlistblock)):
             self.speed_goal[speed].insert(tk.END,  self.speedpkr['speed_goal_artbck{}'.format(speed)])
             self.speed_realtime[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
+    
+    #def get_total/goal(self): TO FINISH TO FINISH
 
     def autoblock(self, lsofblock):
 
@@ -165,8 +167,6 @@ class Activity():
 
             self.dictart_int[self.lsofblock.index(nblock)] = tk.IntVar()
             self.dictean_int[self.lsofblock.index(nblock)] = tk.IntVar()
-
-            #self.speed_realtime[self.lsofblock.index(nblock)] = tk.IntVar()
             
             self.part_block = tk.Label(self.master, text=self.lsofblock[self.lsofblock.index(nblock)], font=("bold", 12))
             self.part_block.grid(row=1, column=self.lsofblock.index(nblock)+2)
