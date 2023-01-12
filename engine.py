@@ -124,7 +124,7 @@ class Computing:
 
             useofdb.insert_dicsql(self.lastdict, "delta_table")
 
-            print(useofdb.compute_totals())
+            print("total",useofdb.compute_totals())
 
     # def computationOf(self, thedb, deltadict):
     #     self.deltadict = deltadict

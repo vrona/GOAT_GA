@@ -95,7 +95,7 @@ class CreationDB:
         lsartean.insert(len(lsartean), "total_pickers")
 
     def createtotalpick(self, numofblock, db):
-
+        global ls_total
         sql_total = []
         self.numoblock = numofblock
 
@@ -108,7 +108,7 @@ class CreationDB:
         # Table 6 input total vol article ean picked
         self.begin = "CREATE TABLE IF NOT EXISTS total_out ("
         self.body = ", ".join((sql_total))
-        self.completed = self.begin+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.body+", total_allart INTEGER, total_allean INTEGER, FOREIGN KEY (time_glob) REFERENCES in_globalpick (time_glob))"
+        self.completed = self.begin+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.body+", FOREIGN KEY (time_glob) REFERENCES in_globalpick (time_glob))" #, total_allart INTEGER, total_allean INTEGER
 
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
@@ -180,12 +180,18 @@ class UsingDB:
         self.conn.commit()
  
     def compute_totals(self):
-        self.deltacolumns = ', '.join(ls_delta)
-        self.totalcolumns = ', '.join(ls_total)
-        self.sqltotal = "SELECT SUM(%s) as %s FROM %s" % (self.totalcolumns, self.deltacolumns, 'total_out') #ORDER BY id _SELECT SUM(score) as sum_score FROM game;
-        self.cur.execute(self.sqltotal)
-        row = self.cur.fetchone()
-        return row
+        back_uplist = []
+        self.totalcolumn = ', '.join(ls_total)
+        self.questmark = ','.join(['?'] * len(ls_total))
+        for ddelta, dtotal in zip(ls_delta, ls_total):
+            self.sqltotal = "SELECT SUM(%s) as %s FROM %s" % (ddelta, dtotal, 'delta_table') #ORDER BY id _SELECT SUM(score) as sum_score FROM game;
+            self.cur.execute(self.sqltotal)
+            back_uplist.append(abs(self.cur.fetchone()[0]))
+
+        self.sqltotal = "INSERT INTO total_out (%s) VALUES (%s)" % (self.totalcolumn, self.questmark)
+        self.cur.execute(self.sqltotal, back_uplist)
+        self.conn.commit()
+        return back_uplist
 
     """
     def remove(self, blocks_in):
