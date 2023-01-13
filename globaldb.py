@@ -180,16 +180,24 @@ class UsingDB:
  
     def compute_totals(self):
         back_uplist = []
-        self.totalcolumn = ', '.join(ls_total[:-2])
-        self.questmark = ','.join(['?'] * (len(ls_total)-2))
-        for ddelta, dtotal in zip(ls_delta, ls_total[:-2]):
+        self.cur.execute("SELECT * FROM total_out")
+        self.totcol = [description[0] for description in self.cur.description]
+
+        self.totalcolumn = ', '.join(self.totcol[1:-2])
+        self.questmark = ','.join(['?'] * (len(self.totcol)-3))
+
+        self.timeglob = "SELECT time_glob FROM in_globalpick ORDER BY time_glob DESC LIMIT 1"
+        self.cur.execute(self.timeglob)
+        back_uplist.append(self.cur.fetchone()[0])
+
+        for ddelta, dtotal in zip(ls_delta, self.totcol[1:-2]):
             self.sqltotal = "SELECT SUM(%s) as %s FROM %s" % (ddelta, dtotal, 'delta_table') #ORDER BY id _SELECT SUM(score) as sum_score FROM game;
             self.cur.execute(self.sqltotal)
             back_uplist.append(abs(self.cur.fetchone()[0]))
 
         self.sqltotal = "INSERT INTO total_out (%s) VALUES (%s)" % (self.totalcolumn, self.questmark)
-        print(self.sqltotal, back_uplist)
         self.cur.execute(self.sqltotal, back_uplist)
+
         self.conn.commit()
         return back_uplist
 
