@@ -206,9 +206,7 @@ class UsingDB:
 
         self.sqltotal = "INSERT INTO total_out (%s) VALUES (%s)" % (self.totalcolumn, self.questmark)
         self.cur.execute(self.sqltotal, back_uplist)
-
         self.conn.commit()
-        return back_uplist[1:]
 
     """
     def remove(self, blocks_in):

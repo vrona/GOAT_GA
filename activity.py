@@ -153,8 +153,7 @@ class Activity():
             self.speed_goal[speed].insert(tk.END,  self.speedpkr['speed_goal_artbck{}'.format(speed)])
             self.speed_realtime[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
     
-    #def get_total/goal(self): TO FINISH TO FINISH
-
+        engindb.totalongoal()
     def autoblock(self, lsofblock):
 
         self.part_art_input = {}
@@ -162,6 +161,9 @@ class Activity():
         self.speed_goal = {}
         self.speed_realtime = {}
         self.lsofblock = lsofblock
+
+        engindb = Computing("./database/goatdata.db")
+        
         
         for nblock in self.lsofblock:
 
@@ -223,9 +225,12 @@ class Activity():
             self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2))
             self.navbutton.grid(row=26, column=self.lsofblock.index(self.lsofblock[-1])+5, pady=10)
             
+            
             # Gauge
             Meter(master=self.master, metersize=98, padding=15, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%', textfont= 'Helvetica 12 bold',
             meterstyle='success.TLabel').grid(row=self.rowpart+16, column=self.lsofblock.index(nblock)+8)
+        
+
 
     # Clear all listbox
     def clear_listbox(self):
