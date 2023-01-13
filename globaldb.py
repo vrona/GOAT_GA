@@ -196,10 +196,10 @@ class UsingDB:
             self.sqltotal = "SELECT SUM(%s) as %s FROM %s" % (ddelta, dtotal, 'delta_table')
             self.cur.execute(self.sqltotal)
             back_uplist.append(abs(self.cur.fetchone()[0]))
-
+        print(back_uplist)
         for x in range((len(back_uplist)-1) // 2):
             self.sumart += back_uplist[x+1]
-            self.sumean += back_uplist[x+3]
+            self.sumean += back_uplist[x+2]
         
         back_uplist.append(self.sumart)
         back_uplist.append(self.sumean)

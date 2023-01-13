@@ -219,7 +219,7 @@ class Computing:
     def totalongoal(self):
         self.df_total = pd.read_sql_query("SELECT * FROM total_out ORDER BY id DESC LIMIT 1", self.conn)
         if len(self.df_total) < 1:
-            pass
+            return None
         else:
             self.df_goal = pd.read_sql_query("SELECT * FROM goalpick WHERE id = 1", self.conn)
             self.df_goal = self.df_goal.drop(columns=['id', 'time_left'], axis=1)
@@ -233,10 +233,7 @@ class Computing:
             self.totall = self.totalvol[-2:]
 
             self.percent_done = [round(t/g *100, 2) for t, g in zip(self.totalblock, self.goalvol)]
-            print(self.percent_done)
-
-
-
+            return self.percent_done, self.totall
 
     def get_weight(self):
         #= UsingDB("./database/goatdata.db") # To Simplify if necessary

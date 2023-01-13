@@ -60,8 +60,7 @@ class Activity():
 
         self.autoblock(self.lsofblock)
         self.pickrhour()
-        #self.totalpart()
-
+        self.totalpart()
 
     def sep_widget(self, location):
         # SEPARATOR PART
@@ -91,6 +90,30 @@ class Activity():
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=1, width=5, justify="center")
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(nblock)+2)
 
+    # TOTALS PART 
+    def totalpart(self):
+         
+        self.totrow = 21
+        self._totals = tk.Label(self.master, text='TOTALS', justify='center', font=('bold', 16), pady=10)
+        self._totals.grid(row=self.totrow, column=4)
+
+        self.totalprelev = tk.Label(self.master, text='Total \nPrelev', font=("bold", 13), pady=10)
+        self.totalprelev.grid(row=self.totrow+1, column=3)
+
+        self.deltacap = tk.Label(self.master, text='Delta \nVitesse', font=("bold", 13), pady=10)
+        self.deltacap.grid(row=self.totrow+1, column=4)
+
+        self.totalpredprlv = tk.Label(self.master, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
+        self.totalpredprlv.grid(row=self.totrow+1, column=5)
+
+        self.totalpicked = tk.Listbox(self.master, height=1, width=10, justify="center")
+        self.totalpicked.grid(row=25, column=3)
+
+        self.deltacap_list = tk.Listbox(self.master, height=1, width=10, justify="center")
+        self.deltacap_list.grid(row=25, column=4)
+        
+        self.totalpredprlv_list = tk.Listbox(self.master, height=1, width=10, justify="center")
+        self.totalpredprlv_list.grid(row=25, column=5)
 
     def input_art_ean(self):
         self.clear_listbox()
@@ -153,17 +176,27 @@ class Activity():
             self.speed_goal[speed].insert(tk.END,  self.speedpkr['speed_goal_artbck{}'.format(speed)])
             self.speed_realtime[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
     
-        engindb.totalongoal()
+        
+        # 
+        if engindb.totalongoal() is not None:
+            self.percent_picked, self.totalofit = engindb.totalongoal()
+            # Gauge
+            for ncolit in range(len(adminblocks.mainlistblock)):
+                Meter(master=self.master, metersize=98, padding=15, stripethickness=2, amountused=self.percent_picked[ncolit], labeltext=adminblocks.mainlistblock[ncolit], textappend='%', textfont= 'Helvetica 12 bold',
+                meterstyle='success.TLabel').grid(row=self.rowpart+16, column=ncolit+2)
+            self.totalofit = self.totalofit
+
+            self.totalpicked.insert(tk.END, self.totalofit[0])
+
+
+
     def autoblock(self, lsofblock):
 
         self.part_art_input = {}
         self.part_ean_input = {}
         self.speed_goal = {}
         self.speed_realtime = {}
-        self.lsofblock = lsofblock
-
-        engindb = Computing("./database/goatdata.db")
-        
+        self.lsofblock = lsofblock      
         
         for nblock in self.lsofblock:
 
@@ -224,13 +257,7 @@ class Activity():
             # Navigation Button
             self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2))
             self.navbutton.grid(row=26, column=self.lsofblock.index(self.lsofblock[-1])+5, pady=10)
-            
-            
-            # Gauge
-            Meter(master=self.master, metersize=98, padding=15, stripethickness=2, amountused=10, labeltext=self.lsofblock[self.lsofblock.index(nblock)], textappend='%', textfont= 'Helvetica 12 bold',
-            meterstyle='success.TLabel').grid(row=self.rowpart+16, column=self.lsofblock.index(nblock)+8)
-        
-
+              
 
     # Clear all listbox
     def clear_listbox(self):
@@ -238,33 +265,8 @@ class Activity():
         self.neededpickr.delete(0, tk.END)
         self.polystatus.delete(0, tk.END)
         self.hourofdispatch.delete(0, tk.END)
+        self.totalpicked.delete(0, tk.END)
         for k in self.dictblockpickerout.keys():
             self.dictblockpickerout[k].delete(0, tk.END)
             self.speed_goal[k].delete(0, tk.END)
             self.speed_realtime[k].delete(0, tk.END)
-
-    
-    # TOTALS PART 
-    def totalpart(self):
-         
-        self.totrow = 21
-        self._totals = tk.Label(self.master, text='TOTALS', justify='center', font=('bold', 16), pady=10)
-        self._totals.grid(row=self.totrow, column=4)
-
-        self.totalprelev = tk.Label(self.master, text='Total \nPrelev', font=("bold", 13), pady=10)
-        self.totalprelev.grid(row=self.totrow+1, column=3)
-
-        self.deltacap = tk.Label(self.master, text='Delta \nVitesse', font=("bold", 13), pady=10)
-        self.deltacap.grid(row=self.totrow+1, column=4)
-
-        self.totalpredprlv = tk.Label(self.master, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
-        self.totalpredprlv.grid(row=self.totrow+1, column=5)
-
-        self.totalprelev_list = tk.Listbox(self.master, height=1, width=10, justify="center")
-        self.totalprelev_list.grid(row=25, column=3)
-
-        self.deltacap_list = tk.Listbox(self.master, height=1, width=10, justify="center")
-        self.deltacap_list.grid(row=25, column=4)
-        
-        self.totalpredprlv_list = tk.Listbox(self.master, height=1, width=10, justify="center")
-        self.totalpredprlv_list.grid(row=25, column=5)
