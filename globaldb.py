@@ -90,7 +90,7 @@ class CreationDB:
         self.cur.execute(self.speed_complete)
         self.cur.execute(self.delta_complete)
         
-        # do not delete : global list of art. ean used in backbone.add_arteanpik() 
+        # DO NOT DELETE : global list of art. ean used in backbone.add_arteanpik() 
         lsartean.insert(0, "time_glob")
         lsartean.insert(len(lsartean), "total_pickers")
 
@@ -99,7 +99,7 @@ class CreationDB:
         sql_total = []
         self.numoblock = numofblock
 
-        ls_total = ["total_picked_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["total_picked_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_total = ["total_picked_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["total_picked_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["totall_art", "totall_ean"]
 
         for artean_picked in ls_total:
             self.attrib_total = " ".join((artean_picked, "INTEGER"))
@@ -108,8 +108,7 @@ class CreationDB:
         # Table 6 input total vol article ean picked
         self.begin = "CREATE TABLE IF NOT EXISTS total_out ("
         self.body = ", ".join((sql_total))
-        self.completed = self.begin+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.body+", FOREIGN KEY (time_glob) REFERENCES in_globalpick (time_glob))" #, total_allart INTEGER, total_allean INTEGER
-
+        self.completed = self.begin+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.body+", FOREIGN KEY (time_glob) REFERENCES in_globalpick (time_glob))"
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.cur.execute(self.completed)
@@ -181,14 +180,15 @@ class UsingDB:
  
     def compute_totals(self):
         back_uplist = []
-        self.totalcolumn = ', '.join(ls_total)
-        self.questmark = ','.join(['?'] * len(ls_total))
-        for ddelta, dtotal in zip(ls_delta, ls_total):
+        self.totalcolumn = ', '.join(ls_total[:-2])
+        self.questmark = ','.join(['?'] * (len(ls_total)-2))
+        for ddelta, dtotal in zip(ls_delta, ls_total[:-2]):
             self.sqltotal = "SELECT SUM(%s) as %s FROM %s" % (ddelta, dtotal, 'delta_table') #ORDER BY id _SELECT SUM(score) as sum_score FROM game;
             self.cur.execute(self.sqltotal)
             back_uplist.append(abs(self.cur.fetchone()[0]))
 
         self.sqltotal = "INSERT INTO total_out (%s) VALUES (%s)" % (self.totalcolumn, self.questmark)
+        print(self.sqltotal, back_uplist)
         self.cur.execute(self.sqltotal, back_uplist)
         self.conn.commit()
         return back_uplist
