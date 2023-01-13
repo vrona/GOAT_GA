@@ -60,7 +60,7 @@ class CreationDB:
         # Table 1 input vol article ean
         self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
         self.corps = ", ".join((sql_ent))
-        self.complete = self.entete+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.corps+", total_pickers INTEGER NOT NULL)"
+        self.complete = self.entete+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.corps+", total_pickers INTEGER)"
 
         # Table 2 computed goal article ean
         self.entete_g = "CREATE TABLE IF NOT EXISTS goalpick ("
@@ -197,9 +197,10 @@ class UsingDB:
             self.cur.execute(self.sqltotal)
             back_uplist.append(abs(self.cur.fetchone()[0]))
         print(back_uplist)
-        for x in range((len(back_uplist)-1) // 2):
+        self.middleblock = (len(back_uplist)-1) // 2
+        for x in range(self.middleblock):
             self.sumart += back_uplist[x+1]
-            self.sumean += back_uplist[x+2]
+            self.sumean += back_uplist[x+self.middleblock] #DEAD DEAD DEAD
         
         back_uplist.append(self.sumart)
         back_uplist.append(self.sumean)
