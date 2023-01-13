@@ -214,7 +214,29 @@ class Computing:
             self.newdictgoal['time_left'] = self.getgoaltime
             
             useofdb.insert_dicsql(self.newdictgoal, "goalpick")
+
+
+    def totalongoal(self):
+        self.df_total = pd.read_sql_query("SELECT * FROM total_out ORDER BY id DESC LIMIT 1", self.conn)
+        if len(self.df_total) < 1:
+            pass
+        else:
+            self.df_goal = pd.read_sql_query("SELECT * FROM goalpick WHERE id = 1", self.conn)
+            self.df_goal = self.df_goal.drop(columns=['id', 'time_left'], axis=1)
             
+            self.df_total = self.df_total.drop(columns=['id', 'time_glob'], axis=1)
+
+            self.goalvol = [self.df_goal.iloc[0][indexit] for indexit in self.df_goal.columns]
+            self.totalvol = [self.df_total.iloc[0][indexofit] for indexofit in self.df_total.columns]
+
+            self.totalblock = self.totalvol[:-2]
+            self.totall = self.totalvol[-2:]
+
+            self.percent_done = [round(t/g *100, 2) for t, g in zip(self.totalblock, self.goalvol)]
+            print(self.percent_done)
+
+
+
 
     def get_weight(self):
         #= UsingDB("./database/goatdata.db") # To Simplify if necessary
@@ -222,6 +244,7 @@ class Computing:
         self.phrase = "SELECT %s FROM in_weight ORDER BY time_glob DESC LIMIT 1" % (self.ratiocol)
         self.df_ratio = pd.read_sql_query(self.phrase, self.conn)
         return self.df_ratio
+
 
     def speedtocatch(self, ncol):
 
