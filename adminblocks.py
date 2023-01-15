@@ -128,10 +128,14 @@ class Blocks(tk.Frame):
         setthegoal[1] = self.percent_input.get()
 
         if self.target_input.get() > 0 and self.percent_input.get() > 0: 
-                tkinter.messagebox.showerror(
-                    "Champs requis", "Soit Vol., soit Percent ou les 2 à zéro, svp")
-                return
+            tkinter.messagebox.showerror(
+                "Champs requis", "Soit Vol., soit Percent ou les 2 à zéro, svp")
+            return
 
+        if setthegoal[0] and setthegoal[1] is not None:
+            tkinter.messagebox.showerror(
+                "Valider Pilotage (avec ou sans objectifs), svp")
+            return
 
     def switch_vp(self):
         global is_on

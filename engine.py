@@ -6,7 +6,6 @@ from globaldb import UsingDB
 import adminblocks
 from math import ceil
 import datetime
-#import time
 
 globaldf = pd.DataFrame() # dataframe of input art and ean
 
@@ -165,11 +164,6 @@ class Computing:
              # query art, ean 1st inputs
 
             self.dfglobal = globaldf.drop(columns=['time_glob', 'total_pickers'], axis=1)
-            
-            if adminblocks.setthegoal[0] and adminblocks.setthegoal[1] is not None:
-                tkinter.messagebox.showerror(
-                        "Valider Pilotage (avec ou sans objectifs), svp")
-                return
 
             if adminblocks.setthegoal[0] > 0 :
                 self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
