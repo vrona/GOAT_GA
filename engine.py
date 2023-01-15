@@ -165,24 +165,24 @@ class Computing:
 
             self.dfglobal = globaldf.drop(columns=['time_glob', 'total_pickers'], axis=1)
 
-            # if adminblocks.setthegoal[0] is None and adminblocks.setthegoal[1] is None:
-            #     adminblocks.setthegoal[0] = 0
-            #     adminblocks.setthegoal[1] = 0
-            if adminblocks.setthegoal[0] is not None and adminblocks.setthegoal[1] is not None:
+            if adminblocks.setthegoal[0] is None and adminblocks.setthegoal[1] is None:
+                adminblocks.setthegoal[0] = 0
+                adminblocks.setthegoal[1] = 0
+            #if adminblocks.setthegoal[0] is not None and adminblocks.setthegoal[1] is not None:
+
+            if adminblocks.setthegoal[0] > 0 :
+                self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
                 
-                if adminblocks.setthegoal[0] > 0 :
-                    self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
-                    
-                    self.dictgoal = dict(zip(self.goalkey, list(int(self.weigthvol * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
-                    self.dictgoal['time_left'] = self.getgoaltime
-                    useofdb.insert_dicsql(self.dictgoal, "goalpick")
+                self.dictgoal = dict(zip(self.goalkey, list(int(self.weigthvol * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
+                self.dictgoal['time_left'] = self.getgoaltime
+                useofdb.insert_dicsql(self.dictgoal, "goalpick")
 
-                elif adminblocks.setthegoal[1] > 0:
-                    self.percent = adminblocks.setthegoal[1] / 100
+            elif adminblocks.setthegoal[1] > 0:
+                self.percent = adminblocks.setthegoal[1] / 100
 
-                    self.dictgoal = dict(zip(self.goalkey,  list(int(self.percent * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
-                    self.dictgoal['time_left'] = self.getgoaltime
-                    useofdb.insert_dicsql(self.dictgoal, "goalpick")
+                self.dictgoal = dict(zip(self.goalkey,  list(int(self.percent * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
+                self.dictgoal['time_left'] = self.getgoaltime
+                useofdb.insert_dicsql(self.dictgoal, "goalpick")
 
             else:
                 self.dictgoal = dict(zip(self.goalkey, list(self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))
@@ -252,8 +252,8 @@ class Computing:
 
         self.df_spgoal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
 
-        self.speed_goal_art = round(float(self.df_spgoal.iloc[-1]["goal_artbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
-        self.speed_goal_ean = round(float(self.df_spgoal.iloc[-1]["goal_eanbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 3)
+        self.speed_goal_art = round(float(self.df_spgoal.iloc[-1]["goal_artbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600),2)
+        self.speed_goal_ean = round(float(self.df_spgoal.iloc[-1]["goal_eanbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 2)
 
         return self.speed_goal_art, self.speed_goal_ean
 
@@ -271,7 +271,7 @@ class Computing:
             
             for ncol in range(len(adminblocks.mainlistblock)):
                 self.dictspeed["speed_artbck{}".format(ncol)] = int(self.lsspeedtheo[ncol])
-                self.dictspeed["speed_eanbck{}".format(ncol)] = round(float(self.dictspeed["speed_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)].values[-1]), 3)
+                self.dictspeed["speed_eanbck{}".format(ncol)] = round(float(self.dictspeed["speed_artbck{}".format(ncol)] / self.df_ratio["ratioaebck{}".format(ncol)].values[-1]), 2)
 
                 self.dictspeed["speed_goal_artbck{}".format(ncol)], self.dictspeed["speed_goal_eanbck{}".format(ncol)] = self.speedtocatch(ncol)
 
@@ -292,7 +292,7 @@ class Computing:
             self.speed_real = dict(zip(globaldb.ls_speed_artean, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
 
             for k, v in self.speed_real.items():
-                self.speed_real[k] = round(float(v * 3600), 3)
+                self.speed_real[k] = round(float(v * 3600), 2)
 
             for ncol in range(len(adminblocks.mainlistblock)):
                 self.speed_real["speed_art_avg"] = self.speed_real.get("speed_art_avg",0) + self.speed_real["speed_artbck{}".format(ncol)]
@@ -378,11 +378,6 @@ class Dispatch():
         else:
             self.polyneeded = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polyneeded
-
-
-
-
-
 
 
     """
