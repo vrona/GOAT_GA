@@ -165,19 +165,24 @@ class Computing:
 
             self.dfglobal = globaldf.drop(columns=['time_glob', 'total_pickers'], axis=1)
 
-            if adminblocks.setthegoal[0] > 0 :
-                self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
+            # if adminblocks.setthegoal[0] is None and adminblocks.setthegoal[1] is None:
+            #     adminblocks.setthegoal[0] = 0
+            #     adminblocks.setthegoal[1] = 0
+            if adminblocks.setthegoal[0] is not None and adminblocks.setthegoal[1] is not None:
                 
-                self.dictgoal = dict(zip(self.goalkey, list(int(self.weigthvol * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
-                self.dictgoal['time_left'] = self.getgoaltime
-                useofdb.insert_dicsql(self.dictgoal, "goalpick")
+                if adminblocks.setthegoal[0] > 0 :
+                    self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
+                    
+                    self.dictgoal = dict(zip(self.goalkey, list(int(self.weigthvol * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
+                    self.dictgoal['time_left'] = self.getgoaltime
+                    useofdb.insert_dicsql(self.dictgoal, "goalpick")
 
-            elif adminblocks.setthegoal[1] > 0:
-                self.percent = adminblocks.setthegoal[1] / 100
+                elif adminblocks.setthegoal[1] > 0:
+                    self.percent = adminblocks.setthegoal[1] / 100
 
-                self.dictgoal = dict(zip(self.goalkey,  list(int(self.percent * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
-                self.dictgoal['time_left'] = self.getgoaltime
-                useofdb.insert_dicsql(self.dictgoal, "goalpick")
+                    self.dictgoal = dict(zip(self.goalkey,  list(int(self.percent * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
+                    self.dictgoal['time_left'] = self.getgoaltime
+                    useofdb.insert_dicsql(self.dictgoal, "goalpick")
 
             else:
                 self.dictgoal = dict(zip(self.goalkey, list(self.dfglobal[col].values[-1] for col in self.dfglobal.columns)))

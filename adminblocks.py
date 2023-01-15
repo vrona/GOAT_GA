@@ -132,11 +132,6 @@ class Blocks(tk.Frame):
                 "Champs requis", "Soit Vol., soit Percent ou les 2 à zéro, svp")
             return
 
-        if setthegoal[0] and setthegoal[1] is not None:
-            tkinter.messagebox.showerror(
-                "Valider Pilotage (avec ou sans objectifs), svp")
-            return
-
     def switch_vp(self):
         global is_on
 
@@ -214,7 +209,7 @@ class Blocks(tk.Frame):
         self.pdb = CreationDB(len(mainlistblock),"./database/goatdata.db")
         
         # speedtheodict["speedthavg"] = sum(speedtheodict.values()) / len(speedtheodict) # TO ADD LATER
-
+        
         self.iniblock(mainlistblock)
 
         self.add_btn['state']=tk.DISABLED
