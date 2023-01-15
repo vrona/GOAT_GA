@@ -142,6 +142,7 @@ class Computing:
         elif datetime.time(19, 45, 0) < datetime.datetime.now().time() < datetime.time(23, 59, 59):
             return self.eve
 
+
     def new_goal(self):
 
         self.delta_prod()
@@ -164,8 +165,13 @@ class Computing:
              # query art, ean 1st inputs
 
             self.dfglobal = globaldf.drop(columns=['time_glob', 'total_pickers'], axis=1)
+            
+            if adminblocks.setthegoal[0] and adminblocks.setthegoal[1] is not None:
+                tkinter.messagebox.showerror(
+                        "Valider Pilotage (avec ou sans objectifs), svp")
+                return
 
-            if adminblocks.setthegoal[0] > 0:
+            if adminblocks.setthegoal[0] > 0 :
                 self.weigthvol = adminblocks.setthegoal[0] / np.uint32(self.dfweight['total_art_topick']).item()
                 
                 self.dictgoal = dict(zip(self.goalkey, list(int(self.weigthvol * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
@@ -174,7 +180,7 @@ class Computing:
 
             elif adminblocks.setthegoal[1] > 0:
                 self.percent = adminblocks.setthegoal[1] / 100
-  
+
                 self.dictgoal = dict(zip(self.goalkey,  list(int(self.percent * self.dfglobal[col].values[-1]) for col in self.dfglobal.columns)))
                 self.dictgoal['time_left'] = self.getgoaltime
                 useofdb.insert_dicsql(self.dictgoal, "goalpick")
