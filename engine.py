@@ -286,12 +286,14 @@ class Computing:
 
         else:
             self.df_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn).drop(columns=['id'], axis=1)
-            self.df_speed = pd.read_sql_query("SELECT * FROM in_speed", self.conn).drop(columns=['id'], axis=1)
+            #self.df_speed = pd.read_sql_query("SELECT * FROM in_speed", self.conn).drop(columns=['id'], axis=1)
 
             # get nb picker
             self.speed_real = dict(zip(globaldb.ls_speed_artean, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
 
             for k, v in self.speed_real.items():
+                if v == 0:
+                    v = 0.0001
                 self.speed_real[k] = round(float(v * 3600), 2)
 
             for ncol in range(len(adminblocks.mainlistblock)):

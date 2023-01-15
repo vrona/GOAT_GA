@@ -94,26 +94,7 @@ class Activity():
     def totalpart(self):
          
         self.totrow = 21
-        self._totals = tk.Label(self.master, text='TOTALS', justify='center', font=('bold', 16), pady=10)
-        self._totals.grid(row=self.totrow, column=4)
 
-        self.totalprelev = tk.Label(self.master, text='Total \nPrelev', font=("bold", 13), pady=10)
-        self.totalprelev.grid(row=self.totrow+1, column=3)
-
-        self.deltacap = tk.Label(self.master, text='Delta \nVitesse', font=("bold", 13), pady=10)
-        self.deltacap.grid(row=self.totrow+1, column=4)
-
-        self.totalpredprlv = tk.Label(self.master, text='Total \nPredic Prelev', font=("bold", 13), pady=10)
-        self.totalpredprlv.grid(row=self.totrow+1, column=5)
-
-        self.totalpicked = tk.Listbox(self.master, height=1, width=10, justify="center")
-        self.totalpicked.grid(row=25, column=3)
-
-        self.deltacap_list = tk.Listbox(self.master, height=1, width=10, justify="center")
-        self.deltacap_list.grid(row=25, column=4)
-        
-        self.totalpredprlv_list = tk.Listbox(self.master, height=1, width=10, justify="center")
-        self.totalpredprlv_list.grid(row=25, column=5)
 
     def input_art_ean(self):
         self.clear_listbox()
@@ -177,7 +158,7 @@ class Activity():
             self.speed_realtime[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
     
         
-        # 
+        # Displaying gauges and total
         if engindb.totalongoal() is not None:
             self.percent_picked, self.totalofit = engindb.totalongoal()
             # Gauge
@@ -254,9 +235,24 @@ class Activity():
             self.buttondata = ttk.Button(self.master, text="GOAT Power", bootstyle="success", command=self.input_art_ean)
             self.buttondata.grid(row=2, column=self.lsofblock.index(self.lsofblock[-1])+6 , padx=10)
 
+            self._totals = tk.Label(self.master, text='TOTALS', justify='center', font=('bold', 16), pady=10)
+            self._totals.grid(row=self.rowpart+7, column=self.lsofblock.index(self.lsofblock[-1])+4)
+
+            self.totalpickedn = tk.Label(self.master, text='Total \nPicked', font=("bold", 13), pady=10)
+            self.totalpickedn.grid(row=self.rowpart+15, column=self.lsofblock.index(self.lsofblock[-1])+4)
+
+            self.totalpredpick = tk.Label(self.master, text='Total \nPrediction', font=("bold", 13), pady=10)
+            self.totalpredpick.grid(row=self.rowpart+17, column=self.lsofblock.index(self.lsofblock[-1])+4)
+
+            self.totalpicked = tk.Listbox(self.master, height=1, width=10, justify="center")
+            self.totalpicked.grid(row=self.rowpart+16, column=self.lsofblock.index(self.lsofblock[-1])+4)
+            
+            self.totalpredpick_list = tk.Listbox(self.master, height=1, width=10, justify="center")
+            self.totalpredpick_list.grid(row=self.rowpart+18, column=self.lsofblock.index(self.lsofblock[-1])+4)
+
             # Navigation Button
             self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2))
-            self.navbutton.grid(row=26, column=self.lsofblock.index(self.lsofblock[-1])+5, pady=10)
+            self.navbutton.grid(row=26, column=self.lsofblock.index(self.lsofblock[-1])+6, pady=10)
               
 
     # Clear all listbox

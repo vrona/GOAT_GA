@@ -141,7 +141,7 @@ class UsingDB:
         self.cur.execute("SELECT total_picker FROM block_picker_out ORDER BY total_picker DESC LIMIT 1")
         rows = self.cur.fetchall()
         return rows
-    
+
     """
     @param self: nothing
     @return row: goal of art
@@ -160,7 +160,7 @@ class UsingDB:
     @return row: goal of ean
     """
     def fetch_eangoal(self):
-        
+
         self.middle = len(ls_goal_g) // 2
         self.eancolumn = ', '.join(ls_goal_g[self.middle: ])
         self.sqlegoal = "SELECT %s FROM %s ORDER BY id" % (self.eancolumn, 'goalpick')
@@ -177,14 +177,14 @@ class UsingDB:
 
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
- 
+
     def compute_totals(self):
         back_uplist = []
         self.sumart = 0
         self.sumean = 0
         self.cur.execute("SELECT * FROM total_out")
         self.totcol = [description[0] for description in self.cur.description]
-       
+
         self.totalcolumn = ', '.join(self.totcol[1:])
         self.questmark = ','.join(['?'] * (len(self.totcol)-1))
 
@@ -202,7 +202,7 @@ class UsingDB:
         for x in range(self.middleblock):
             self.sumart += back_uplist[x+1]
             self.sumean += back_uplist[x+1+self.middleblock]
-        
+
         back_uplist.append(self.sumart)
         back_uplist.append(self.sumean)
 
