@@ -131,7 +131,7 @@ class Blocks(tk.Frame):
                 tkinter.messagebox.showerror(
                     "Champs requis", "Soit Vol., soit Percent ou les 2 à zéro, svp")
                 return
-        
+
 
     def switch_vp(self):
         global is_on
@@ -212,7 +212,6 @@ class Blocks(tk.Frame):
         # speedtheodict["speedthavg"] = sum(speedtheodict.values()) / len(speedtheodict) # TO ADD LATER
 
         self.iniblock(mainlistblock)
-
 
         self.add_btn['state']=tk.DISABLED
         self.remove_btn['state']=tk.DISABLED
