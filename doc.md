@@ -22,11 +22,15 @@ Creating a DApp which computes and stores on-chain 35 ko (avg.) svg images + met
 ## [BACKBONE.PY](backbone.py)
 
 ## [ENGINE.PY](engine.py)
-<strong>speedness()</strong>
+- <strong>class Engine()</strong>
+    
+- <strong>class Computing()</strong>
 ```shell
 
-return              // self.dictspeed
+    speedness() return self.dictspeed (dictionnary of speed peviously inserted into sql in_speed table)
 ```
+
+- <strong>class Dispatch()</strong>
 
 
 see.: [Genes](packages/ReadMeDocs/Genes.md)
