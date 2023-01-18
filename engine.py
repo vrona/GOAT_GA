@@ -402,18 +402,19 @@ class Dispatch():
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
         
+        nameofpicker = list("Picker_%s"%(x+1) for x in range(self.declaredtp))
 
-        while nb_pickr_block >= 1:
-            nameofpicker = list("Picker_%s"%(x+1) for x in range(self.declaredtp))
-
-            list_block.append((nameofpicker[0], 1))
-            nameofpicker.pop(nameofpicker.index(nameofpicker[0]))
-            print("show poping", nameofpicker)
-            nb_pickr_block -= 1
-        
-        if nb_pickr_block < 1:
-            list_block.append(((nameofpicker[0]), round(float(nb_pickr_block), 2)))
-            nb_pickr_block -= nb_pickr_block
+        while bool(nameofpicker):
+            
+            if nb_pickr_block >= 1:
+                list_block.append((nameofpicker[0], 1))
+                nameofpicker = nameofpicker.pop(nameofpicker.index(nameofpicker[0]))
+                print("show poping", nameofpicker)
+                nb_pickr_block -= 1
+            
+            if nb_pickr_block < 1:
+                list_block.append(((nameofpicker[0]), round(float(nb_pickr_block), 2)))
+                nb_pickr_block -= nb_pickr_block
     
  
     def pick_in_out_block(self):
