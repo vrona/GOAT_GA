@@ -16,6 +16,7 @@ class Dispatch():
             exit()
     
         self.block_list = {}
+        self.block_list_buffer = {}
 
     def picker_needs(self, opt_speed, real_speed):
         self.opt_speed = opt_speed
@@ -92,7 +93,7 @@ class Dispatch():
             max_needed_pickr_key = max(a[0], key=a[0].get)
 
             self.block_list[max_needed_pickr_key] = []
-            listofbuffer = []
+
             #self.split_pickr(self.block_list[max_needed_pickr_key], max_needed_pickr_value, listofname)
             while listofname:
 
@@ -102,20 +103,36 @@ class Dispatch():
                     max_needed_pickr_value -= 1
                 
                 if max_needed_pickr_value < 1:
-                    print(listofbuffer)
+                    self.block_list_buffer[max_needed_pickr_key] = max_needed_pickr_value
+                    max_needed_pickr_value -= max_needed_pickr_value
+                
+
+                    #print(round(float(sum(self.block_list_buffer.values())), 2))
                     
-                    if not listofbuffer:
-                        listofbuffer.append(listofname[0])
-                        self.block_list[max_needed_pickr_key].append(((listofname[0]), round(float(max_needed_pickr_value), 2)))
-                        listofname.pop(listofname.index(listofname[0]))
-                        max_needed_pickr_value -= max_needed_pickr_value
-                    else:
-                        self.block_list[max_needed_pickr_key].append(((listofbuffer[0]), round(float(max_needed_pickr_value), 2)))
-                        max_needed_pickr_value -= max_needed_pickr_value
+                    # if threshold < 0.51:
+                    #     if not listofbuffer:
+                            
+                    #         listofbuffer.append(listofname[0])
+                    #         self.block_list[max_needed_pickr_key].append(((listofname[0]), round(float(max_needed_pickr_value), 2)))
+                    #         listofname.pop(listofname.index(listofname[0]))
+                    #         max_needed_pickr_value -= max_needed_pickr_value
+                                           
+                    #     else:
+                    #         self.block_list[max_needed_pickr_key].append(((listofbuffer[0]), round(float(max_needed_pickr_value), 2)))
+                    #         max_needed_pickr_value -= max_needed_pickr_value
+
+                    # elif threshold > 0.51:
+                    #     listofbuffer.append(listofname[0])
+                    #     self.block_list[max_needed_pickr_key].append(((listofbuffer[-1]), round(float(max_needed_pickr_value), 2)))
+                    #     max_needed_pickr_value -= max_needed_pickr_value
+                    break
   
             a[0].pop(max_needed_pickr_key)
+        
+        for kval, vval in self.block_list_buffer.items():
+            self.block_list[kval].append((listofname[0], vval))
 
-        print(self.block_list)
+        print(self.block_list, '\n',self.block_list_buffer, '\n',listofname)
 
     """
     PICKERS DISTRIBUTION
