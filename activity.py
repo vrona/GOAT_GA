@@ -3,7 +3,8 @@ import tkinter.messagebox
 #from tkinter import ttk
 import ttkbootstrap as ttk
 import adminblocks
-from engine import Computing, Dispatch
+from engine import Computing
+from dispatch import Dispatch
 import globaldb
 from globaldb import UsingDB
 from gauge import Meter
