@@ -247,7 +247,11 @@ class Computing:
         self.df_ratio = pd.read_sql_query(self.phrase, self.conn)
         return self.df_ratio
 
-
+    """
+    Computation of speed goal
+    @param ncol: index of block
+    @return self.speed_goal_art, self.speed_goal_ean: speed to reach per second for each block to picked all the block. 1st in article, 2nd in ean
+    """
     def speedtocatch(self, ncol):
 
         self.df_spgoal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
@@ -257,7 +261,11 @@ class Computing:
 
         return self.speed_goal_art, self.speed_goal_ean
 
-
+    """
+    Computation of speedness
+    @param self: nothing
+    @return self.dictspeed: dictionnary of speed per type/block (dict. previously insert into sql in_speed table)
+    """
     def speedness(self):
         self.dictspeed = {}
         self.df_ratio = self.get_weight()
