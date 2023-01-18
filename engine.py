@@ -248,7 +248,7 @@ class Computing:
         return self.df_ratio
 
     """
-    Computation of speed goal
+    Computation of optimal speed aka speed_goal
     @param ncol: index of block
     @return self.speed_goal_art, self.speed_goal_ean: speed to reach per second for each block to picked all the block. 1st in article, 2nd in ean
     """
@@ -327,6 +327,9 @@ class Computing:
         total_predic == sum block_predic
         """
 
+    """
+    TO DELETE: been replaced by speedtocatch()
+    """
     def optimal_speed(self, vol_todo, time_left):
         self.vol_todo = vol_todo
         self.time_left = time_left
@@ -348,6 +351,8 @@ class Dispatch():
             print(f'An error occurred: {e}.')
             exit()
     
+        self.block_list = {}
+
     def picker_needs(self, opt_speed, real_speed):
         self.opt_speed = opt_speed
         self.real_speed = real_speed
@@ -389,9 +394,43 @@ class Dispatch():
                 self.polyneeded = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polyneeded
         else:
-            self.polyneeded = round(float(self.declaredtp - self.totaloptipkr), 2)
-            return self.optimalpkr, self.totaloptipkr, self.polyneeded
+            self.polytogive = round(float(self.declaredtp - self.totaloptipkr), 2)
+            return self.optimalpkr, self.totaloptipkr, self.polytogive
 
+
+    def split_pickr(self, list_block, nb_pickr_block):
+        self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
+        self.declaredtp = self.df_declaredtp.iloc[-1][0]
+        
+
+        while nb_pickr_block >= 1:
+            nameofpicker = list("Picker_%s"%(x+1) for x in range(self.declaredtp))
+
+            list_block.append((nameofpicker[0], 1))
+            nameofpicker.pop(nameofpicker.index(nameofpicker[0]))
+            print("show poping", nameofpicker)
+            nb_pickr_block -= 1
+        
+        if nb_pickr_block < 1:
+            list_block.append(((nameofpicker[0]), round(float(nb_pickr_block), 2)))
+            nb_pickr_block -= nb_pickr_block
+    
+ 
+    def pick_in_out_block(self):
+
+        a= self.pkrandpoly()
+
+        # for kblock, vblock in a[0].items():
+        while bool(a[0]):
+            max_needed_pickr_value = max(a[0].values())
+            max_needed_pickr_key = max(a[0], key=a[0].get)
+
+            self.block_list[max_needed_pickr_key] = []
+            self.split_pickr(self.block_list[max_needed_pickr_key], max_needed_pickr_value)
+            a[0].pop(max_needed_pickr_key)
+
+        
+        print(self.block_list)
 
     """
     PICKERS DISTRIBUTION
