@@ -59,10 +59,10 @@ class PickGAApp(ttk.Frame): # perhaps tk is enough vs ttk
         self.unlock_var = tk.IntVar()
         self.unlock_btn = ttk.Checkbutton(self.activity, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn)
         #self.unlock_btn = ttk.Checkbutton(self.activity, text="Unlock", variable=self.unlock_var, bootstyle="danger-round-toggle", image=self.img, command=self.unlock_killbtn)
-        self.unlock_btn.grid(row=33, column=1)
+        self.unlock_btn.grid(row=22, column=1)
         self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.NORMAL)
         #self.reset_btn = ttk.Button(self.activity, text="Reset App", comman=self.resetapp, bootstyle="danger", state=tk.DISABLED)
-        self.reset_btn.grid(row=34, column=1, pady=5)
+        self.reset_btn.grid(row=23, column=1, pady=5)
 
     def resetapp(self):
         if os.path.exists("./database/goatdata.db"):

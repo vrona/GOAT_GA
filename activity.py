@@ -159,7 +159,7 @@ class Activity():
             self.speed_goal[speed].insert(tk.END,  self.speedpkr['speed_goal_artbck{}'.format(speed)])
             self.speed_realtime[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
     
-        
+        dispatch.pick_in_out_block()
         # Displaying gauges and total
         if engindb.totalongoal() is not None:
             self.percent_picked, self.totalofit = engindb.totalongoal()
@@ -170,8 +170,6 @@ class Activity():
             self.totalofit = self.totalofit
 
             self.totalpicked.insert(tk.END, self.totalofit[0])
-
-
 
     def autoblock(self, lsofblock):
 
@@ -244,17 +242,17 @@ class Activity():
             self.totalpickedn.grid(row=self.rowpart+15, column=self.lsofblock.index(self.lsofblock[-1])+4)
 
             self.totalpredpick = tk.Label(self.master, text='Total \nPrediction', font=("bold", 13), pady=10)
-            self.totalpredpick.grid(row=self.rowpart+17, column=self.lsofblock.index(self.lsofblock[-1])+4)
+            self.totalpredpick.grid(row=self.rowpart+15, column=self.lsofblock.index(self.lsofblock[-1])+6)
 
             self.totalpicked = tk.Listbox(self.master, height=1, width=10, justify="center")
             self.totalpicked.grid(row=self.rowpart+16, column=self.lsofblock.index(self.lsofblock[-1])+4)
             
             self.totalpredpick_list = tk.Listbox(self.master, height=1, width=10, justify="center")
-            self.totalpredpick_list.grid(row=self.rowpart+18, column=self.lsofblock.index(self.lsofblock[-1])+4)
+            self.totalpredpick_list.grid(row=self.rowpart+16, column=self.lsofblock.index(self.lsofblock[-1])+6)
 
             # Navigation Button
             self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2))
-            self.navbutton.grid(row=26, column=self.lsofblock.index(self.lsofblock[-1])+6, pady=10)
+            self.navbutton.grid(row=23, column=self.lsofblock.index(self.lsofblock[-1])+6, pady=10)
               
 
     # Clear all listbox
