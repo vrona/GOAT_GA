@@ -73,7 +73,7 @@ class Dispatch():
                 nb_pickr_block -= 1
             
             if nb_pickr_block < 1:
-                list_block.append(((listofname[0]), round(float(nb_pickr_block), 2)))
+                list_block.append(((listofname[-1]), round(float(nb_pickr_block), 2)))
                 nb_pickr_block -= nb_pickr_block
                 break
     
@@ -85,18 +85,36 @@ class Dispatch():
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
         
-        listofname = list("Picker_%s"%(x+1) for x in range(self.declaredtp))
-
-        # for kblock, vblock in a[0].items():
+        listofname = list("Picker_%s"%(x) for x in range(self.declaredtp))
+        
         while bool(a[0]):
             max_needed_pickr_value = max(a[0].values())
             max_needed_pickr_key = max(a[0], key=a[0].get)
 
             self.block_list[max_needed_pickr_key] = []
-            self.split_pickr(self.block_list[max_needed_pickr_key], max_needed_pickr_value, listofname)
+            listofbuffer = []
+            #self.split_pickr(self.block_list[max_needed_pickr_key], max_needed_pickr_value, listofname)
+            while listofname:
+
+                if max_needed_pickr_value >= 1:
+                    self.block_list[max_needed_pickr_key].append((listofname[0], 1))
+                    listofname.pop(listofname.index(listofname[0]))
+                    max_needed_pickr_value -= 1
+                
+                if max_needed_pickr_value < 1:
+                    print(listofbuffer)
+                    
+                    if not listofbuffer:
+                        listofbuffer.append(listofname[0])
+                        self.block_list[max_needed_pickr_key].append(((listofname[0]), round(float(max_needed_pickr_value), 2)))
+                        listofname.pop(listofname.index(listofname[0]))
+                        max_needed_pickr_value -= max_needed_pickr_value
+                    else:
+                        self.block_list[max_needed_pickr_key].append(((listofbuffer[0]), round(float(max_needed_pickr_value), 2)))
+                        max_needed_pickr_value -= max_needed_pickr_value
+  
             a[0].pop(max_needed_pickr_key)
 
-        
         print(self.block_list)
 
     """
