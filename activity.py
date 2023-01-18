@@ -20,9 +20,9 @@ class Activity():
         self.artgoal_input = {}
         self.eangoal_input = {}
         self.get_dictglobalpick = {}
-        self.speedtheo_input = {}
-        
+        self.speedinitial_input = {}
         self.dictblockpickerout = {}
+        self.picker_name = {}
 
     def task_widget(self, lsofblock):
         
@@ -89,6 +89,8 @@ class Activity():
 
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=1, width=5, justify="center")
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(nblock)+2)
+            self.picker_name[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=8, width=10, justify="center")
+            self.picker_name[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+11, column=adminblocks.mainlistblock.index(nblock)+2)
 
     # TOTALS PART 
     def totalpart(self):
@@ -133,7 +135,7 @@ class Activity():
 
         # Displaying the initial_speed
         for k, val in adminblocks.speedtheodict.items():
-            self.speedtheo_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
+            self.speedinitial_input[adminblocks.mainlistblock.index(k)].insert(tk.END, val)
 
         # Displaying TP Present
         #self.currentopick.insert(tk.END, self.get_dictglobalpick['total_pickers'])
@@ -193,8 +195,8 @@ class Activity():
             self.part_ean_input[self.lsofblock.index(nblock)] = tk.Entry(self.master, textvariable=self.dictean_int[self.lsofblock.index(nblock)], justify="center", width=10)
             self.part_ean_input[self.lsofblock.index(nblock)].grid(row=3, column=self.lsofblock.index(nblock)+2)
 
-            self.speedtheo_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
-            self.speedtheo_input[self.lsofblock.index(nblock)].grid(row=self.rowpart, column=self.lsofblock.index(nblock)+2)
+            self.speedinitial_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
+            self.speedinitial_input[self.lsofblock.index(nblock)].grid(row=self.rowpart, column=self.lsofblock.index(nblock)+2)
 
             self.artgoal_input[self.lsofblock.index(nblock)] = tk.Listbox(self.master, justify="center", height=1, width=10)
             self.artgoal_input[self.lsofblock.index(nblock)].grid(row= self.rowpart+1, column=self.lsofblock.index(nblock)+2, padx=15)

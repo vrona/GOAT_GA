@@ -300,8 +300,8 @@ class Computing:
             self.speed_real = dict(zip(globaldb.ls_speed_artean, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
 
             for k, v in self.speed_real.items():
-                if v == 0:
-                    v = 0.0001
+                # if v == 0:
+                #     v = 0.0001
                 self.speed_real[k] = round(float(v * 3600), 2)
 
             for ncol in range(len(adminblocks.mainlistblock)):
@@ -351,7 +351,10 @@ class Dispatch():
     def picker_needs(self, opt_speed, real_speed):
         self.opt_speed = opt_speed
         self.real_speed = real_speed
-        self.pickr_needs = round(float(self.opt_speed/self.real_speed), 2)
+        if self.real_speed == 0:
+            self.pickr_needs = 0
+        else:
+            self.pickr_needs = round(float(self.opt_speed/self.real_speed), 2)
         return self.pickr_needs
 
     # computation of number of picker needed for each block and based on EAN ONLY

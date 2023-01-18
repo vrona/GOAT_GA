@@ -31,7 +31,9 @@ Creating a DApp which computes and stores on-chain 35 ko (avg.) svg images + met
 ```
 
 - <strong>class Dispatch()</strong>
-
+```shell
+    picker_needs() @param optimal_speed / real_speed return self.pickr_needs (portion of picker necessary to reach the goal picking)
+```
 
 see.: [Genes](packages/ReadMeDocs/Genes.md)
 ![alt text](https://github.com/IIROW-BC/MetaHackRand/blob/master/MetaHacker_archi_v4.png)
