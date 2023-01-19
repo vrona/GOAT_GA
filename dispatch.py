@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import sqlite3
 import adminblocks
-
+from comb import CombPicker
 
 class Dispatch():
 
@@ -63,7 +63,7 @@ class Dispatch():
             return self.optimalpkr, self.totaloptipkr, self.polytogive
 
 
-    def split_pickr(self, list_block, nb_pickr_block, listofname):
+    """def split_pickr(self, list_block, nb_pickr_block, listofname):
         
         while bool(listofname):
             
@@ -76,18 +76,19 @@ class Dispatch():
             if nb_pickr_block < 1:
                 list_block.append(((listofname[-1]), round(float(nb_pickr_block), 2)))
                 nb_pickr_block -= nb_pickr_block
-                break
+                break"""
     
  
-    def pick_in_out_block(self):
+    def bankofpicker(self): # MOTEUR DE DISPATCH BASE SUR LE RESTANT
 
         a= self.pkrandpoly()
         
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
         
+        dictofname = dict(zip(list("Picker_%s"%(x) for x in range(self.declaredtp)), 1))
         listofname = list("Picker_%s"%(x) for x in range(self.declaredtp))
-        
+
         while bool(a[0]):
             max_needed_pickr_value = max(a[0].values())
             max_needed_pickr_key = max(a[0], key=a[0].get)
@@ -95,17 +96,21 @@ class Dispatch():
             self.block_list[max_needed_pickr_key] = []
 
             #self.split_pickr(self.block_list[max_needed_pickr_key], max_needed_pickr_value, listofname)
-            while listofname:
+            #while listofname:
+            for x in range(self.declaredtp):
 
-                if max_needed_pickr_value >= 1:
-                    self.block_list[max_needed_pickr_key].append((listofname[0], 1))
-                    listofname.pop(listofname.index(listofname[0]))
+                if max_needed_pickr_value - dictofname["Picker_%s"%(x)] >= 0:
+                    self.block_list[max_needed_pickr_key].append(("Picker_%s"%(x), dictofname["Picker_%s"%(x)]))
+                    dictofname.pop("Picker_%s"%(x))
                     max_needed_pickr_value -= 1
-                
-                if max_needed_pickr_value < 1:
+
+                if max_needed_pickr_value - dictofname["Picker_%s"%(x)] < 0:
+                    self.block_list[max_needed_pickr_key].append(("Picker_%s"%(x), max_needed_pickr_value))
+                    dictofname["Picker_%s"%(x)] = max_needed_pickr_value - dictofname["Picker_%s"%(x)]
+                    
                     self.block_list_buffer[max_needed_pickr_key] = max_needed_pickr_value
                     max_needed_pickr_value -= max_needed_pickr_value
-                
+
 
                     #print(round(float(sum(self.block_list_buffer.values())), 2))
                     
@@ -126,14 +131,15 @@ class Dispatch():
                     #     self.block_list[max_needed_pickr_key].append(((listofbuffer[-1]), round(float(max_needed_pickr_value), 2)))
                     #     max_needed_pickr_value -= max_needed_pickr_value
                     break
-  
+
             a[0].pop(max_needed_pickr_key)
-        
-        for kval, vval in self.block_list_buffer.items():
-            self.block_list[kval].append((listofname[0], vval))
+        echoof = self.block_list_buffer.values()
+        CombPicker(echoof, 1)
+        # for kval, vval in self.block_list_buffer.items():
+        #     self.block_list[kval].append((listofname[0], vval))
 
-        print(self.block_list, '\n',self.block_list_buffer, '\n',listofname)
-
+        #print(self.block_list, '\n',self.block_list_buffer, '\n',listofname)
+  
     """
     PICKERS DISTRIBUTION
     Total Picker * Ean weights
