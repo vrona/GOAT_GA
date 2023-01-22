@@ -17,67 +17,119 @@ class CombPicker:
             except KeyError:
                 dicto[np.absolute(np.sum(x) - target)] = [x]
         print(dicto[min(dicto.keys())])"""
-    def combine_it(s, target):
-        dic = {}
-        for tup in combinations(s, 2):
-            try:
-                dic[np.absolute(np.sum(tup) - target)].append(str(tup))
-            except KeyError:
-                dic[np.absolute(np.sum(tup) - target)] = [tup]
-        print(dic[min(dic.keys())]) #
+    # def combine_it(s, target, size):
+    #     dic = {}
+
+    #     for tup in combinations(s, size):
+    #         try:
+    #             dic[np.absolute(np.sum(tup) - target)].append(str(tup))
+    #         except KeyError:
+    #             dic[np.absolute(np.sum(tup) - target)] = [tup]
+
+    #     buffy = [x for x in (dic[min(dic.keys())])]
+    #     for y in buffy[0]:
+    #         s.pop(s.index(y))
+    #     buffy.append(tuple(s))
+    #     return buffy
 
 
     def doco():
-        a = {"A": 2.83, "B": 1.12, "C": 1.05}
-        time = 5
-        
-        
+        a = {"A": 2.80, "B": 1.12, "C": 1.56, "D": 0.9, "E": 0.49, "F": 3.13}
+        blocklist = {}
+        bufferlist = {}
+        picker_stock = {"Picker%s"% (x):1 for x in range(1, int(sum(a.values())+1))}
+        priorityorder = []
         while a:
-            blocklist = {}
-            picker_stock = {"Picker%s"% (x):1 for x in range(time)}
+
             max_value = max(a.values())
             max_key = max(a, key=a.get)
 
             blocklist[max_key] = []
-
-
-            #for d in range(len(picker)):
+            
+            #bufferlist[max_key] = []
+            
+            
             while picker_stock:
+
                 max_picker = [pickr for pickr, value in picker_stock.items() if value == max(picker_stock.values())]
-
                 
-                #randpickr = print(lambda x:1 if x==0 else x + random.randint(0, len(picker_stock)-1))
-                max_splited_picker = max(picker_stock.values())
-                max_splited_picker_key = max(picker_stock, key=picker_stock.get)
-
-                if max_value >= picker_stock[max_picker[0]]:
-
-                    blocklist[max_key].append((max_picker[0], picker_stock[max_picker[0]]))
-                    #picker_stock[max_picker[0]] = 1 - picker_stock[max_picker[0]]
-
+                if max_value >= 1:
+                    max_picker[0]
+                    blocklist[max_key].append((max_picker[0],1))
                     max_value -= 1
                     picker_stock.pop(max_picker[0])
-                    max_picker.pop(max_picker.index(max_picker[0]))
-                    
-                print(blocklist)
-                if max_value < max_splited_picker :
-                    print(max_splited_picker, max_splited_picker_key)
-                    blocklist[max_key].append((max_splited_picker_key, max_value))
-                    picker_stock[max_splited_picker_key] = picker_stock[max_splited_picker_key] - max_value
+
+                elif max_value < 1 :
+                    max_picker[0]
+                    bufferlist[max_key] =  round(float(max_value), 2)
+                    priorityorder.append(max_key)
                     max_value -= max_value
-
-                    if picker_stock[max_splited_picker_key] == 0 :
-                        picker_stock.pop(max_splited_picker_key) 
-
+                    break
 
             a.pop(max_key)
-        print(blocklist,'\n', picker_stock)
-            
-            
 
+            new_blocklist = {k:v for k,v in blocklist.items() if len(v) > 0}
+            blocklist.clear()
+            blocklist.update(new_blocklist)
         
+        #print("Static Picker:", blocklist,'\n',"Flying Picker:", bufferlist)
+        
+        #CombPicker.combine_it([valo for valo in bufferlist.values()], 1, len(bufferlist)//2)
+        A = [valo for valo in bufferlist.values()]
+
+        D.emptythecup(bufferlist, picker_stock, priorityorder)
+        #print(D.combine_it(A, 1, 3))
+
+    def emptythecup(dictofflying, pickerfree, priority):
+        totaltimepicker = sum(dictofflying.values())
+
+        new_flyingpick = {}
+        #= random.sample(pickerfree.keys(), 1)
+
+       
+
+        #while pickerfree:
+        list_of_picker = [p for p in pickerfree.keys()]
+        
+        while list_of_picker:
+            
+            for x in priority:
+                new_flyingpick[x] = []
+
+                if pickerfree[pf] - dictofflying[x] > 0:
+                    new_flyingpick[x].append((list_of_picker[list_of_picker.index(pf)], dictofflying[x]))
+                    pickerfree[pf] = pickerfree[pf] - dictofflying[x]
+
+                if pickerfree[pf] - dictofflying[x] < 0:
+                    new_flyingpick[x].append((list_of_picker[list_of_picker.index(pf)], pickerfree[pf]))
+                    dictofflying[x] = dictofflying[x] - pickerfree[pf]
+
+                    pickerfree[pf] = 0
+                    print(new_flyingpick)
+                    list_of_picker.pop(list_of_picker.index(pf))
+                    break
+                #else:
+                    #break
+                    
+                
+                # if dictofflying[x] == 0:
+                #     dictofflying.pop(x)
+
+                        #print("1er:",dictofflying[x])
+                    
+
+                #dictofflying.pop(x)
+                
+                # if pickerfree[pf] == 0:
+                #     pickerfree.pop(pf)
+                #)
+
+        print("New Flying Pick:", new_flyingpick)
+    
+
 if __name__ == "__main__":
     D = CombPicker
     # data = [0.66, 0.93, 0.42]
     # D.combine_it(data, 1)
     D.doco()
+

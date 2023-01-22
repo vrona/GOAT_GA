@@ -86,7 +86,7 @@ class Dispatch():
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
         
-        dictofname = dict(zip(list("Picker_%s"%(x) for x in range(self.declaredtp)), 1))
+        
         listofname = list("Picker_%s"%(x) for x in range(self.declaredtp))
 
         while bool(a[0]):
@@ -94,7 +94,7 @@ class Dispatch():
             max_needed_pickr_key = max(a[0], key=a[0].get)
 
             self.block_list[max_needed_pickr_key] = []
-
+            dictofname = dict(zip(list("Picker_%s"%(x) for x in range(self.declaredtp)), 1))
             #self.split_pickr(self.block_list[max_needed_pickr_key], max_needed_pickr_value, listofname)
             #while listofname:
             for x in range(self.declaredtp):
@@ -131,7 +131,7 @@ class Dispatch():
                     #     self.block_list[max_needed_pickr_key].append(((listofbuffer[-1]), round(float(max_needed_pickr_value), 2)))
                     #     max_needed_pickr_value -= max_needed_pickr_value
                     break
-
+                print(self.block_list)
             a[0].pop(max_needed_pickr_key)
         echoof = self.block_list_buffer.values()
         CombPicker(echoof, 1)

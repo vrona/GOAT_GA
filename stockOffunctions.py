@@ -141,3 +141,57 @@ def bankofpicker(self): # MOTEUR DE DISPATCH BASE SUR LE RESTANT
     #     self.block_list[kval].append((listofname[0], vval))
 
     #print(self.block_list, '\n',self.block_list_buffer, '\n',listofname)
+
+     a = {"A": 2.83, "B": 1.12, "C": 1.05}
+        blocklist = {}
+
+        while a:
+
+            max_value = max(a.values())
+            max_key = max(a, key=a.get)
+
+            blocklist[max_key] = []
+            time = 0
+
+            fullpicker = []
+            
+            while time < sum(a.values()):
+
+                picker_stock = {"Picker%s"% (x):1 for x in range(int(sum(a.values())))}
+
+                #max_splited_picker = max(picker_stock.values())
+                #max_splited_picker_key = max(picker_stock, key=picker_stock.get)
+                #max_picker = [pickr for pickr, value in picker_stock.items() if value == max(picker_stock.values())]
+
+                randome = random.sample(picker_stock.items(), 1)
+
+                max_splited_picker = max(picker_stock.values())
+                max_splited_picker_key = max(picker_stock, key=picker_stock.get)
+                
+                if max_value >= picker_stock[randome[0][0]]:
+
+                    blocklist[max_key].append((randome[0][0], randome[0][1]))
+
+                    picker_stock.pop(randome[0][0])
+                    max_value -= 1
+                    time += 1
+
+                if max_value < max_splited_picker :
+                    if max_splited_picker == 0 :
+                        break
+                    #picker_stock.pop(max_splited_picker_key) 
+                    #print(max_splited_picker, max_splited_picker_key)
+                    else:
+                        blocklist[max_key].append((max_splited_picker_key, max_value))
+                        picker_stock[max_splited_picker_key] = picker_stock[max_splited_picker_key] - max_value
+                        
+                        time += max_value
+                        #max_value -= max_value
+                        if picker_stock[max_splited_picker_key] == 0:
+                            picker_stock.pop(max_splited_picker_key)
+
+            
+
+
+            a.pop(max_key)
+        print(blocklist)
