@@ -3,6 +3,10 @@ import numpy as np
 import sqlite3
 import adminblocks
 
+# sorted_vtasklist = []
+# sorted_kblocklist = []
+picker_dispatch = {}
+
 class Dispatch():
 
     def __init__(self, db):
@@ -14,9 +18,7 @@ class Dispatch():
             print(f'An error occurred: {e}.')
             exit()
     
-        self.sorted_vtasklist = []
-        self.sorted_kblocklist = []
-        self.picker_dispatch = {}
+        
         
 
     def picker_needs(self, opt_speed, real_speed):
@@ -64,58 +66,67 @@ class Dispatch():
             return self.optimalpkr, self.totaloptipkr, self.polytogive
 
  
-    def consume_time(self, timestock, self.sorted_vtasklist, self.sorted_kblocklist, pickername):
-
-        if timestock == 0:
-            pass
-        else:
-
-            if self.sorted_vtasklist[0] > timestock:
-                
-                self.picker_dispatch[self.sorted_kblocklist[0]].append((pickername[0], timestock))
-                new_sub_task = self.sorted_vtasklist[0] - timestock
-                
-                self.sorted_vtasklist[0] = new_sub_task
-                timestock -= timestock
-
-            
-            else: #self.sorted_vtasklist[0] < timestock
-                self.picker_dispatch[self.sorted_kblocklist[0]].append((pickername[0], self.sorted_vtasklist[0]))
-                residual_ts = timestock - self.sorted_vtasklist[0]
-                timestock = residual_ts
-                self.sorted_vtasklist.pop(self.sorted_vtasklist.index(self.sorted_vtasklist[0]))
-                self.sorted_kblocklist.pop(self.sorted_kblocklist.index(self.sorted_kblocklist[0]))
-                self.consume_time(residual_ts, self.sorted_vtasklist, self.sorted_kblocklist, pickername)
-
-
-    def picker(self, picker_stock):
-        
-        if len(picker_stock) == 0:
-            pass
-        
-        else:
-            self.consume_time(1, self.sorted_vtasklist, self.sorted_kblocklist, picker_stock)
-            picker_stock.pop(picker_stock.index(picker_stock[0]))
-            self.picker(picker_stock)
-        print(self.picker_dispatch)
-
     def dispatchme(self):
-        self.sorted_vtasklist = []
-        self.sorted_kblocklist = []
-        self.picker_dispatch = {}
+        global sorted_vtasklist, sorted_kblocklist, picker_dispatch
+       
         a= self.pkrandpoly()
-        
+    
+        sorted_kblocklist = [kblock for kblock in a[0].keys()]
+        sorted_vtasklist = [task for task in a[0].values()]
+        picker_dispatch = {k:[] for k in a[0].keys()}
 
-        self.sorted_kblocklist = [kblock for kblock in a[0].keys()]
-        self.sorted_vtasklist = [task for task in a[0].values()]
-        self.picker_dispatch = {k:[] for k in a[0].keys()}
 
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
         
         listofname = ["Picker_%s"%(x) for x in range(self.declaredtp)]
 
-        self.picker(listofname)
+        self.picker(1, listofname)
+
+        return picker_dispatch
+
+
+
+
+    def consume_time(self, timestock, sorted_vtasklist, sorted_kblocklist, pickername):
+
+        if timestock == 0 or len(sorted_vtasklist) == 0:
+            pass
+        else:
+
+            if sorted_vtasklist[0] > timestock:
+                
+                picker_dispatch[sorted_kblocklist[0]].append((pickername[0], timestock))
+                new_sub_task = sorted_vtasklist[0] - timestock
+                
+                sorted_vtasklist[0] = new_sub_task
+                timestock -= timestock
+                return timestock
+
+            
+            else: #sorted_vtasklist[0] < timestock
+                picker_dispatch[sorted_kblocklist[0]].append((pickername[0], sorted_vtasklist[0]))
+                residual_ts = timestock - sorted_vtasklist[0]
+                timestock = residual_ts
+                sorted_vtasklist.pop(sorted_vtasklist.index(sorted_vtasklist[0]))
+                sorted_kblocklist.pop(sorted_kblocklist.index(sorted_kblocklist[0]))
+                self.consume_time(residual_ts, sorted_vtasklist, sorted_kblocklist, pickername)
+                return residual_ts
+
+
+    def picker(self, time_stock, picker_stock):
+
+        if len(picker_stock) == 0 or time_stock == 0:
+            #print(picker_stock, time_stock)
+            pass
+        
+        else:
+            time_stock = self.consume_time(1, sorted_vtasklist, sorted_kblocklist, picker_stock)
+            picker_stock.pop(picker_stock.index(picker_stock[0]))
+            self.picker(time_stock, picker_stock)
+
+
+
         
     """
     PICKERS DISTRIBUTION
