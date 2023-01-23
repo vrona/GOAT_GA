@@ -160,7 +160,7 @@ class Activity():
             self.speed_goal[speed].insert(tk.END,  self.speedpkr['speed_goal_artbck{}'.format(speed)])
             self.speed_realtime[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
     
-        dispatch.bankofpicker()
+        dispatch.dispatchme()
         # Displaying gauges and total
         if engindb.totalongoal() is not None:
             self.percent_picked, self.totalofit = engindb.totalongoal()

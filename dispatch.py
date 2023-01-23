@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import sqlite3
 import adminblocks
-from comb import CombPicker
 
 class Dispatch():
 
@@ -15,8 +14,10 @@ class Dispatch():
             print(f'An error occurred: {e}.')
             exit()
     
-        self.block_list = {}
-        self.block_list_buffer = {}
+        self.sorted_vtasklist = []
+        self.sorted_kblocklist = []
+        self.picker_dispatch = {}
+        
 
     def picker_needs(self, opt_speed, real_speed):
         self.opt_speed = opt_speed
@@ -62,84 +63,60 @@ class Dispatch():
             self.polytogive = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polytogive
 
-
-    """def split_pickr(self, list_block, nb_pickr_block, listofname):
-        
-        while bool(listofname):
-            
-            if nb_pickr_block >= 1:
-                list_block.append((listofname[0], 1))
-                listofname.pop(listofname.index(listofname[0]))
-                print("show",listofname)
-                nb_pickr_block -= 1
-            
-            if nb_pickr_block < 1:
-                list_block.append(((listofname[-1]), round(float(nb_pickr_block), 2)))
-                nb_pickr_block -= nb_pickr_block
-                break"""
-    
  
-    def bankofpicker(self): # MOTEUR DE DISPATCH BASE SUR LE RESTANT
+    def consume_time(self, timestock, self.sorted_vtasklist, self.sorted_kblocklist, pickername):
 
+        if timestock == 0:
+            pass
+        else:
+
+            if self.sorted_vtasklist[0] > timestock:
+                
+                self.picker_dispatch[self.sorted_kblocklist[0]].append((pickername[0], timestock))
+                new_sub_task = self.sorted_vtasklist[0] - timestock
+                
+                self.sorted_vtasklist[0] = new_sub_task
+                timestock -= timestock
+
+            
+            else: #self.sorted_vtasklist[0] < timestock
+                self.picker_dispatch[self.sorted_kblocklist[0]].append((pickername[0], self.sorted_vtasklist[0]))
+                residual_ts = timestock - self.sorted_vtasklist[0]
+                timestock = residual_ts
+                self.sorted_vtasklist.pop(self.sorted_vtasklist.index(self.sorted_vtasklist[0]))
+                self.sorted_kblocklist.pop(self.sorted_kblocklist.index(self.sorted_kblocklist[0]))
+                self.consume_time(residual_ts, self.sorted_vtasklist, self.sorted_kblocklist, pickername)
+
+
+    def picker(self, picker_stock):
+        
+        if len(picker_stock) == 0:
+            pass
+        
+        else:
+            self.consume_time(1, self.sorted_vtasklist, self.sorted_kblocklist, picker_stock)
+            picker_stock.pop(picker_stock.index(picker_stock[0]))
+            self.picker(picker_stock)
+        print(self.picker_dispatch)
+
+    def dispatchme(self):
+        self.sorted_vtasklist = []
+        self.sorted_kblocklist = []
+        self.picker_dispatch = {}
         a= self.pkrandpoly()
         
+
+        self.sorted_kblocklist = [kblock for kblock in a[0].keys()]
+        self.sorted_vtasklist = [task for task in a[0].values()]
+        self.picker_dispatch = {k:[] for k in a[0].keys()}
+
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
         
+        listofname = ["Picker_%s"%(x) for x in range(self.declaredtp)]
+
+        self.picker(listofname)
         
-        listofname = list("Picker_%s"%(x) for x in range(self.declaredtp))
-
-        while bool(a[0]):
-            max_needed_pickr_value = max(a[0].values())
-            max_needed_pickr_key = max(a[0], key=a[0].get)
-
-            self.block_list[max_needed_pickr_key] = []
-            dictofname = dict(zip(list("Picker_%s"%(x) for x in range(self.declaredtp)), 1))
-            #self.split_pickr(self.block_list[max_needed_pickr_key], max_needed_pickr_value, listofname)
-            #while listofname:
-            for x in range(self.declaredtp):
-
-                if max_needed_pickr_value - dictofname["Picker_%s"%(x)] >= 0:
-                    self.block_list[max_needed_pickr_key].append(("Picker_%s"%(x), dictofname["Picker_%s"%(x)]))
-                    dictofname.pop("Picker_%s"%(x))
-                    max_needed_pickr_value -= 1
-
-                if max_needed_pickr_value - dictofname["Picker_%s"%(x)] < 0:
-                    self.block_list[max_needed_pickr_key].append(("Picker_%s"%(x), max_needed_pickr_value))
-                    dictofname["Picker_%s"%(x)] = max_needed_pickr_value - dictofname["Picker_%s"%(x)]
-                    
-                    self.block_list_buffer[max_needed_pickr_key] = max_needed_pickr_value
-                    max_needed_pickr_value -= max_needed_pickr_value
-
-
-                    #print(round(float(sum(self.block_list_buffer.values())), 2))
-                    
-                    # if threshold < 0.51:
-                    #     if not listofbuffer:
-                            
-                    #         listofbuffer.append(listofname[0])
-                    #         self.block_list[max_needed_pickr_key].append(((listofname[0]), round(float(max_needed_pickr_value), 2)))
-                    #         listofname.pop(listofname.index(listofname[0]))
-                    #         max_needed_pickr_value -= max_needed_pickr_value
-                                           
-                    #     else:
-                    #         self.block_list[max_needed_pickr_key].append(((listofbuffer[0]), round(float(max_needed_pickr_value), 2)))
-                    #         max_needed_pickr_value -= max_needed_pickr_value
-
-                    # elif threshold > 0.51:
-                    #     listofbuffer.append(listofname[0])
-                    #     self.block_list[max_needed_pickr_key].append(((listofbuffer[-1]), round(float(max_needed_pickr_value), 2)))
-                    #     max_needed_pickr_value -= max_needed_pickr_value
-                    break
-                print(self.block_list)
-            a[0].pop(max_needed_pickr_key)
-        echoof = self.block_list_buffer.values()
-        CombPicker(echoof, 1)
-        # for kval, vval in self.block_list_buffer.items():
-        #     self.block_list[kval].append((listofname[0], vval))
-
-        #print(self.block_list, '\n',self.block_list_buffer, '\n',listofname)
-  
     """
     PICKERS DISTRIBUTION
     Total Picker * Ean weights
