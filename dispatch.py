@@ -70,7 +70,7 @@ class Dispatch():
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
        
         a= self.pkrandpoly()
-    
+
         sorted_kblocklist = [kblock for kblock in a[0].keys()]
         sorted_vtasklist = [task for task in a[0].values()]
         picker_dispatch = {k:[] for k in a[0].keys()}
@@ -101,6 +101,7 @@ class Dispatch():
                 
                 sorted_vtasklist[0] = new_sub_task
                 timestock -= timestock
+                
                 return timestock
 
             
@@ -111,12 +112,13 @@ class Dispatch():
                 sorted_vtasklist.pop(sorted_vtasklist.index(sorted_vtasklist[0]))
                 sorted_kblocklist.pop(sorted_kblocklist.index(sorted_kblocklist[0]))
                 self.consume_time(residual_ts, sorted_vtasklist, sorted_kblocklist, pickername)
+
                 return residual_ts
 
 
     def picker(self, time_stock, picker_stock):
 
-        if len(picker_stock) == 0 or time_stock == 0:
+        if len(picker_stock) == 0: #or time_stock == 0
             #print(picker_stock, time_stock)
             pass
         
