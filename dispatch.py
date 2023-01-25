@@ -71,7 +71,7 @@ class Dispatch():
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
 
         sqlonfly = CreateDB_OnFly("./database/goatdata.db")
-        usingdb = UsingDB("./database/goatdata.db")
+        #usingdb = UsingDB("./database/goatdata.db")
 
         a= self.pkrandpoly()
 
@@ -87,7 +87,7 @@ class Dispatch():
 
         self.picker(1, listofname)
 
-        sqlonfly.createtask(picker_dispatch) # creates or updates the task table
+        sqlonfly.createtask(picker_dispatch, "./database/goatdata.db") # creates or updates the task table
         # for kpt, vpt in picker_dispatch.items():
         #     for infodata in vpt:
         #         print("--New Dispatch--\n",kpt,":", infodata[0], infodata[1],"\n")

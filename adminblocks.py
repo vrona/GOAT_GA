@@ -5,8 +5,8 @@ from globaldb import CreationDB
 
 
 is_on = False
-mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "E Rando/Camp", "Prio E", "V Cycle/Urban", "Prio V", "PFECA", "Implant"]
-speedtheodict = {"C Chasse":270, "C SportCo":290, "D Glisse":306, "D Running":290, "E Rando/Camp":220, "Prio E":220, "V Cycle/Urban":220, "Prio V":220, "PFECA":220, "Implant":220}
+mainlistblock = ["C Chasse", "C SportCo", "D Glisse", "D Running", "E RandoCamp", "Prio E", "V CycleUrban", "Prio V", "PFECA", "Implant"]
+speedtheodict = {"C Chasse":270, "C SportCo":290, "D Glisse":306, "D Running":290, "E RandoCamp":220, "Prio E":220, "V CycleUrban":220, "Prio V":220, "PFECA":220, "Implant":220}
 setthegoal = [None] *2
 
 class Blocks(tk.Frame):

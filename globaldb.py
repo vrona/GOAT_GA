@@ -7,7 +7,7 @@ ls_w_artean = []
 ls_speed_artean = []
 ls_delta = []
 ls_total = []
-ls_task = []
+ls_task_data = []
 prev_dicttask = {}
 
 class CreationDB:
@@ -136,18 +136,24 @@ class CreateDB_OnFly:
         self.cur.execute("CREATE TABLE IF NOT EXISTS pickers (id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, time_arrival REAL NOT NULL, time_ending REAL NOT NULL")
 
     def createtask(self, dicttask, db):
-        global ls_task
+        global ls_task_data, prev_dicttask
 
         self.dicttask = dicttask
         pre_set = set(prev_dicttask.keys())
         new_set = set(self.dicttask.keys()) # .items()
         
-        if len(ls_task) == 0:
+        if len(ls_task_data) == 0:
             sql_task = []
-            ls_task = ["{}_{}".format(ntask, numlock) for ntask, numlock in zip(self.dicttask.keys(), range(0, len(self.dicttask)))]
 
-            for task_block in ls_task:
-                self.attrib_task = " ".join((task_block, "FLOAT"))
+            ls_task_data = ["{}_{}_data".format(ktask, ndata) for ktask, vpicker in self.dicttask.items() for ndata in range(len(vpicker))]
+            ls_human = ["{}_{}_human".format(ktask, ndata) for ktask, vpicker in self.dicttask.items() for ndata in range(len(vpicker))]
+
+            for task_data in ls_task_data:
+                self.attrib_task = " ".join((task_data, "FLOAT"))
+                sql_task.append(self.attrib_task)
+            
+            for task_human in ls_human:
+                self.attrib_task = " ".join((task_human, "VARCHAR"))
                 sql_task.append(self.attrib_task)
 
             # Table 8 input prop of time per blocks (aka task_table)
@@ -156,18 +162,21 @@ class CreateDB_OnFly:
             self.completedtask = self.begintask+"id INTEGER PRIMARY KEY, "+self.bodytask+")"
             self.conn = sqlite3.connect(db)
             self.cur = self.conn.cursor()
+
             self.cur.execute(self.completedtask)
 
             prev_dicttask = self.dicttask # updating previous dict of tasks
 
-            self.placeholder = ','.join(['?'] * len(self.dicttask))
-            self.column = ', '.join(self.dicttask.keys())
+            self.placeholder = ','.join(['?'] * len(sql_task))
+            self.column = ', '.join(sql_task)
 
             self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('task_table', self.column, self.placeholder)
-            self.cur.execute(self.sql, list(self.dicttask.values()))
+            print(self.sql, '\n \n')
+            print([task_data for vpicker in self.dicttask.values() for task_data in vpicker]) #DEAD DEAD DEAD
+            self.cur.execute(self.sql, list(task_data for vpicker in self.dicttask.values() for task_data in vpicker))
             self.conn.commit()
 
-        else: #len(ls_task) != previous_lstask
+        else: #len(ls_task_data) != previous_lstask
             sql_addtask = []
             self.add_dict = pre_set ^ new_set # searching differences between keys
             buffer_task = [k for k in self.add_dict.keys()]
@@ -184,7 +193,7 @@ class CreateDB_OnFly:
 
             self.placeholder = ','.join(['?'] * len(self.dicttask))
             self.column = ', '.join(self.dicttask.keys())
-            self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('task_table', self.column, self.placeholder))
+            self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('task_table', self.column, self.placeholder)
 
             self.cur.execute(self.sql, list(self.dictbase.values()))
             self.conn.commit()
