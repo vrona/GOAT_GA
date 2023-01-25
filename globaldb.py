@@ -7,6 +7,8 @@ ls_w_artean = []
 ls_speed_artean = []
 ls_delta = []
 ls_total = []
+ls_task = []
+prev_dicttask = {}
 
 class CreationDB:
     def __init__(self, numofblock, db):
@@ -16,10 +18,11 @@ class CreationDB:
         self.cur = self.conn.cursor()
         self.createglobalpick(self.numofblock, db)
         self.cur.execute("CREATE TABLE IF NOT EXISTS blocks_in (id INTEGER PRIMARY KEY, name text NOT NULL)")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES in_globalpick (total_pickers))")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS pickers_out (id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, time_block_arrival record REAL NOT NULL, time_block_departure REAL NOT NULL, block_id_origin INTEGER, block_id_landing INTEGER, FOREIGN KEY (block_id_origin) REFERENCES blocks_in (id))")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS poly_out (time_glob REAL PRIMARY KEY, total_picker_onsite INTEGER NOT NULL, total_pick_goal INTEGER NOT NULL, poly_status INTEGER, FOREIGN KEY (total_picker_onsite) REFERENCES in_globalpick (time_glob), FOREIGN KEY (time_glob) REFERENCES in_globalpick (total_pickers))")
+
+        #self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES in_globalpick (total_pickers))")
+        #self.cur.execute("CREATE TABLE IF NOT EXISTS poly_out (time_glob REAL PRIMARY KEY, total_picker_onsite INTEGER NOT NULL, total_pick_goal INTEGER NOT NULL, poly_status INTEGER, FOREIGN KEY (total_picker_onsite) REFERENCES in_globalpick (time_glob), FOREIGN KEY (time_glob) REFERENCES in_globalpick (total_pickers))")
         self.createtotalpick(self.numofblock, db)
+        
         self.conn.commit()
 
     def createglobalpick(self, numofblock, db):
@@ -111,12 +114,86 @@ class CreationDB:
         self.completed = self.begin+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.body+", FOREIGN KEY (time_glob) REFERENCES in_globalpick (time_glob))"
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
-        self.cur.execute(self.completed)
+        self.cur.execute(self.completed)   
 
     def insert_nameblock(self, id, name):
         self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(id, name))
         self.conn.commit()
 
+"""
+creates new tables on fly
+"""
+class CreateDB_OnFly:
+    def __init__(self, db):
+        self.conn = sqlite3.connect(db)
+        self.cur = self.conn.cursor()
+    
+    def createpickers(self, num_picker, db):
+        sql_pickertotal = []
+        self.num_picker = num_picker
+
+        #ls_pickertotal = ["Picker_{}".format(npick) for npick in range(0, self.num_picker)]
+        self.cur.execute("CREATE TABLE IF NOT EXISTS pickers (id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, time_arrival REAL NOT NULL, time_ending REAL NOT NULL")
+
+    def createtask(self, dicttask, db):
+        global ls_task
+
+        self.dicttask = dicttask
+        pre_set = set(prev_dicttask.keys())
+        new_set = set(self.dicttask.keys()) # .items()
+        
+        if len(ls_task) == 0:
+            sql_task = []
+            ls_task = ["{}_{}".format(ntask, numlock) for ntask, numlock in zip(self.dicttask.keys(), range(0, len(self.dicttask)))]
+
+            for task_block in ls_task:
+                self.attrib_task = " ".join((task_block, "FLOAT"))
+                sql_task.append(self.attrib_task)
+
+            # Table 8 input prop of time per blocks (aka task_table)
+            self.begintask = "CREATE TABLE IF NOT EXISTS task_table ("
+            self.bodytask = ", ".join((sql_task))
+            self.completedtask = self.begintask+"id INTEGER PRIMARY KEY, "+self.bodytask+")"
+            self.conn = sqlite3.connect(db)
+            self.cur = self.conn.cursor()
+            self.cur.execute(self.completedtask)
+
+            prev_dicttask = self.dicttask # updating previous dict of tasks
+
+            self.placeholder = ','.join(['?'] * len(self.dicttask))
+            self.column = ', '.join(self.dicttask.keys())
+
+            self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('task_table', self.column, self.placeholder)
+            self.cur.execute(self.sql, list(self.dicttask.values()))
+            self.conn.commit()
+
+        else: #len(ls_task) != previous_lstask
+            sql_addtask = []
+            self.add_dict = pre_set ^ new_set # searching differences between keys
+            buffer_task = [k for k in self.add_dict.keys()]
+            for addtask_block in buffer_task:
+                self.add_attrib_task = " ".join((addtask_block, "FLOAT"))
+                sql_addtask.append(self.add_attrib_task)
+            
+            self.add_begintask = "ALTER TABLE task_table"
+            self.add_bodytask = ", ".join((sql_addtask))
+            self.add_completedtask = self.add_begintask+" ADD "+ self.add_bodytask
+            self.conn = sqlite3.connect(db)
+            self.cur = self.conn.cursor()
+            self.cur.execute(self.add_completedtask)
+
+            self.placeholder = ','.join(['?'] * len(self.dicttask))
+            self.column = ', '.join(self.dicttask.keys())
+            self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('task_table', self.column, self.placeholder))
+
+            self.cur.execute(self.sql, list(self.dictbase.values()))
+            self.conn.commit()
+
+            prev_dicttask = self.dicttask # updating previous dict of tasks
+     
+        
+
+    #task_time FLOAT, time_record REAL NOT NULL, time_ending REAL NOT NULL, task_id INTEGER, FOREIGN KEY (task_id) REFERENCES blocks_in (id))"
 class UsingDB:
     def __init__(self, db):
         self.conn = sqlite3.connect(db)

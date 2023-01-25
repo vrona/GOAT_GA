@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import sqlite3
 import adminblocks
+from globaldb import CreateDB_OnFly, UsingDB
 
 # sorted_vtasklist = []
 # sorted_kblocklist = []
@@ -68,7 +69,10 @@ class Dispatch():
  
     def dispatchme(self):
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
-       
+
+        sqlonfly = CreateDB_OnFly("./database/goatdata.db")
+        usingdb = UsingDB("./database/goatdata.db")
+
         a= self.pkrandpoly()
 
         sorted_kblocklist = [kblock for kblock in a[0].keys()]
@@ -83,7 +87,10 @@ class Dispatch():
 
         self.picker(1, listofname)
 
-        return picker_dispatch
+        sqlonfly.createtask(picker_dispatch) # creates or updates the task table
+        # for kpt, vpt in picker_dispatch.items():
+        #     for infodata in vpt:
+        #         print("--New Dispatch--\n",kpt,":", infodata[0], infodata[1],"\n")
 
 
 
