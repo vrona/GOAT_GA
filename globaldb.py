@@ -18,7 +18,7 @@ class CreationDB:
         self.cur = self.conn.cursor()
         self.createglobalpick(self.numofblock, db)
         self.cur.execute("CREATE TABLE IF NOT EXISTS blocks_in (id INTEGER PRIMARY KEY, name text NOT NULL)")
-
+        self.cur.execute("CREATE TABLE IF NOT EXISTS pickers (id INTEGER PRIMARY KEY, name text NOT NULL, arrival_time REAL, stock_of_time FLOAT)")
         #self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES in_globalpick (total_pickers))")
         #self.cur.execute("CREATE TABLE IF NOT EXISTS poly_out (time_glob REAL PRIMARY KEY, total_picker_onsite INTEGER NOT NULL, total_pick_goal INTEGER NOT NULL, poly_status INTEGER, FOREIGN KEY (total_picker_onsite) REFERENCES in_globalpick (time_glob), FOREIGN KEY (time_glob) REFERENCES in_globalpick (total_pickers))")
         self.createtotalpick(self.numofblock, db)
@@ -127,13 +127,15 @@ class CreateDB_OnFly:
     def __init__(self, db):
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
+        self.ini_pickers = False
     
-    def createpickers(self, num_picker, db):
-        sql_pickertotal = []
-        self.num_picker = num_picker
-
-        #ls_pickertotal = ["Picker_{}".format(npick) for npick in range(0, self.num_picker)]
-        self.cur.execute("CREATE TABLE IF NOT EXISTS pickers (id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, time_arrival REAL NOT NULL, time_ending REAL NOT NULL")
+    # Table x pickers
+    def insert_pickers(self, id, picker_name, arrival_time, stock_of_time):
+    
+        #for npicker in range(num_picker):
+            #self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(id, "Picker_{}".format(npicker)))
+        self.cur.execute("INSERT INTO pickers VALUES (?,?,?,?)",(id, picker_name, arrival_time, stock_of_time))
+        self.conn.commit()
 
     def createtask(self, dicttask, db):
         global ls_task_data, prev_dicttask
@@ -171,14 +173,17 @@ class CreateDB_OnFly:
             self.column = ', '.join(sql_task)
 
             self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('task_table', self.column, self.placeholder)
-            print(self.sql, '\n \n')
+            print(self.sql, '\n')
+            print(self.dicttask, '\n')
             print([task_data for vpicker in self.dicttask.values() for task_data in vpicker]) #DEAD DEAD DEAD
+            
             self.cur.execute(self.sql, list(task_data for vpicker in self.dicttask.values() for task_data in vpicker))
             self.conn.commit()
 
         else: #len(ls_task_data) != previous_lstask
             sql_addtask = []
             self.add_dict = pre_set ^ new_set # searching differences between keys
+            print(type(self.add_dict), self.add_dict)
             buffer_task = [k for k in self.add_dict.keys()]
             for addtask_block in buffer_task:
                 self.add_attrib_task = " ".join((addtask_block, "FLOAT"))

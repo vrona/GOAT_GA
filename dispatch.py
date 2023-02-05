@@ -87,7 +87,7 @@ class Dispatch():
 
         self.picker(1, listofname)
 
-        sqlonfly.createtask(picker_dispatch, "./database/goatdata.db") # creates or updates the task table
+        #sqlonfly.createtask(picker_dispatch, "./database/goatdata.db") # creates or updates the task table
         # for kpt, vpt in picker_dispatch.items():
         #     for infodata in vpt:
         #         print("--New Dispatch--\n",kpt,":", infodata[0], infodata[1],"\n")

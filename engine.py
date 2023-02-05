@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import sqlite3
 import globaldb
-from globaldb import UsingDB
+from globaldb import UsingDB, CreateDB_OnFly
 import adminblocks
 from math import ceil
 import datetime
@@ -42,6 +42,7 @@ class Computing:
         except Exception as e:
             print(f'An error occurred: {e}.')
             exit()
+
 
     def weightnratio(self, dictbase):
         """This function computes the weights of articles, eans and ration article/ean"""
@@ -127,20 +128,19 @@ class Computing:
 
     def get_shift(self):
         today = datetime.datetime.today()
-        self.night = (datetime.time(2, 45,0), "night")
+        self.nightly_morning = (datetime.datetime(today.year, today.month, today.day, 2, 45,0), "nightly_morning")
         self.morning = (datetime.datetime(today.year, today.month, today.day, 12, 45, 0), "morning")
         self.afternoon = (datetime.datetime(today.year, today.month, today.day, 19, 45, 1), "afternoon")
-        self.eve = (datetime.datetime(today.year, today.month, today.day, 19, 45, 2), "evening")
+        self.eve = (datetime.datetime(today.year, today.month, today.day, 23, 45, 2), "evening")
 
-        if datetime.datetime.now().time() < datetime.time(2, 5, 0):
-            return self.night
-        elif datetime.time(5, 5, 0) < datetime.datetime.now().time() < datetime.time(12, 45, 0):
+        if datetime.datetime.now().time() < datetime.time(2, 45, 0):
+            return self.nightly_morning
+        elif datetime.time(5, 45, 0) < datetime.datetime.now().time() < datetime.time(12, 45, 0):
             return self.morning
         elif datetime.time(12, 45, 1) < datetime.datetime.now().time() < datetime.time(19, 45, 0):
             return self.afternoon
         elif datetime.time(19, 45, 0) < datetime.datetime.now().time() < datetime.time(23, 59, 59):
             return self.eve
-
 
     def new_goal(self):
 
@@ -220,7 +220,6 @@ class Computing:
             
             useofdb.insert_dicsql(self.newdictgoal, "goalpick")
 
-
     def totalongoal(self):
         self.df_total = pd.read_sql_query("SELECT * FROM total_out ORDER BY id DESC LIMIT 1", self.conn)
         if len(self.df_total) < 1:
@@ -260,6 +259,38 @@ class Computing:
         self.speed_goal_ean = round(float(self.df_spgoal.iloc[-1]["goal_eanbck{}".format(ncol)] / self.df_spgoal['time_left'].values[-1] * 3600), 2)
 
         return self.speed_goal_art, self.speed_goal_ean
+
+    """
+    Insertion of initial pickers and new_picker into pickers table
+    @param total_picker_realtime: real time data given by activity manager
+    """
+    onfly = CreateDB_OnFly("./database/goatdata.db")
+    def insert_new_picker(self, total_picker_realtime):
+                
+        self.timerecord = datetime.datetime.now()
+         # insert pickers' name and stock of time (aka available time)
+        print(self.onfly.ini_pickers)
+        if not self.onfly.ini_pickers:
+            limit_hour_shift = self.get_shift()[0]
+            stock_time = (limit_hour_shift - self.timerecord).seconds #/ 360
+
+            for npicker in range(total_picker_realtime):
+                self.onfly.insert_pickers(npicker, "Picker_{}".format(npicker), self.timerecord, stock_time/21600) # 21600 seconds is a complete shift
+        
+            self.onfly.ini_pickers = True
+        
+        else: #DEAD PRIORITY 1
+            self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn)
+
+            self.dfbase = pd.DataFrame(self.sql_query)
+            self.dfbase['total_pickers'] = self.dfbase.iloc[-2]['total_pickers']
+            
+            print(total_picker_realtime, self.dfbase['total_pickers'])
+            if total_picker_realtime > self.dfbase['total_pickers']:
+                
+                for n_newpicker in range(1, (total_picker_realtime - self.dfbase['total_pickers'] + 1)):
+                    print(n_newpicker)
+                    self.onfly.insert_pickers(self.dfbase['total_pickers'] + n_newpicker, "Picker_{}".format(self.dfbase['total_pickers'] + n_newpicker), self.timerecord, stock_time/21600)
 
     """
     Computation of speedness

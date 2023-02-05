@@ -1,12 +1,12 @@
 import tkinter as tk
 import tkinter.messagebox
-#from tkinter import ttk
+# from tkinter import ttk
 import ttkbootstrap as ttk
 import adminblocks
 from engine import Computing
 from dispatch import Dispatch
 import globaldb
-from globaldb import UsingDB
+from globaldb import UsingDB, CreateDB_OnFly
 from gauge import Meter
 from ttkbootstrap.constants import *
 import datetime
@@ -120,13 +120,23 @@ class Activity():
 
         # Insert into DB
         pdb = UsingDB("./database/goatdata.db")
-        engindb = Computing("./database/goatdata.db")
+        enginedb = Computing("./database/goatdata.db")
+        onfly = CreateDB_OnFly("./database/goatdata.db")
         dispatch = Dispatch("./database/goatdata.db")
 
         pdb.insert_dicsql(self.get_dictglobalpick, "in_globalpick")
-        engindb.weightnratio(self.get_dictglobalpick)
-        engindb.new_goal()
-        self.speedpkr = engindb.speedness()
+        enginedb.weightnratio(self.get_dictglobalpick)
+        
+        #insert new picker
+        enginedb.insert_new_picker(self.totalpicker_text.get())
+
+        # setting goals
+        enginedb.new_goal()
+        
+        # computes speedness of blocks
+        self.speedpkr = enginedb.speedness()
+
+        # retrieve pickers and poly needs
         self.dispatch_pkr, self.tot_opti_pkr, self.poly_value = dispatch.pkrandpoly()
 
         # Displaying the goals
@@ -167,8 +177,8 @@ class Activity():
         #         print("--New Dispatch--\n",kpt,":", infodata[0], infodata[1],"\n")
 
         # Displaying gauges and total
-        if engindb.totalongoal() is not None:
-            self.percent_picked, self.totalofit = engindb.totalongoal()
+        if enginedb.totalongoal() is not None:
+            self.percent_picked, self.totalofit = enginedb.totalongoal()
             # Gauge
             for ncolit in range(len(adminblocks.mainlistblock)):
                 Meter(master=self.master, metersize=98, padding=15, stripethickness=2, amountused=self.percent_picked[ncolit], labeltext=adminblocks.mainlistblock[ncolit], textappend='%', textfont= 'Helvetica 12 bold',
