@@ -19,8 +19,6 @@ class Dispatch():
             print(f'An error occurred: {e}.')
             exit()
     
-        
-        
 
     def picker_needs(self, opt_speed, real_speed):
         self.opt_speed = opt_speed
@@ -66,7 +64,6 @@ class Dispatch():
             self.polytogive = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polytogive
 
- 
     def dispatchme(self):
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
 
@@ -91,8 +88,6 @@ class Dispatch():
         # for kpt, vpt in picker_dispatch.items():
         #     for infodata in vpt:
         #         print("--New Dispatch--\n",kpt,":", infodata[0], infodata[1],"\n")
-
-
 
 
     def consume_time(self, timestock, sorted_vtasklist, sorted_kblocklist, pickername):

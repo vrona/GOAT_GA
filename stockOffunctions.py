@@ -195,3 +195,73 @@ def bankofpicker(self): # MOTEUR DE DISPATCH BASE SUR LE RESTANT
 
             a.pop(max_key)
         print(blocklist)
+
+
+global ls_task_data, prev_dicttask
+
+        self.dicttask = dicttask
+        pre_set = set(prev_dicttask.keys())
+        new_set = set(self.dicttask.keys()) # .items()
+        
+        if len(ls_task_data) == 0:
+            sql_task = []
+
+            ls_task_data = ["{}_{}_data".format(ktask, ndata) for ktask, vpicker in self.dicttask.items() for ndata in range(len(vpicker))]
+            ls_human = ["{}_{}_human".format(ktask, ndata) for ktask, vpicker in self.dicttask.items() for ndata in range(len(vpicker))]
+
+            for task_data in ls_task_data:
+                self.attrib_task = " ".join((task_data, "FLOAT"))
+                sql_task.append(self.attrib_task)
+            
+            for task_human in ls_human:
+                self.attrib_task = " ".join((task_human, "VARCHAR"))
+                sql_task.append(self.attrib_task)
+
+            # Table 8 input prop of time per blocks (aka task_table)
+            self.begintask = "CREATE TABLE IF NOT EXISTS task_table ("
+            self.bodytask = ", ".join((sql_task))
+            self.completedtask = self.begintask+"id INTEGER PRIMARY KEY, "+self.bodytask+")"
+            self.conn = sqlite3.connect(db)
+            self.cur = self.conn.cursor()
+
+            self.cur.execute(self.completedtask)
+
+            prev_dicttask = self.dicttask # updating previous dict of tasks
+
+            self.placeholder = ','.join(['?'] * len(sql_task))
+            self.column = ', '.join(sql_task)
+
+            self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('task_table', self.column, self.placeholder)
+            print(self.sql, '\n')
+            print(self.dicttask, '\n')
+            print([task_data for vpicker in self.dicttask.values() for task_data in vpicker]) #DEAD DEAD DEAD
+            
+            self.cur.execute(self.sql, list(task_data for vpicker in self.dicttask.values() for task_data in vpicker))
+            self.conn.commit()
+
+        else: #len(ls_task_data) != previous_lstask
+            sql_addtask = []
+            self.add_dict = pre_set ^ new_set # searching differences between keys
+            print(type(self.add_dict), self.add_dict)
+            buffer_task = [k for k in self.add_dict.keys()]
+            for addtask_block in buffer_task:
+                self.add_attrib_task = " ".join((addtask_block, "FLOAT"))
+                sql_addtask.append(self.add_attrib_task)
+            
+            self.add_begintask = "ALTER TABLE task_table"
+            self.add_bodytask = ", ".join((sql_addtask))
+            self.add_completedtask = self.add_begintask+" ADD "+ self.add_bodytask
+            self.conn = sqlite3.connect(db)
+            self.cur = self.conn.cursor()
+            self.cur.execute(self.add_completedtask)
+
+            self.placeholder = ','.join(['?'] * len(self.dicttask))
+            self.column = ', '.join(self.dicttask.keys())
+            self.sql = "INSERT INTO %s (%s) VALUES (%s)" % ('task_table', self.column, self.placeholder)
+
+            self.cur.execute(self.sql, list(self.dictbase.values()))
+            self.conn.commit()
+
+            prev_dicttask = self.dicttask # updating previous dict of tasks
+     
+        

@@ -29,7 +29,7 @@ class Engine():
     def querygb_inputs(self):
 
         self.df = pd.read_sql_query("select * from in_globalpick", self.conn)
-        print(self.df.head())
+        #print(self.df.head())
         #self.conn.close()
 
 
@@ -260,38 +260,7 @@ class Computing:
 
         return self.speed_goal_art, self.speed_goal_ean
 
-    """
-    Insertion of initial pickers and new_picker into pickers table
-    @param total_picker_realtime: real time data given by activity manager
-    """
-    onfly = CreateDB_OnFly("./database/goatdata.db")
-    def insert_new_picker(self, total_picker_realtime):
-                
-        self.timerecord = datetime.datetime.now()
-         # insert pickers' name and stock of time (aka available time)
-        print(self.onfly.ini_pickers)
-        if not self.onfly.ini_pickers:
-            limit_hour_shift = self.get_shift()[0]
-            stock_time = (limit_hour_shift - self.timerecord).seconds #/ 360
-
-            for npicker in range(total_picker_realtime):
-                self.onfly.insert_pickers(npicker, "Picker_{}".format(npicker), self.timerecord, stock_time/21600) # 21600 seconds is a complete shift
-        
-            self.onfly.ini_pickers = True
-        
-        else: #DEAD PRIORITY 1
-            self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn)
-
-            self.dfbase = pd.DataFrame(self.sql_query)
-            self.dfbase['total_pickers'] = self.dfbase.iloc[-2]['total_pickers']
-            
-            print(total_picker_realtime, self.dfbase['total_pickers'])
-            if total_picker_realtime > self.dfbase['total_pickers']:
-                
-                for n_newpicker in range(1, (total_picker_realtime - self.dfbase['total_pickers'] + 1)):
-                    print(n_newpicker)
-                    self.onfly.insert_pickers(self.dfbase['total_pickers'] + n_newpicker, "Picker_{}".format(self.dfbase['total_pickers'] + n_newpicker), self.timerecord, stock_time/21600)
-
+    
     """
     Computation of speedness
     @param self: nothing
@@ -345,6 +314,36 @@ class Computing:
 
             useofdb.insert_dicsql(self.speed_real, "in_speed")
             return self.speed_real
+
+    """
+    Insertion of initial pickers and new_picker into pickers table
+    @param total_picker_realtime: real time data given by activity manager
+    """
+    onfly = CreateDB_OnFly("./database/goatdata.db")
+    def insert_new_picker(self, total_picker_realtime):
+                
+        self.timerecord = datetime.datetime.now()
+        # insert pickers' name and stock of time (aka available time)
+        limit_hour_shift = self.get_shift()[0]
+        stock_time = (limit_hour_shift - self.timerecord).seconds #/ 360
+
+        if not self.onfly.ini_pickers: # happen at 1st record of picker amount
+            
+            for npicker in range(total_picker_realtime):
+                self.onfly.insert_pickers(npicker, "Picker_{}".format(npicker), self.timerecord, stock_time/21600) # 21600 seconds is a complete shift
+            self.onfly.ini_pickers = True
+        
+        else: # happen for all the records for new pickers
+            self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn).drop(columns=['id'], axis=1)
+            self.dfbase = pd.DataFrame(self.sql_query)
+            total_pickers = int(self.dfbase.iloc[-2]['total_pickers'])
+
+            if total_picker_realtime > total_pickers:
+                for n_newpicker in range((total_picker_realtime - total_pickers)):
+                    self.onfly.insert_pickers((total_pickers + n_newpicker), "Picker_{}".format(total_pickers + n_newpicker), self.timerecord, stock_time/21600)
+
+            # TO DO MISE A JOUR STOCK OF TIME PICKER
+
 
     def total(self):
         'totals_out'
