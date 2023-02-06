@@ -138,7 +138,7 @@ class CreateDB_OnFly:
         self.cur.execute("INSERT INTO pickers VALUES (?,?,?,?)",(id, picker_name, arrival_time, stock_of_time))
         self.conn.commit()
 
-    def picker_to_task(self, name, id, picker, time, start_time, end_time):
+    def insert_picker_to_task(self, name, id, picker, time, start_time, end_time):
         self.cur.execute("INSERT INTO %s_task VALUES (?,?,?,?)" %(name),(id, picker, time, start_time, end_time))
         self.conn.commit()
 

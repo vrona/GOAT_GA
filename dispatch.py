@@ -4,8 +4,6 @@ import sqlite3
 import adminblocks
 from globaldb import CreateDB_OnFly, UsingDB
 
-# sorted_vtasklist = []
-# sorted_kblocklist = []
 picker_dispatch = {}
 
 class Dispatch():
@@ -83,7 +81,7 @@ class Dispatch():
         listofname = ["Picker_%s"%(x) for x in range(self.declaredtp)]
 
         self.picker(1, listofname)
-
+        print(picker_dispatch) # TO DO INSERT DATA INTO THE DIFFERENT BLOCK_TABLES
         #sqlonfly.createtask(picker_dispatch, "./database/goatdata.db") # creates or updates the task table
         # for kpt, vpt in picker_dispatch.items():
         #     for infodata in vpt:

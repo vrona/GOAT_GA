@@ -196,8 +196,8 @@ def bankofpicker(self): # MOTEUR DE DISPATCH BASE SUR LE RESTANT
             a.pop(max_key)
         print(blocklist)
 
-
-global ls_task_data, prev_dicttask
+def createtask(self):
+    global ls_task_data, prev_dicttask
 
         self.dicttask = dicttask
         pre_set = set(prev_dicttask.keys())
