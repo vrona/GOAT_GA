@@ -171,11 +171,8 @@ class Activity():
             self.speed_realtime[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
     
         # Displaying pickers dispatch
-        dispatch.dispatchme() # self.allpickerstask = 
-        # for kpt, vpt in self.allpickerstask.items():
-        #     for infodata in vpt:
-        #         print("--New Dispatch--\n",kpt,":", infodata[0], infodata[1],"\n")
-
+        dispatch.dispatchme(datetime.datetime.now())
+       
         # Displaying gauges and total
         if enginedb.totalongoal() is not None:
             self.percent_picked, self.totalofit = enginedb.totalongoal()

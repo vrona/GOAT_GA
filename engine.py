@@ -4,7 +4,6 @@ import sqlite3
 import globaldb
 from globaldb import UsingDB, CreateDB_OnFly
 import adminblocks
-from math import ceil
 import datetime
 
 globaldf = pd.DataFrame() # dataframe of input art and ean
@@ -130,8 +129,8 @@ class Computing:
         today = datetime.datetime.today()
         self.nightly_morning = (datetime.datetime(today.year, today.month, today.day, 2, 45,0), "nightly_morning")
         self.morning = (datetime.datetime(today.year, today.month, today.day, 12, 45, 0), "morning")
-        self.afternoon = (datetime.datetime(today.year, today.month, today.day, 19, 45, 1), "afternoon")
-        self.eve = (datetime.datetime(today.year, today.month, today.day, 23, 45, 2), "evening")
+        self.afternoon = (datetime.datetime(today.year, today.month, today.day, 19, 45, 1), "afternoon") # test 19 instead of 22
+        self.eve = (datetime.datetime(today.year, today.month, today.day, 23, 59, 59) + datetime.timedelta(seconds=(10800)), "evening")
 
         if datetime.datetime.now().time() < datetime.time(2, 45, 0):
             return self.nightly_morning
@@ -330,7 +329,7 @@ class Computing:
         if not self.onfly.ini_pickers: # happen at 1st record of picker amount
             
             for npicker in range(total_picker_realtime):
-                self.onfly.insert_pickers(npicker, "Picker_{}".format(npicker), self.timerecord, stock_time/21600) # 21600 seconds is a complete shift
+                self.onfly.insert_pickers(npicker, "Picker_{}".format(npicker), self.timerecord, round(float(stock_time/21600),2)) # 21600 seconds is a complete shift
             self.onfly.ini_pickers = True
         
         else: # happen for all the records for new pickers
@@ -340,7 +339,7 @@ class Computing:
 
             if total_picker_realtime > total_pickers:
                 for n_newpicker in range((total_picker_realtime - total_pickers)):
-                    self.onfly.insert_pickers((total_pickers + n_newpicker), "Picker_{}".format(total_pickers + n_newpicker), self.timerecord, stock_time/21600)
+                    self.onfly.insert_pickers((total_pickers + n_newpicker), "Picker_{}".format(total_pickers + n_newpicker), self.timerecord, round(float(stock_time/21600),2))
 
             # TO DO MISE A JOUR STOCK OF TIME PICKER
 

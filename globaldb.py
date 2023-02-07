@@ -1,5 +1,5 @@
 import sqlite3
-import pandas as pd
+from datetime import datetime, time, timedelta
 
 lsartean = []
 ls_goal_g = []
@@ -92,7 +92,7 @@ class CreationDB:
         self.cur.execute(self.w_complete)
         self.cur.execute(self.speed_complete)
         self.cur.execute(self.delta_complete)
-        
+
         # DO NOT DELETE : global list of art. ean used in backbone.add_arteanpik() 
         lsartean.insert(0, "time_glob")
         lsartean.insert(len(lsartean), "total_pickers")
@@ -114,12 +114,14 @@ class CreationDB:
         self.completed = self.begin+"id INTEGER PRIMARY KEY, time_glob REAL, "+self.body+", FOREIGN KEY (time_glob) REFERENCES in_globalpick (time_glob))"
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
-        self.cur.execute(self.completed)   
+        self.cur.execute(self.completed)
+
 
     def insert_nameblock(self, id, name):
         self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(id, name))
-        self.cur.execute("CREATE TABLE IF NOT EXISTS {}_task (id INTEGER PRIMARY KEY, picker INTEGER, time FLOAT, start_time REAL, end_time REAL)".format(name))
+        self.cur.execute("CREATE TABLE IF NOT EXISTS {}_task (start_time REAL, picker text, time_task FLOAT, end_time REAL)".format(name)) #id INTEGER PRIMARY KEY, 
         self.conn.commit()
+
 
 """
 creates new tables on fly
@@ -138,9 +140,15 @@ class CreateDB_OnFly:
         self.cur.execute("INSERT INTO pickers VALUES (?,?,?,?)",(id, picker_name, arrival_time, stock_of_time))
         self.conn.commit()
 
-    def insert_picker_to_task(self, name, id, picker, time, start_time, end_time):
-        self.cur.execute("INSERT INTO %s_task VALUES (?,?,?,?)" %(name),(id, picker, time, start_time, end_time))
-        self.conn.commit()
+
+
+    def insert_picker_to_task(self, dictbase, start_time):
+
+        for key_block_name, value_block_task in dictbase.items():
+            for values in value_block_task:
+                end_time = start_time + timedelta(seconds=(int(21600 * values[1]))) # 21600 seconds for 6 hours shift * portion of time needed 
+                self.cur.execute("INSERT INTO %s_task VALUES (?,?,?,?)" %(key_block_name),(start_time, values[0], values[1], end_time))
+                self.conn.commit()
 
 
     #task_time FLOAT, time_record REAL NOT NULL, time_ending REAL NOT NULL, task_id INTEGER, FOREIGN KEY (task_id) REFERENCES blocks_in (id))"
@@ -152,21 +160,25 @@ class UsingDB:
     def fetch_hourout(self):
         self.cur.execute("SELECT time_glob FROM in_globalpick ORDER BY time_glob DESC LIMIT 1")
         rows = self.cur.fetchall()
+
         return rows
 
     def fetch_art_ean_input(self):
         self.cur.execute("SELECT * FROM in_globalpick ORDER BY time_glob DESC LIMIT 1")
         rows = self.cur.fetchall()
+
         return rows
 
     def fetch_picker(self, block_id):
         self.cur.execute("SELECT num_picker FROM block_picker_out WHERE block_id=?",(block_id,))
         rows = self.cur.fetchall()
+
         return rows
 
     def fetch_total_picker(self):
         self.cur.execute("SELECT total_picker FROM block_picker_out ORDER BY total_picker DESC LIMIT 1")
         rows = self.cur.fetchall()
+
         return rows
 
     """
@@ -180,6 +192,7 @@ class UsingDB:
         self.sqlagoal = "SELECT %s FROM %s ORDER BY id" % (self.artcolumn, 'goalpick')
         self.cur.execute(self.sqlagoal)
         row = self.cur.fetchone()
+
         return row
 
     """
@@ -193,6 +206,7 @@ class UsingDB:
         self.sqlegoal = "SELECT %s FROM %s ORDER BY id" % (self.eancolumn, 'goalpick')
         self.cur.execute(self.sqlegoal)
         row = self.cur.fetchone()
+
         return row
 
     def insert_dicsql(self, dictbase, str_table_name):
@@ -204,6 +218,7 @@ class UsingDB:
 
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
+
 
     def compute_totals(self):
         back_uplist = []

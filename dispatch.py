@@ -3,6 +3,7 @@ import numpy as np
 import sqlite3
 import adminblocks
 from globaldb import CreateDB_OnFly, UsingDB
+import datetime
 
 picker_dispatch = {}
 
@@ -62,46 +63,52 @@ class Dispatch():
             self.polytogive = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polytogive
 
-    def dispatchme(self):
+    
+    def dispatchme(self, start_time):
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
 
         sqlonfly = CreateDB_OnFly("./database/goatdata.db")
         #usingdb = UsingDB("./database/goatdata.db")
+        self.sql_query = pd.read_sql_query("SELECT * FROM pickers", self.conn).drop(columns=['id'], axis=1)
+        self.dfpickers = pd.DataFrame(self.sql_query)
+        #total_pickers = int(self.dfpickers.iloc[-2]['total_pickers'])
 
         a= self.pkrandpoly()
+        sorted_vtasklist = []
+        sorted_kblocklist = []
 
-        sorted_kblocklist = [kblock for kblock in a[0].keys()]
-        sorted_vtasklist = [task for task in a[0].values()]
-        picker_dispatch = {k:[] for k in a[0].keys()}
-
-
-        self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
-        self.declaredtp = self.df_declaredtp.iloc[-1][0]
+        # sorting the block and task by order of pickers needs
+        while len(a[0]) > 0:
+            sorted_vtasklist.append(max(a[0].values()))
+            sorted_kblocklist.append(max(a[0],key=a[0].get))
+            picker_dispatch[max(a[0],key=a[0].get)] = []
+            a[0].pop(max(a[0],key=a[0].get))
         
-        listofname = ["Picker_%s"%(x) for x in range(self.declaredtp)]
+        print("K", sorted_kblocklist,'\n',"V", sorted_vtasklist,'\n',"empty picker_dispatch", picker_dispatch)
 
-        self.picker(1, listofname)
-        print(picker_dispatch) # TO DO INSERT DATA INTO THE DIFFERENT BLOCK_TABLES
-        #sqlonfly.createtask(picker_dispatch, "./database/goatdata.db") # creates or updates the task table
-        # for kpt, vpt in picker_dispatch.items():
-        #     for infodata in vpt:
-        #         print("--New Dispatch--\n",kpt,":", infodata[0], infodata[1],"\n")
+        
+        list_of_name = self.dfpickers['name'].tolist()#["Picker_%s"%(x) for x in range(self.declaredtp)]
+        list_of_stock_of_time = self.dfpickers['stock_of_time'].tolist()
+
+        self.picker(list_of_stock_of_time[0], list_of_stock_of_time, list_of_name) # 1
+        print("B", picker_dispatch) # TO DO INSERT DATA INTO THE DIFFERENT BLOCK_TABLES
+        sqlonfly.insert_picker_to_task(picker_dispatch, start_time)
 
 
-    def consume_time(self, timestock, sorted_vtasklist, sorted_kblocklist, pickername):
 
+    def consume_time(self, timestock, timestock_list, sorted_vtasklist, sorted_kblocklist, pickername):
+        
         if timestock == 0 or len(sorted_vtasklist) == 0:
+            timestock_list.pop(timestock_list.index(timestock_list[0]))
             pass
         else:
 
             if sorted_vtasklist[0] > timestock:
-                
+
                 picker_dispatch[sorted_kblocklist[0]].append((pickername[0], timestock))
                 new_sub_task = sorted_vtasklist[0] - timestock
-                
                 sorted_vtasklist[0] = new_sub_task
                 timestock -= timestock
-                
                 return timestock
 
             
@@ -109,23 +116,24 @@ class Dispatch():
                 picker_dispatch[sorted_kblocklist[0]].append((pickername[0], sorted_vtasklist[0]))
                 residual_ts = timestock - sorted_vtasklist[0]
                 timestock = residual_ts
+                
                 sorted_vtasklist.pop(sorted_vtasklist.index(sorted_vtasklist[0]))
                 sorted_kblocklist.pop(sorted_kblocklist.index(sorted_kblocklist[0]))
-                self.consume_time(residual_ts, sorted_vtasklist, sorted_kblocklist, pickername)
+                #timestock.pop(timestock.index(timestock))
+                self.consume_time(timestock, timestock_list, sorted_vtasklist, sorted_kblocklist, pickername)
 
                 return residual_ts
 
 
-    def picker(self, time_stock, picker_stock):
-
-        if len(picker_stock) == 0: #or time_stock == 0
-            #print(picker_stock, time_stock)
+    def picker(self, time_stock, picker_time_stock, picker_stock):
+        if len(picker_stock) == 0: #or picker_time_stock == 0
+            #print(picker_stock, picker_time_stock)
             pass
         
         else:
-            time_stock = self.consume_time(1, sorted_vtasklist, sorted_kblocklist, picker_stock)
+            time_stock = self.consume_time(picker_time_stock[0], picker_time_stock, sorted_vtasklist, sorted_kblocklist, picker_stock)
             picker_stock.pop(picker_stock.index(picker_stock[0]))
-            self.picker(time_stock, picker_stock)
+            self.picker(time_stock, picker_time_stock, picker_stock)
 
 
 
