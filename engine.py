@@ -127,19 +127,22 @@ class Computing:
 
     def get_shift(self):
         today = datetime.datetime.today()
-        self.nightly_morning = (datetime.datetime(today.year, today.month, today.day, 2, 45,0), "nightly_morning")
+        #self.nightly_morning = (datetime.datetime(today.year, today.month, today.day, 2, 45,0), "nightly_morning")
         self.morning = (datetime.datetime(today.year, today.month, today.day, 12, 45, 0), "morning")
         self.afternoon = (datetime.datetime(today.year, today.month, today.day, 19, 45, 1), "afternoon") # test 19 instead of 22
-        self.eve = (datetime.datetime(today.year, today.month, today.day, 23, 59, 59) + datetime.timedelta(seconds=(10800)), "evening")
+        self.night = (datetime.datetime(today.year, today.month, today.day, 23, 45, 0) + datetime.timedelta(seconds=(10800)), "night")
 
-        if datetime.datetime.now().time() < datetime.time(2, 45, 0):
-            return self.nightly_morning
-        elif datetime.time(5, 45, 0) < datetime.datetime.now().time() < datetime.time(12, 45, 0):
+        # if datetime.datetime.now().time() < datetime.time(2, 45, 0):
+        #     return self.nightly_morning
+        # morning shift
+        if datetime.time(5, 45, 0) < datetime.datetime.now().time() < datetime.time(12, 45, 0):
             return self.morning
+        # afternoon shift
         elif datetime.time(12, 45, 1) < datetime.datetime.now().time() < datetime.time(19, 45, 0):
             return self.afternoon
+        # night shift
         elif datetime.time(19, 45, 0) < datetime.datetime.now().time() < datetime.time(23, 59, 59):
-            return self.eve
+            return self.night
 
     def new_goal(self):
 
@@ -311,6 +314,7 @@ class Computing:
             self.speed_real["speed_art_avg"] = self.speed_real["speed_art_avg"] / len(adminblocks.mainlistblock)
             self.speed_real["speed_ean_avg"] = self.speed_real["speed_ean_avg"] / len(adminblocks.mainlistblock)
 
+            print("RT:", self.speed_real)
             useofdb.insert_dicsql(self.speed_real, "in_speed")
             return self.speed_real
 

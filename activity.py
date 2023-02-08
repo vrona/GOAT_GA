@@ -50,10 +50,10 @@ class Activity():
         self.eangoal = tk.Label(self.master, text='EAN Goal', justify='center',font=("bold", 13), pady=10)
         self.eangoal.grid(row=self.rowpart+2, column=1)
 
-        self.speedgoal = tk.Label(self.master, text='Vitesse Goal\nart./h.', justify='center',font=("bold", 13), pady=10)
+        self.speedgoal = tk.Label(self.master, text='Vitesse Goal Block\nart./h.', justify='center',font=("bold", 13), pady=10)
         self.speedgoal.grid(row=self.rowpart+3, column=1)
 
-        self.speedrealt = tk.Label(self.master, text='Vitesse réelle\nart./h.', justify='center',font=("bold", 13), pady=10)
+        self.speedrealt = tk.Label(self.master, text='Vitesse réelle\nart./picker/h.', justify='center',font=("bold", 13), pady=10)
         self.speedrealt.grid(row=self.rowpart+4, column=1)
 
         # SEPARATOR & PICKERS PARTS

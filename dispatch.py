@@ -3,7 +3,8 @@ import numpy as np
 import sqlite3
 import adminblocks
 from globaldb import CreateDB_OnFly, UsingDB
-import datetime
+from datetime import timedelta
+import time
 
 picker_dispatch = {}
 
@@ -45,7 +46,10 @@ class Dispatch():
 
         self.totalpkrneed = round(float(sum(self.dictpkrneed_ean.values())), 2)
         return self.dictpkrneed_ean, self.totalpkrneed #self.pickr_need_art
-
+    
+    """
+    Pickers and Poly
+    """
     def pkrandpoly(self):
         self.weighted = {}
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
@@ -83,17 +87,24 @@ class Dispatch():
             sorted_kblocklist.append(max(a[0],key=a[0].get))
             picker_dispatch[max(a[0],key=a[0].get)] = []
             a[0].pop(max(a[0],key=a[0].get))
-        
-        print("K", sorted_kblocklist,'\n',"V", sorted_vtasklist,'\n',"empty picker_dispatch", picker_dispatch)
 
+        print("task",sorted_vtasklist)
+        print("block",sorted_kblocklist)
         
         list_of_name = self.dfpickers['name'].tolist()#["Picker_%s"%(x) for x in range(self.declaredtp)]
         list_of_stock_of_time = self.dfpickers['stock_of_time'].tolist()
 
-        self.picker(list_of_stock_of_time[0], list_of_stock_of_time, list_of_name) # 1
-        print("B", picker_dispatch) # TO DO INSERT DATA INTO THE DIFFERENT BLOCK_TABLES
-        sqlonfly.insert_picker_to_task(picker_dispatch, start_time)
+        self.picker(list_of_stock_of_time[0], list_of_stock_of_time, list_of_name)
 
+        print("Dispatch", picker_dispatch)
+
+        """TO DO: fixed the principle of Task tables + multi insert data"""
+        # for key_block_name, value_block_task in picker_dispatch.items():
+    
+        #     for values in value_block_task:
+        #         """21600 seconds for 6 hours shift * portion of time needed // could also convert all .time() but SQL does not support time but datetime"""
+        #         end_time = start_time + timedelta(seconds=(int(21600 * values[1])))
+        #         sqlonfly.insert_picker_to_task("{}_task".format(key_block_name), values[0], values[1], start_time, end_time)
 
 
     def consume_time(self, timestock, timestock_list, sorted_vtasklist, sorted_kblocklist, pickername):
@@ -127,7 +138,6 @@ class Dispatch():
 
     def picker(self, time_stock, picker_time_stock, picker_stock):
         if len(picker_stock) == 0: #or picker_time_stock == 0
-            #print(picker_stock, picker_time_stock)
             pass
         
         else:

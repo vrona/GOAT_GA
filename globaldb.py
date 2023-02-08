@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import datetime, time, timedelta
+import time
 
 lsartean = []
 ls_goal_g = []
@@ -119,8 +119,11 @@ class CreationDB:
 
     def insert_nameblock(self, id, name):
         self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(id, name))
-        self.cur.execute("CREATE TABLE IF NOT EXISTS {}_task (start_time REAL, picker text, time_task FLOAT, end_time REAL)".format(name)) #id INTEGER PRIMARY KEY, 
+        self.cur.execute("CREATE TABLE IF NOT EXISTS {}_task (id INTEGER PRIMARY KEY, picker text, time_task FLOAT, start_time REAL, end_time REAL)".format(name)) #id INTEGER PRIMARY KEY, 
         self.conn.commit()
+
+    def __del__(self):
+        self.conn.close()
 
 
 """
@@ -142,16 +145,36 @@ class CreateDB_OnFly:
 
 
 
-    def insert_picker_to_task(self, dictbase, start_time):
+    # def insert_picker_to_task(self, dictbase, start_time):
+    
+    #     for key_block_name, value_block_task in dictbase.items():
+    #         for values in value_block_task:
+    #             end_time = start_time + timedelta(seconds=(int(21600 * values[1]))) # 21600 seconds for 6 hours shift * portion of time needed 
+    #             self.cur.execute("INSERT INTO %s_task VALUES (?,?,?,?)" %(key_block_name),(start_time, values[0], values[1], end_time))
+        
+    #     self.conn.commit()
 
-        for key_block_name, value_block_task in dictbase.items():
-            for values in value_block_task:
-                end_time = start_time + timedelta(seconds=(int(21600 * values[1]))) # 21600 seconds for 6 hours shift * portion of time needed 
-                self.cur.execute("INSERT INTO %s_task VALUES (?,?,?,?)" %(key_block_name),(start_time, values[0], values[1], end_time))
-                self.conn.commit()
+    def insert_picker_to_task(self, key_block_name, picker_name, task_value, start_time, end_time):
 
+        #print("INSERT INTO %s VALUES (?,?,?,?)" %(key_block_name),(start_time, picker_name, task_value, end_time))
+        self.columns = "picker, time_task, start_time, end_time"
+        self.sqllang =  "INSERT INTO %s (%s) VALUES (?,?,?,?)" % (key_block_name, self.columns)
 
-    #task_time FLOAT, time_record REAL NOT NULL, time_ending REAL NOT NULL, task_id INTEGER, FOREIGN KEY (task_id) REFERENCES blocks_in (id))"
+        self.cur.execute(self.sqllang, [picker_name, task_value, start_time, end_time])
+        """TO DO
+        rows = [
+            ("row1",),
+            ("row2",),
+        ]
+
+        self.cur.executemany("INSERT INTO data VALUES(?)", rows)
+    """
+        
+        self.conn.commit()
+
+    def __del__(self):
+        self.conn.close()
+
 class UsingDB:
     def __init__(self, db):
         self.conn = sqlite3.connect(db)
@@ -213,9 +236,9 @@ class UsingDB:
         self.dictbase = dictbase
         self.placeholder = ','.join(['?'] * len(self.dictbase))
         self.column = ', '.join(self.dictbase.keys())
+        
 
         self.sql = "INSERT INTO %s (%s) VALUES (%s)" % (str_table_name, self.column, self.placeholder)
-
         self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
 
