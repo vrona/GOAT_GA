@@ -25,13 +25,21 @@ class CreationDB:
         
         self.conn.commit()
 
+    def helper_dbtype(self, listofsth, datatype):
+            listofall = []
+
+            for data in listofsth:
+                attribute = " ".join((data, datatype))
+                listofall.append(attribute)
+            return listofall
+
     def createglobalpick(self, numofblock, db):
         global lsartean, ls_goal_g, ls_delta, ls_speed_artean
-        sql_ent = []
-        sql_ent_g = []
-        sql_w_ent = []
-        sql_speed = []
-        sql_delta = []
+        #sql_ent = []
+        # sql_ent_g = []
+        # sql_w_ent = []
+        # sql_speed = []
+        # sql_delta = []
         self.numoblock = numofblock
         
         lsartean = ["artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
@@ -40,25 +48,31 @@ class CreationDB:
         ls_speed_artean = ["speed_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["speed_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["speed_goal_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["speed_goal_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_delta = ["delta_artbck{}".format(nblock) for nblock in range(0, self.numofblock)] + ["delta_eanbck{}".format(nblock) for nblock in range(0, self.numofblock)]
 
-        for artean in lsartean:
-            self.attribute = " ".join((artean, "INTEGER"))
-            sql_ent.append(self.attribute)
-
-        for artean_g in ls_goal_g:
-            self.attribute_g = " ".join((artean_g, "INTEGER"))
-            sql_ent_g.append(self.attribute_g)
         
-        for w_artean in ls_w_artean:
-            self.w_attribute = " ".join((w_artean, "FLOAT"))
-            sql_w_ent.append(self.w_attribute)
+        sql_ent = self.helper_dbtype(lsartean, "INTEGER")
+        sql_ent_g = self.helper_dbtype(ls_goal_g, "INTEGER")
+        sql_w_ent = self.helper_dbtype(ls_w_artean, "FLOAT")
+        sql_speed = self.helper_dbtype(ls_speed_artean, "FLOAT")
+        sql_delta = self.helper_dbtype(ls_delta, "INTEGER")
+        # for artean in lsartean:
+        #     self.attribute = " ".join((artean, "INTEGER"))
+        #     sql_ent.append(self.attribute)
 
-        for speed_ae in ls_speed_artean:
-            self.speed_attribute = " ".join((speed_ae, "FLOAT"))
-            sql_speed.append(self.speed_attribute)
+        # for artean_g in ls_goal_g:
+        #     self.attribute_g = " ".join((artean_g, "INTEGER"))
+        #     sql_ent_g.append(self.attribute_g)
+        
+        # for w_artean in ls_w_artean:
+        #     self.w_attribute = " ".join((w_artean, "FLOAT"))
+        #     sql_w_ent.append(self.w_attribute)
 
-        for delta in ls_delta:
-            self.attribute_delta = " ".join((delta, "INTEGER"))
-            sql_delta.append(self.attribute_delta)
+        # for speed_ae in ls_speed_artean:
+        #     self.speed_attribute = " ".join((speed_ae, "FLOAT"))
+        #     sql_speed.append(self.speed_attribute)
+
+        # for delta in ls_delta:
+        #     self.attribute_delta = " ".join((delta, "INTEGER"))
+        #     sql_delta.append(self.attribute_delta)
 
         # Table 1 input vol article ean
         self.entete = "CREATE TABLE IF NOT EXISTS in_globalpick ("
