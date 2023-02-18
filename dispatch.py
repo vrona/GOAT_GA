@@ -10,11 +10,14 @@ picker_dispatch = {}
 
 class Dispatch():
 
-    def __init__(self, db):
+    def __init__(self, db_main="./database/input_data.db", db_second="./database/dispatch_data.db"):
 
         try:
-            self.conn = sqlite3.connect(db)
-            self.cur = self.conn.cursor()
+            self.conn_main = sqlite3.connect(db_main)
+            self.cur = self.conn_main.cursor()
+
+            self.conn_second = sqlite3.connect(db_second)
+            
         except Exception as e:
             print(f'An error occurred: {e}.')
             exit()
@@ -33,7 +36,7 @@ class Dispatch():
     def get_picker_bck_need(self):
 
         self.dictpkrneed_ean = {}
-        self.df_speed = pd.read_sql_query("SELECT * FROM in_speed ORDER BY id DESC LIMIT 1", self.conn).drop(columns=['id'], axis=1)
+        self.df_speed = pd.read_sql_query("SELECT * FROM in_speed ORDER BY id DESC LIMIT 1", self.conn_main).drop(columns=['id'], axis=1)
 
         for ncol in range(len(adminblocks.mainlistblock)):
 
@@ -52,7 +55,7 @@ class Dispatch():
     """
     def pkrandpoly(self):
         self.weighted = {}
-        self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn)
+        self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn_main)
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
         self.optimalpkr, self.totaloptipkr = self.get_picker_bck_need()
         
@@ -71,9 +74,9 @@ class Dispatch():
     def dispatchme(self, start_time):
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
 
-        sqlonfly = CreateDB_OnFly("./database/goatdata.db")
+        sqlonfly = CreateDB_OnFly()
         #usingdb = UsingDB("./database/goatdata.db")
-        self.sql_query = pd.read_sql_query("SELECT * FROM pickers", self.conn).drop(columns=['id'], axis=1)
+        self.sql_query = pd.read_sql_query("SELECT * FROM pickers", self.conn_second).drop(columns=['id'], axis=1)
         self.dfpickers = pd.DataFrame(self.sql_query)
         #total_pickers = int(self.dfpickers.iloc[-2]['total_pickers'])
 

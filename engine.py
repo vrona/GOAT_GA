@@ -322,7 +322,7 @@ class Computing:
     Insertion of initial pickers and new_picker into pickers table
     @param total_picker_realtime: real time data given by activity manager
     """
-    onfly = CreateDB_OnFly("./database/goatdata.db")
+    onfly = CreateDB_OnFly()
     def insert_new_picker(self, total_picker_realtime):
                 
         self.timerecord = datetime.datetime.now()

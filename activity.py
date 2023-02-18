@@ -121,7 +121,7 @@ class Activity():
         # Insert into DB
         pdb = UsingDB("./database/goatdata.db")
         enginedb = Computing("./database/goatdata.db")
-        onfly = CreateDB_OnFly("./database/goatdata.db")
+        #onfly = CreateDB_OnFly()
         dispatch = Dispatch("./database/goatdata.db")
 
         pdb.insert_dicsql(self.get_dictglobalpick, "in_globalpick")
