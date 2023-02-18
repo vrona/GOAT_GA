@@ -88,8 +88,9 @@ class Dispatch():
             picker_dispatch[max(a[0],key=a[0].get)] = []
             a[0].pop(max(a[0],key=a[0].get))
 
-        print("task",sorted_vtasklist)
-        print("block",sorted_kblocklist)
+        # tasks inserted
+        #for task_value, task_name in zip(sorted_vtasklist, sorted_kblocklist):
+        sqlonfly.insert_tasks(sorted_vtasklist, sorted_kblocklist)
         
         list_of_name = self.dfpickers['name'].tolist()#["Picker_%s"%(x) for x in range(self.declaredtp)]
         list_of_stock_of_time = self.dfpickers['stock_of_time'].tolist()

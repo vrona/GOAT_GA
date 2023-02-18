@@ -265,3 +265,27 @@ def createtask(self):
             prev_dicttask = self.dicttask # updating previous dict of tasks
      
         
+    # def insert_picker_to_task(self, dictbase, start_time):
+    
+    #     for key_block_name, value_block_task in dictbase.items():
+    #         for values in value_block_task:
+    #             end_time = start_time + timedelta(seconds=(int(21600 * values[1]))) # 21600 seconds for 6 hours shift * portion of time needed 
+    #             self.cur.execute("INSERT INTO %s_task VALUES (?,?,?,?)" %(key_block_name),(start_time, values[0], values[1], end_time))
+        
+    #     self.conn.commit()
+
+    # def insert_picker_to_task(self, key_block_name, picker_name, task_value, start_time, end_time):
+
+    #     #print("INSERT INTO %s VALUES (?,?,?,?)" %(key_block_name),(start_time, picker_name, task_value, end_time))
+    #     self.columns = "picker, task_time, start_time, end_time"
+    #     self.sqllang =  "INSERT INTO %s (%s) VALUES (?,?,?,?)" % (key_block_name, self.columns)
+
+    #     self.cur.execute(self.sqllang, [picker_name, task_value, start_time, end_time])
+    #     """TO DO
+    #     rows = [
+    #         ("row1",),
+    #         ("row2",),
+    #     ]
+
+    #     self.cur.executemany("INSERT INTO data VALUES(?)", rows)
+    # """

@@ -17,7 +17,7 @@ class CreationDB:
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.createglobalpick(self.numofblock, db)
-        self.cur.execute("CREATE TABLE IF NOT EXISTS blocks_in (id INTEGER PRIMARY KEY, name text NOT NULL)")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS blocks_in (block_id INTEGER PRIMARY KEY, name text NOT NULL)")
         self.cur.execute("CREATE TABLE IF NOT EXISTS pickers (id INTEGER PRIMARY KEY, name text NOT NULL, arrival_time REAL, stock_of_time FLOAT)")
         #self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES in_globalpick (total_pickers))")
         #self.cur.execute("CREATE TABLE IF NOT EXISTS poly_out (time_glob REAL PRIMARY KEY, total_picker_onsite INTEGER NOT NULL, total_pick_goal INTEGER NOT NULL, poly_status INTEGER, FOREIGN KEY (total_picker_onsite) REFERENCES in_globalpick (time_glob), FOREIGN KEY (time_glob) REFERENCES in_globalpick (total_pickers))")
@@ -117,9 +117,10 @@ class CreationDB:
         self.cur.execute(self.completed)
 
 
-    def insert_nameblock(self, id, name):
-        self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(id, name))
-        self.cur.execute("CREATE TABLE IF NOT EXISTS {}_task (id INTEGER PRIMARY KEY, picker text, time_task FLOAT, start_time REAL, end_time REAL)".format(name)) #id INTEGER PRIMARY KEY, 
+    def insert_nameblock(self, block_id, name):
+        self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(block_id, name))
+        self.cur.execute("CREATE TABLE IF NOT EXISTS tasks_in (id INTEGER PRIMARY KEY, task_id INTEGER, task_time FLOAT, FOREIGN KEY (task_id) REFERENCES blocks_in (block_id))") #id INTEGER PRIMARY KEY,
+        # TO DELETE self.cur.execute("CREATE TABLE IF NOT EXISTS {}_task (id INTEGER PRIMARY KEY, picker text, task_time FLOAT, start_time REAL, end_time REAL)".format(name)) #id INTEGER PRIMARY KEY, 
         self.conn.commit()
 
     def __del__(self):
@@ -143,34 +144,15 @@ class CreateDB_OnFly:
         self.cur.execute("INSERT INTO pickers VALUES (?,?,?,?)",(id, picker_name, arrival_time, stock_of_time))
         self.conn.commit()
 
-
-
-    # def insert_picker_to_task(self, dictbase, start_time):
-    
-    #     for key_block_name, value_block_task in dictbase.items():
-    #         for values in value_block_task:
-    #             end_time = start_time + timedelta(seconds=(int(21600 * values[1]))) # 21600 seconds for 6 hours shift * portion of time needed 
-    #             self.cur.execute("INSERT INTO %s_task VALUES (?,?,?,?)" %(key_block_name),(start_time, values[0], values[1], end_time))
+    # task table insertion
+    def insert_tasks(self, task_time, blockname):
         
-    #     self.conn.commit()
+        for task_value, task_name in zip(task_time,  blockname):
+            values = [(task_name, task_value)]
+            print(values)
+            self.cur.executemany("INSERT INTO tasks_in (task_id, task_time) VALUES ((SELECT block_id FROM blocks_in WHERE name=?),?)", values)
+            self.conn.commit()
 
-    def insert_picker_to_task(self, key_block_name, picker_name, task_value, start_time, end_time):
-
-        #print("INSERT INTO %s VALUES (?,?,?,?)" %(key_block_name),(start_time, picker_name, task_value, end_time))
-        self.columns = "picker, time_task, start_time, end_time"
-        self.sqllang =  "INSERT INTO %s (%s) VALUES (?,?,?,?)" % (key_block_name, self.columns)
-
-        self.cur.execute(self.sqllang, [picker_name, task_value, start_time, end_time])
-        """TO DO
-        rows = [
-            ("row1",),
-            ("row2",),
-        ]
-
-        self.cur.executemany("INSERT INTO data VALUES(?)", rows)
-    """
-        
-        self.conn.commit()
 
     def __del__(self):
         self.conn.close()
