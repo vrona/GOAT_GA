@@ -153,14 +153,14 @@ class CreateDB_OnFly:
        
         print(values)
             #self.cur.executemany("INSERT INTO tasks_in (task_id, task_time) VALUES ((SELECT block_id FROM blocks_in WHERE name=?),?)", values)
-        self.cur.executemany("INSERT INTO tasks_in (block_name, task_time) VALUES (?,?)", list(values))
+        self.cur.executemany("INSERT INTO tasks_in (task_time, block_name) VALUES (?,?)", list(values))
         self.conn.commit()
 
     def __del__(self):
         self.conn.close()
 
 class UsingDB:
-    def __init__(self, db):
+    def __init__(self, db="./database/input_data.db"):
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
 

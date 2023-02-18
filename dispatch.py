@@ -75,7 +75,7 @@ class Dispatch():
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
 
         sqlonfly = CreateDB_OnFly()
-        #usingdb = UsingDB("./database/goatdata.db")
+        #usingdb = UsingDB()
         self.sql_query = pd.read_sql_query("SELECT * FROM pickers", self.conn_second).drop(columns=['id'], axis=1)
         self.dfpickers = pd.DataFrame(self.sql_query)
         #total_pickers = int(self.dfpickers.iloc[-2]['total_pickers'])

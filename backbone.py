@@ -65,8 +65,8 @@ class PickGAApp(ttk.Frame): # perhaps tk is enough vs ttk
         self.reset_btn.grid(row=23, column=1, pady=5)
 
     def resetapp(self):
-        if os.path.exists("./database/goatdata.db") or os.path.exists("./database/dispatch_data.db"):
-            os.remove("./database/goatdata.db")
+        if os.path.exists("./database/input_data.db") or os.path.exists("./database/dispatch_data.db"):
+            os.remove("./database/input_data.db")
             os.remove("./database/dispatch_data.db")
             print("DB removed")
 

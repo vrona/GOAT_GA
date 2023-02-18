@@ -206,7 +206,7 @@ class Blocks(tk.Frame):
         #self.listofids = list(mainlistblock.index(x) for x in mainlistblock)
         #self.data = {'id': self.listofids, 'name': mainlistblock}
         #self.df = pd.DataFrame(self.data, columns=['id','name'])
-        self.pdb = CreationDB(len(mainlistblock)) #,"./database/goatdata.db"
+        self.pdb = CreationDB(len(mainlistblock))
         
         # speedtheodict["speedthavg"] = sum(speedtheodict.values()) / len(speedtheodict) # TO ADD LATER
         

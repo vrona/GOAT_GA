@@ -33,7 +33,7 @@ class Engine():
 
 
 class Computing:
-    def __init__(self, db):
+    def __init__(self, db="./database/input_data.db"):
 
         try:
             self.conn = sqlite3.connect(db)
@@ -96,7 +96,7 @@ class Computing:
         self.conn.commit()
 
     def delta_prod(self):
-        useofdb = UsingDB("./database/goatdata.db")
+        useofdb = UsingDB()
         self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn)
 
         self.veryglobal = pd.DataFrame(self.sql_query)
@@ -153,7 +153,7 @@ class Computing:
         self.getgoaltime = self.shiftendtime - pd.to_datetime(globaldf['time_glob'].values[-1])
         self.getgoaltime = self.getgoaltime.seconds
 
-        useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
+        useofdb = UsingDB() # To Simplify if necessary
         self.goalkey = globaldb.ls_goal_g # list of futur keys' dict
 
         self.sql_weight = pd.read_sql_query("SELECT * FROM in_weight ORDER BY time_glob DESC LIMIT 1", self.conn)
@@ -242,7 +242,6 @@ class Computing:
             return self.percent_done, self.totall
 
     def get_weight(self):
-        #= UsingDB("./database/goatdata.db") # To Simplify if necessary
         self.ratiocol = ", ".join(["ratioaebck{}".format(x) for x in range(len(adminblocks.mainlistblock))])
         self.phrase = "SELECT %s FROM in_weight ORDER BY time_glob DESC LIMIT 1" % (self.ratiocol)
         self.df_ratio = pd.read_sql_query(self.phrase, self.conn)
@@ -271,7 +270,7 @@ class Computing:
     def speedness(self):
         self.dictspeed = {}
         self.df_ratio = self.get_weight()
-        useofdb = UsingDB("./database/goatdata.db") # To Simplify if necessary
+        useofdb = UsingDB() # To Simplify if necessary
 
         # check the length of goalpick table
         self.cur.execute("SELECT count(*) FROM in_speed")

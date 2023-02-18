@@ -119,10 +119,10 @@ class Activity():
                 return
 
         # Insert into DB
-        pdb = UsingDB("./database/goatdata.db")
-        enginedb = Computing("./database/goatdata.db")
+        pdb = UsingDB()
+        enginedb = Computing()
         #onfly = CreateDB_OnFly()
-        dispatch = Dispatch("./database/goatdata.db")
+        dispatch = Dispatch()
 
         pdb.insert_dicsql(self.get_dictglobalpick, "in_globalpick")
         enginedb.weightnratio(self.get_dictglobalpick)
