@@ -1,5 +1,4 @@
 import sqlite3
-import time
 
 lsartean = []
 ls_goal_g = []
@@ -126,13 +125,35 @@ class CreationDB:
 creates new tables on fly
 """
 class CreateDB_OnFly:
-    def __init__(self, db="./database/dispatch_data.db"):
+    def __init__(self, numofblock=0, db="./database/dispatch_data.db"):
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.ini_pickers = False
         self.cur.execute("CREATE TABLE IF NOT EXISTS tasks_in (id INTEGER PRIMARY KEY, block_name text, task_time FLOAT)")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS pickers (id INTEGER PRIMARY KEY, name text NOT NULL, arrival_time REAL, stock_of_time FLOAT)")
+
+        self.create_pickers(numofblock, db)
         self.conn.commit()
+
+    def create_pickers(self, numofblock, db):
+        print(numofblock)
+        self.numofblock = numofblock
+        ls_task_name = ["task_name{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_task_value = ["task_value{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_time_ending = ["time_ending{}".format(nblock) for nblock in range(0, self.numofblock)]
+        
+        sql_tn = helper_dbtype(ls_task_name, "text")
+        sql_tv = helper_dbtype(ls_task_value, "FLOAT")
+        sql_te = helper_dbtype(ls_time_ending, "real")
+
+        self.entete_picker = "CREATE TABLE IF NOT EXISTS pickers ("
+        self.corps_tn = ", ".join((sql_tn))
+        self.corps_tv = ", ".join((sql_tv))
+        self.corps_te = ", ".join((sql_te))
+        self.pick_comp = self.entete_picker+"id INTEGER PRIMARY KEY, name text NOT NULL, arrival_time REAL, stock_of_time FLOAT, "+self.corps_tn+self.corps_tv+self.corps_te+")"
+        
+        self.conn = sqlite3.connect(db)
+        self.cur = self.conn.cursor()
+        self.cur.execute(self.pick_comp)
     
     # Table x pickers
     def insert_pickers(self, id, picker_name, arrival_time, stock_of_time):
