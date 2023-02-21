@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter.ttk import *
 import tkinter.messagebox
-from globaldb import CreationDB
+from globaldb import CreationDB, CreateDB_OnFly
 
 
 is_on = False
@@ -207,6 +207,7 @@ class Blocks(tk.Frame):
         #self.data = {'id': self.listofids, 'name': mainlistblock}
         #self.df = pd.DataFrame(self.data, columns=['id','name'])
         self.pdb = CreationDB(len(mainlistblock))
+        CreateDB_OnFly().create_pickers(len(mainlistblock), "./database/dispatch_data.db")
         
         # speedtheodict["speedthavg"] = sum(speedtheodict.values()) / len(speedtheodict) # TO ADD LATER
         

@@ -74,7 +74,7 @@ class Dispatch():
     def dispatchme(self, start_time):
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
 
-        sqlonfly = CreateDB_OnFly(len(adminblocks.mainlistblock))
+        sqlonfly = CreateDB_OnFly()
         #usingdb = UsingDB()
         self.sql_query = pd.read_sql_query("SELECT * FROM pickers", self.conn_second).drop(columns=['id'], axis=1)
         self.dfpickers = pd.DataFrame(self.sql_query)

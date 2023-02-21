@@ -125,13 +125,12 @@ class CreationDB:
 creates new tables on fly
 """
 class CreateDB_OnFly:
-    def __init__(self, numofblock=0, db="./database/dispatch_data.db"):
+    def __init__(self, db="./database/dispatch_data.db"):
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.ini_pickers = False
         self.cur.execute("CREATE TABLE IF NOT EXISTS tasks_in (id INTEGER PRIMARY KEY, block_name text, task_time FLOAT)")
-
-        self.create_pickers(numofblock, db)
+        
         self.conn.commit()
 
     def create_pickers(self, numofblock, db):
@@ -149,8 +148,9 @@ class CreateDB_OnFly:
         self.corps_tn = ", ".join((sql_tn))
         self.corps_tv = ", ".join((sql_tv))
         self.corps_te = ", ".join((sql_te))
-        self.pick_comp = self.entete_picker+"id INTEGER PRIMARY KEY, name text NOT NULL, arrival_time REAL, stock_of_time FLOAT, "+self.corps_tn+self.corps_tv+self.corps_te+")"
         
+        self.pick_comp = self.entete_picker+"id INTEGER PRIMARY KEY, name text NOT NULL, arrival_time REAL, stock_of_time FLOAT, "+self.corps_tn+", "+self.corps_tv+", "+self.corps_te+")"
+        print(self.pick_comp)
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.cur.execute(self.pick_comp)
@@ -158,9 +158,9 @@ class CreateDB_OnFly:
     # Table x pickers
     def insert_pickers(self, id, picker_name, arrival_time, stock_of_time):
     
-        #for npicker in range(num_picker):
-            #self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(id, "Picker_{}".format(npicker)))
-        self.cur.execute("INSERT INTO pickers VALUES (?,?,?,?)",(id, picker_name, arrival_time, stock_of_time))
+        order = "INSERT INTO pickers (id,name,arrival_time,stock_of_time) VALUES (?,?,?,?) "
+        param = list((id, picker_name, arrival_time, stock_of_time))
+        self.cur.execute(order, param)
         self.conn.commit()
 
     # task table insertion
@@ -170,6 +170,17 @@ class CreateDB_OnFly:
         print(values)
             #self.cur.executemany("INSERT INTO tasks_in (task_id, task_time) VALUES ((SELECT block_id FROM blocks_in WHERE name=?),?)", values)
         self.cur.executemany("INSERT INTO tasks_in (task_time, block_name) VALUES (?,?)", list(values))
+        self.conn.commit()
+
+    # update pickers table
+    def update_pickers(self, dictbase, str_table_name):
+        self.dictbase = dictbase
+        self.placeholder = ','.join(['?'] * len(self.dictbase))
+        self.column = ', '.join(self.dictbase.keys())
+        
+
+        self.sql = "INSERT INTO %s (%s) VALUES (%s)" % (str_table_name, self.column, self.placeholder)
+        self.cur.execute(self.sql, list(self.dictbase.values()))
         self.conn.commit()
 
     def __del__(self):
