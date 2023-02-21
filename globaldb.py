@@ -25,7 +25,7 @@ class CreationDB:
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.createglobalpick(self.numofblock, db)
-        self.cur.execute("CREATE TABLE IF NOT EXISTS blocks_in (block_id INTEGER PRIMARY KEY, name text NOT NULL)")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS blocks_in (block_id INTEGER PRIMARY KEY, block_name text NOT NULL)")
         
         #self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES in_globalpick (total_pickers))")
         #self.cur.execute("CREATE TABLE IF NOT EXISTS poly_out (time_glob REAL PRIMARY KEY, total_picker_onsite INTEGER NOT NULL, total_pick_goal INTEGER NOT NULL, poly_status INTEGER, FOREIGN KEY (total_picker_onsite) REFERENCES in_globalpick (time_glob), FOREIGN KEY (time_glob) REFERENCES in_globalpick (total_pickers))")
@@ -110,11 +110,8 @@ class CreationDB:
         self.cur = self.conn.cursor()
         self.cur.execute(self.completed)
 
-    def insert_nameblock(self, block_id, name):
-        self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(block_id, name))
-        
-        #self.cur.execute("CREATE TABLE IF NOT EXISTS tasks_in (id INTEGER PRIMARY KEY, task_id INTEGER, task_time FLOAT, FOREIGN KEY (task_id) REFERENCES blocks_in (block_id))") #id INTEGER PRIMARY KEY,
-        # TO DELETE self.cur.execute("CREATE TABLE IF NOT EXISTS {}_task (id INTEGER PRIMARY KEY, picker text, task_time FLOAT, start_time REAL, end_time REAL)".format(name)) #id INTEGER PRIMARY KEY, 
+    def insert_nameblock(self, block_id, block_name):
+        self.cur.execute("INSERT INTO blocks_in VALUES (?,?)",(block_id, block_name))
         self.conn.commit()
 
     def __del__(self):
@@ -129,12 +126,12 @@ class CreateDB_OnFly:
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.ini_pickers = False
+        self.ini_task_w_picker = False
         self.cur.execute("CREATE TABLE IF NOT EXISTS tasks_in (id INTEGER PRIMARY KEY, block_name text, task_time FLOAT)")
         
         self.conn.commit()
 
     def create_pickers(self, numofblock, db):
-        print(numofblock)
         self.numofblock = numofblock
         ls_task_name = ["task_name{}".format(nblock) for nblock in range(0, self.numofblock)]
         ls_task_value = ["task_value{}".format(nblock) for nblock in range(0, self.numofblock)]
@@ -150,11 +147,38 @@ class CreateDB_OnFly:
         self.corps_te = ", ".join((sql_te))
         
         self.pick_comp = self.entete_picker+"id INTEGER PRIMARY KEY, name text NOT NULL, arrival_time REAL, stock_of_time FLOAT, "+self.corps_tn+", "+self.corps_tv+", "+self.corps_te+")"
-        print(self.pick_comp)
+
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
         self.cur.execute(self.pick_comp)
-    
+        self.conn.commit()
+
+
+    def create_table_tasks(self, block_name, listofpicker, db):
+        
+        sql_picker_name = helper_dbtype(listofpicker, "FLOAT")
+
+        task_table_name = "{}_task".format(block_name)
+        self.entete_taskpicker = "CREATE TABLE IF NOT EXISTS %s (" % task_table_name
+        self.corps_pickername = ", ".join((sql_picker_name))
+
+        self.task_picker = self.entete_taskpicker+"id INTEGER PRIMARY KEY, "+self.corps_pickername+")"
+
+        self.conn = sqlite3.connect(db)
+        self.cur = self.conn.cursor()
+        self.cur.execute(self.task_picker)
+        self.conn.commit()
+
+
+    def update_table_picker_tasks(self, block_name, new_column_name):       
+ 
+        self.alter_task_picker = "ALTER TABLE %s_task ADD COLUMN %s FLOAT;" % (block_name, new_column_name)
+        
+        print(self.alter_task_picker)
+
+        self.cur.execute(self.alter_task_picker)
+        self.conn.commit()
+
     # Table x pickers
     def insert_pickers(self, id, picker_name, arrival_time, stock_of_time):
     
@@ -167,21 +191,28 @@ class CreateDB_OnFly:
     def insert_tasks(self, task_time, blockname):
         values = [(task_value, task_name) for task_value, task_name in zip(task_time,  blockname)]
        
-        print(values)
-            #self.cur.executemany("INSERT INTO tasks_in (task_id, task_time) VALUES ((SELECT block_id FROM blocks_in WHERE name=?),?)", values)
+            #self.cur.executemany("INSERT INTO tasks_in (task_id, task_time) VALUES ((SELECT block_id FROM blocks_in WHERE block_name=?),?)", values)
         self.cur.executemany("INSERT INTO tasks_in (task_time, block_name) VALUES (?,?)", list(values))
         self.conn.commit()
 
-    # update pickers table
-    def update_pickers(self, dictbase, str_table_name):
-        self.dictbase = dictbase
-        self.placeholder = ','.join(['?'] * len(self.dictbase))
-        self.column = ', '.join(self.dictbase.keys())
+    def insert_disp_taskpickr(self, block_name, listofdata):
+        task_table_name = "{}_task".format(block_name)
+        picker_name = []
+        task_val = []
         
+        # splitting from dict.value the tuple to get picker_name, task_times
+        for t in listofdata:
+            picker_name.append(t[0])
+            task_val.append(t[1])
 
-        self.sql = "INSERT INTO %s (%s) VALUES (%s)" % (str_table_name, self.column, self.placeholder)
-        self.cur.execute(self.sql, list(self.dictbase.values()))
+        placeholder = ','.join(['?'] * len(picker_name))
+        column = ', '.join(picker_name)
+
+        self.sql = "INSERT INTO %s (%s) VALUES (%s)" % (task_table_name, column, placeholder)
+        print(self.sql)
+        self.cur.execute(self.sql, list(task_val))
         self.conn.commit()
+
 
     def __del__(self):
         self.conn.close()

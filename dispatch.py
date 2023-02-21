@@ -21,6 +21,7 @@ class Dispatch():
         except Exception as e:
             print(f'An error occurred: {e}.')
             exit()
+        
     
 
     def picker_needs(self, opt_speed, real_speed):
@@ -70,11 +71,10 @@ class Dispatch():
             self.polytogive = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polytogive
 
-    
+    sqlonfly = CreateDB_OnFly()
     def dispatchme(self, start_time):
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
-
-        sqlonfly = CreateDB_OnFly()
+        
         #usingdb = UsingDB()
         self.sql_query = pd.read_sql_query("SELECT * FROM pickers", self.conn_second).drop(columns=['id'], axis=1)
         self.dfpickers = pd.DataFrame(self.sql_query)
@@ -91,18 +91,58 @@ class Dispatch():
             picker_dispatch[max(a[0],key=a[0].get)] = []
             a[0].pop(max(a[0],key=a[0].get))
 
+
         # tasks inserted
         #for task_value, task_name in zip(sorted_vtasklist, sorted_kblocklist):
-        sqlonfly.insert_tasks(sorted_vtasklist, sorted_kblocklist)
+        self.sqlonfly.insert_tasks(sorted_vtasklist, sorted_kblocklist)
         
-        list_of_name = self.dfpickers['name'].tolist()#["Picker_%s"%(x) for x in range(self.declaredtp)]
+        list_of_name = self.dfpickers['name'].tolist() #["Picker_%s"%(x) for x in range(self.declaredtp)]
+
+        # copy of list of pickers before self.picker() recursive funct
+        pickerz = list_of_name.copy()
+
         list_of_stock_of_time = self.dfpickers['stock_of_time'].tolist()
 
+        # production of dispatch via recursive 
         self.picker(list_of_stock_of_time[0], list_of_stock_of_time, list_of_name)
 
+        print(self.sqlonfly.ini_task_w_picker)
+        if not self.sqlonfly.ini_task_w_picker:
+            for taskname in picker_dispatch.keys(): # happen at creation of task tables
+                
+                # create column tables of tasks
+                self.sqlonfly.create_table_tasks(taskname, pickerz, "./database/dispatch_data.db")
+
+                # insert task_time to picker to in dedicated task table
+                self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
+
+            self.sqlonfly.ini_task_w_picker = True
+            print(self.sqlonfly.ini_task_w_picker)
+        else:
+
+            self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn_main).drop(columns=['id'], axis=1)
+            self.dfbase = pd.DataFrame(self.sql_query)
+
+            total_pickers = int(self.dfbase.iloc[-2]['total_pickers'])
+
+            if len(pickerz) > total_pickers:
+                
+                for n_picker in range(total_pickers):
+                    pickerz.pop(pickerz.index("Picker_{}".format(n_picker)))
+            
+       
+                # update column tables of tasks
+                for taskname in picker_dispatch.keys():
+                    for new_picker in pickerz:
+                        self.sqlonfly.update_table_picker_tasks(taskname, new_picker)
+                        # insert task_time to picker to in dedicated task table
+                        self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
+            
+    
+        
         print("Dispatch", picker_dispatch)
 
-        """TO DO: fixed the principle of Task tables + multi insert data"""
+
         # for key_block_name, value_block_task in picker_dispatch.items():
     
         #     for values in value_block_task:
