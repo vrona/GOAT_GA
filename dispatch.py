@@ -23,6 +23,9 @@ class Dispatch():
         
 
     def picker_needs(self, opt_speed, real_speed):
+        """
+        a helper func which computes the number of needed pickers given the real speed vs the needed speed
+        """
         self.opt_speed = opt_speed
         self.real_speed = real_speed
         if self.real_speed == 0:
@@ -43,17 +46,24 @@ class Dispatch():
             # self.real_speedart = round(float(self.df_speed.iloc[-1]["speed_artbck{}".format(ncol)]), 2)
             # self.pickr_need_art = self.picker_needs(self.opti_speedart, self.real_speedart)
             
-            #self.dictpkrneed_ean["pkreanbck{}".format(ncol)]= self.picker_needs(round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2), round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2))
-            self.dictpkrneed_ean[adminblocks.mainlistblock[ncol]]= self.picker_needs(round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2), round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2))
+            #self.dictpkrneed_ean["pkreanbck{}".format(ncol)]= self.picker_needs(
+            #   round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2),
+            #   round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2)
+            #   )
+            self.dictpkrneed_ean[adminblocks.mainlistblock[ncol]]= self.picker_needs(
+                round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2),
+                round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2)
+                )
 
         self.totalpkrneed = round(float(sum(self.dictpkrneed_ean.values())), 2)
         return self.dictpkrneed_ean, self.totalpkrneed #self.pickr_need_art
     
-    """
-    Pickers and Poly
-    """
+    
     def pkrandpoly(self):
-        self.weighted = {}
+        """
+        Pickers and Poly returns dict of optimal_picker_needed per block, total sum optimal picker, float poly to give
+        """
+
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn_main)
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
         self.optimalpkr, self.totaloptipkr = self.get_picker_bck_need()
@@ -71,14 +81,15 @@ class Dispatch():
 
 
     sqlonfly = CreateDB_OnFly()
-    def dispatchme(self, start_time): # TO DO REFACTORING
+    def dispatchme(self, start_time):
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
         
-        #usingdb = UsingDB()
+        # get the number of picker at previous record
         self.sql_query = pd.read_sql_query("SELECT * FROM pickers", self.conn_second).drop(columns=['id'], axis=1)
         self.dfpickers = pd.DataFrame(self.sql_query)
         #total_pickers = int(self.dfpickers.iloc[-2]['total_pickers'])
 
+        #  get block_name aka task, optimal_picker_needed aka value task
         a= self.pkrandpoly()
         sorted_vtasklist = []
         sorted_kblocklist = []
