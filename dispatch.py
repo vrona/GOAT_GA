@@ -1,10 +1,7 @@
 import pandas as pd
-import numpy as np
 import sqlite3
 import adminblocks
-from globaldb import CreateDB_OnFly, UsingDB
-from datetime import timedelta
-import time
+from globaldb import CreateDB_OnFly
 
 picker_dispatch = {}
 
@@ -106,7 +103,6 @@ class Dispatch():
         # production of dispatch via recursive 
         self.picker(list_of_stock_of_time[0], list_of_stock_of_time, list_of_name)
 
-        print(self.sqlonfly.ini_task_w_picker)
         if not self.sqlonfly.ini_task_w_picker:
             for taskname in picker_dispatch.keys(): # happen at creation of task tables
                 
@@ -117,7 +113,7 @@ class Dispatch():
                 self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
 
             self.sqlonfly.ini_task_w_picker = True
-            print(self.sqlonfly.ini_task_w_picker)
+
         else:
 
             self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn_main).drop(columns=['id'], axis=1)

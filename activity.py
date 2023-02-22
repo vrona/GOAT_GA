@@ -6,7 +6,7 @@ import adminblocks
 from engine import Computing
 from dispatch import Dispatch
 import globaldb
-from globaldb import UsingDB, CreateDB_OnFly
+from globaldb import UsingDB
 from gauge import Meter
 from ttkbootstrap.constants import *
 import datetime
