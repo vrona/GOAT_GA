@@ -131,6 +131,7 @@ class Dispatch():
 
             total_pickers = int(self.dfbase.iloc[-2]['total_pickers'])
 
+            # in case number of picker more than the record before
             if len(pickerz) > total_pickers:
 
                 pickerz_backup = pickerz.copy()
@@ -143,27 +144,12 @@ class Dispatch():
                         self.sqlonfly.update_table_picker_tasks(taskname, new_picker)
                         
                 # insert task_time to picker to in dedicated task table
-                for taskname in picker_dispatch.keys():
-
-                    if picker_dispatch[taskname]:
-                        self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
-                        
-                    else:
-                        for name_np in pickerz_backup:
-                            picker_dispatch[taskname].append((name_np, 0))
-                    
-                        print(taskname, picker_dispatch[taskname])
-                        self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
+                self.helper_insert_dispatch(picker_dispatch, pickerz_backup)
             
+            # in case number of picker less than the record before
             else:
-                for taskname in picker_dispatch.keys():
-                    if picker_dispatch[taskname]:
-                        self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
-                    
-                    else:
-                        for name_nm in pickerz:
-                            picker_dispatch[taskname].append((name_nm, 0))
-                        self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
+                self.helper_insert_dispatch(picker_dispatch, pickerz)
+
 
         print("Dispatch", picker_dispatch)
 
@@ -215,6 +201,15 @@ class Dispatch():
             self.picker(time_stock, picker_time_stock, picker_stock)
 
 
+    def helper_insert_dispatch(self, dictbase, listofpickerz):
+        for task_name in dictbase.keys():
+            if dictbase[task_name]:
+                self.sqlonfly.insert_disp_taskpickr(task_name, dictbase[task_name])
+            
+            else:
+                for name in listofpickerz:
+                    dictbase[task_name].append((name, 0))
+                self.sqlonfly.insert_disp_taskpickr(task_name, dictbase[task_name])
 
         
     """
