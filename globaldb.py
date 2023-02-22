@@ -226,6 +226,10 @@ class CreateDB_OnFly:
         for t in listofdata:
             picker_name.append(t[0])
             task_val.append(t[1])
+            # if t[1]:
+            #     task_val.append(t[1])
+            # else:
+            #     task_val.append(0)
 
         placeholder = ','.join(['?'] * len(picker_name))
         column = ', '.join(picker_name)

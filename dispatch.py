@@ -8,7 +8,9 @@ picker_dispatch = {}
 class Dispatch():
 
     def __init__(self, db_main="./database/input_data.db", db_second="./database/dispatch_data.db"):
-
+        """
+        class dedicated to table that compute dispatch of task per block among pickers's available time. input from input_data.db, output recorded into dispatch_data.db
+        """
         try:
             self.conn_main = sqlite3.connect(db_main)
             self.cur = self.conn_main.cursor()
@@ -19,7 +21,6 @@ class Dispatch():
             print(f'An error occurred: {e}.')
             exit()
         
-    
 
     def picker_needs(self, opt_speed, real_speed):
         self.opt_speed = opt_speed
@@ -68,8 +69,9 @@ class Dispatch():
             self.polytogive = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polytogive
 
+
     sqlonfly = CreateDB_OnFly()
-    def dispatchme(self, start_time):
+    def dispatchme(self, start_time): # TO DO REFACTORING
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
         
         #usingdb = UsingDB()
@@ -110,7 +112,15 @@ class Dispatch():
                 self.sqlonfly.create_table_tasks(taskname, pickerz, "./database/dispatch_data.db")
 
                 # insert task_time to picker to in dedicated task table
-                self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
+                if picker_dispatch[taskname]:
+                    self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
+                    
+                else:
+                    for name_p in pickerz:
+                        picker_dispatch[taskname].append((name_p, 0))
+
+                    self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
+
 
             self.sqlonfly.ini_task_w_picker = True
 
@@ -122,20 +132,39 @@ class Dispatch():
             total_pickers = int(self.dfbase.iloc[-2]['total_pickers'])
 
             if len(pickerz) > total_pickers:
-                
+
+                pickerz_backup = pickerz.copy()
                 for n_picker in range(total_pickers):
                     pickerz.pop(pickerz.index("Picker_{}".format(n_picker)))
-            
-       
+
                 # update column tables of tasks
                 for taskname in picker_dispatch.keys():
                     for new_picker in pickerz:
                         self.sqlonfly.update_table_picker_tasks(taskname, new_picker)
-                        # insert task_time to picker to in dedicated task table
+                        
+                # insert task_time to picker to in dedicated task table
+                for taskname in picker_dispatch.keys():
+
+                    if picker_dispatch[taskname]:
+                        self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
+                        
+                    else:
+                        for name_np in pickerz_backup:
+                            picker_dispatch[taskname].append((name_np, 0))
+                    
+                        print(taskname, picker_dispatch[taskname])
                         self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
             
-    
-        
+            else:
+                for taskname in picker_dispatch.keys():
+                    if picker_dispatch[taskname]:
+                        self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
+                    
+                    else:
+                        for name_nm in pickerz:
+                            picker_dispatch[taskname].append((name_nm, 0))
+                        self.sqlonfly.insert_disp_taskpickr(taskname, picker_dispatch[taskname])
+
         print("Dispatch", picker_dispatch)
 
 
