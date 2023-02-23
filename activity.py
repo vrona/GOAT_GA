@@ -75,6 +75,7 @@ class Activity():
         self.sep_widget(7)
         
         # PICKERS PART
+    
     def pickrhour(self):
 
         self.pickertitle = tk.Label(self.master, text='PICKERS', font=("bold", 20), pady=10)
