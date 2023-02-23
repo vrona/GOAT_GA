@@ -297,14 +297,26 @@ class Computing:
             self.df_delta = pd.read_sql_query("SELECT * FROM delta_table", self.conn).drop(columns=['id'], axis=1)
             #self.df_speed = pd.read_sql_query("SELECT * FROM in_speed", self.conn).drop(columns=['id'], axis=1)
 
-            # get nb picker
-            self.speed_real = dict(zip(globaldb.ls_speed_artean, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
+            # computes real speed at second level
+            #self.speed_real = dict(zip(globaldb.ls_speed_artean, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
+            
+            iterable_iv_dict = []
+            for col in range(1, len(self.df_delta.columns)):
+                if self.df_delta.iloc[-1][col] < 0:
+                    iterable_iv_dict.append((abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1])))
+                    self.speed_real = dict(zip(globaldb.ls_speed_artean, iterable_iv_dict))
+                else:
+                    iterable_iv_dict.append((0 / self.df_delta['delta_time'].values[-1]))
 
-            for k, v in self.speed_real.items():
+            self.speed_real = dict(zip(globaldb.ls_speed_artean, iterable_iv_dict))
+            
+            # computes real speed at hour level
+            for key_speed, val_speed in self.speed_real.items():
                 # if v == 0:
                 #     v = 0.0001
-                self.speed_real[k] = round(float(v * 3600), 2)
+                self.speed_real[key_speed] = round(float(val_speed * 3600), 2)
 
+            # adds and computes real speed avg and adds goal of speed (as speedtocatch)
             for ncol in range(len(adminblocks.mainlistblock)):
                 self.speed_real["speed_art_avg"] = self.speed_real.get("speed_art_avg",0) + self.speed_real["speed_artbck{}".format(ncol)]
                 self.speed_real["speed_ean_avg"] = self.speed_real.get("speed_ean_avg",0) + self.speed_real["speed_eanbck{}".format(ncol)]
@@ -313,8 +325,9 @@ class Computing:
             self.speed_real["speed_art_avg"] = self.speed_real["speed_art_avg"] / len(adminblocks.mainlistblock)
             self.speed_real["speed_ean_avg"] = self.speed_real["speed_ean_avg"] / len(adminblocks.mainlistblock)
 
-            #print("RT:", self.speed_real)
+            print("REAL_TIME:", self.speed_real)
 
+            # insertion of all speed data to in_speed sql table
             useofdb.insert_dicsql(self.speed_real, "in_speed")
             return self.speed_real
 
