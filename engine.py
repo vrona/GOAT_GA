@@ -129,7 +129,7 @@ class Computing:
         today = datetime.datetime.today()
         #self.nightly_morning = (datetime.datetime(today.year, today.month, today.day, 2, 45,0), "nightly_morning")
         self.morning = (datetime.datetime(today.year, today.month, today.day, 12, 45, 0), "morning")
-        self.afternoon = (datetime.datetime(today.year, today.month, today.day, 19, 45, 1), "afternoon") # test 19 instead of 22
+        self.afternoon = (datetime.datetime(today.year, today.month, today.day, 19, 45, 1), "afternoon")
         self.night = (datetime.datetime(today.year, today.month, today.day, 23, 45, 0) + datetime.timedelta(seconds=(10800)), "night")
 
         # if datetime.datetime.now().time() < datetime.time(2, 45, 0):

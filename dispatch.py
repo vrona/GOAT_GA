@@ -1,6 +1,8 @@
 import pandas as pd
 import sqlite3
 import adminblocks
+from datetime import datetime
+from engine import Computing
 from globaldb import CreateDB_OnFly
 
 picker_dispatch = {}
@@ -20,7 +22,7 @@ class Dispatch():
         except Exception as e:
             print(f'An error occurred: {e}.')
             exit()
-        
+
 
     def picker_needs(self, opt_speed, real_speed):
         """
@@ -81,6 +83,21 @@ class Dispatch():
 
 
     sqlonfly = CreateDB_OnFly()
+    computing = Computing()
+
+    def real_time_stock_time(self, ls_pickr_names):
+        # compute stock of time for each picker
+        timerecord = datetime.now()
+        limit_hour_shift = self.computing.get_shift()[0]
+        real_stock_time = (limit_hour_shift - timerecord).seconds #/ 360
+        rounded_real_stock_time = round(float(real_stock_time/21600),2)
+
+        for picker in ls_pickr_names:
+            self.sqlonfly.insert_real_stk_time(rounded_real_stock_time, picker)
+        
+        return rounded_real_stock_time
+
+
     def dispatchme(self, start_time):
         global sorted_vtasklist, sorted_kblocklist, picker_dispatch
         
@@ -111,7 +128,11 @@ class Dispatch():
         # copy of list of pickers before self.picker() recursive funct
         pickerz = list_of_name.copy()
 
-        list_of_stock_of_time = self.dfpickers['stock_of_time'].tolist()
+        # insertion of real_time_stock_time per picker
+        rounded_real_stock_time = self.real_time_stock_time(pickerz)
+
+        # get the pickers' stock of time
+        list_of_stock_of_time = [rounded_real_stock_time] * len(pickerz)
 
         # production of dispatch via recursive 
         self.picker(list_of_stock_of_time[0], list_of_stock_of_time, list_of_name)

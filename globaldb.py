@@ -158,7 +158,7 @@ class CreateDB_OnFly:
         self.corps_tv = ", ".join((sql_tv))
         self.corps_te = ", ".join((sql_te))
         
-        self.pick_comp = self.entete_picker+"id INTEGER PRIMARY KEY, name text NOT NULL, arrival_time REAL, stock_of_time FLOAT, "+self.corps_tn+", "+self.corps_tv+", "+self.corps_te+")"
+        self.pick_comp = self.entete_picker+"id INTEGER PRIMARY KEY, name text NOT NULL, arrival_time REAL, initial_stock_time FLOAT, real_stock_time FLOAT, "+self.corps_tn+", "+self.corps_tv+", "+self.corps_te+")"
 
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()
@@ -195,13 +195,22 @@ class CreateDB_OnFly:
         self.conn.commit()
 
 
-    def insert_pickers(self, id, picker_name, arrival_time, stock_of_time):
+    def insert_pickers(self, id, picker_name, arrival_time, initial_stock_time):
         """
         insertion input data into pickers table
         """
-        order = "INSERT INTO pickers (id,name,arrival_time,stock_of_time) VALUES (?,?,?,?)"
-        param = list((id, picker_name, arrival_time, stock_of_time))
+        order = "INSERT INTO pickers (id,name,arrival_time,initial_stock_time) VALUES (?,?,?,?)"
+        param = list((id, picker_name, arrival_time, initial_stock_time))
         self.cur.execute(order, param)
+        self.conn.commit()
+
+
+    def insert_real_stk_time(self, real_stock_time, picker_name):
+        """
+        insertion real_stock_time data into pickers table
+        """
+        self.update_stocktime = "UPDATE pickers SET real_stock_time=%s WHERE name='%s';" % (real_stock_time, picker_name)
+        self.cur.execute(self.update_stocktime)
         self.conn.commit()
 
 
