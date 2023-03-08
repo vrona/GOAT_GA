@@ -261,7 +261,6 @@ class Computing:
 
         return self.speed_goal_art, self.speed_goal_ean
 
-    
     """
     Computation of speedness
     @param self: nothing
@@ -286,7 +285,7 @@ class Computing:
 
                 self.dictspeed["speed_art_avg"] = self.dictspeed.get("speed_art_avg", 0) + self.dictspeed["speed_artbck{}".format(ncol)]
                 self.dictspeed["speed_ean_avg"] = self.dictspeed.get("speed_ean_avg", 0) + self.dictspeed["speed_eanbck{}".format(ncol)]
-            
+
             self.dictspeed["speed_art_avg"] = self.dictspeed["speed_art_avg"] / len(adminblocks.mainlistblock)
             self.dictspeed["speed_ean_avg"] = self.dictspeed["speed_ean_avg"] / len(adminblocks.mainlistblock)
 

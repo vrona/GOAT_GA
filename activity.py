@@ -113,11 +113,11 @@ class Activity():
 
         self.get_dictglobalpick = {'time_glob': self.timerecord, **self.get_dictart,**self.get_dictean, 'total_pickers':self.totalpicker_text.get()}
         
-        for key in self.get_dictglobalpick.keys():
-            if self.get_dictglobalpick[key] == 0: 
-                tkinter.messagebox.showerror(
-                    "Champs requis", "Remplissez les champs, svp")
-                return
+        # for key in self.get_dictglobalpick.keys():
+        #     if self.get_dictglobalpick[key] == 0: 
+        #         tkinter.messagebox.showerror(
+        #             "Champs requis", "Remplissez les champs, svp")
+        #         return
 
         # Insert into DB
         pdb = UsingDB()

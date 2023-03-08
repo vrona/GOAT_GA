@@ -24,16 +24,17 @@ class Dispatch():
             exit()
 
 
-    def picker_needs(self, opt_speed, real_speed):
+    def picker_needs(self, goal_volume, real_speed):
         """
         a helper func which computes the number of needed pickers given the real speed vs the needed speed
         """
-        self.opt_speed = opt_speed
+
+        self.goal_volume = goal_volume
         self.real_speed = real_speed
         if self.real_speed == 0:
             self.pickr_needs = 0
         else:
-            self.pickr_needs = round(float(self.opt_speed/self.real_speed), 2)
+            self.pickr_needs = round(float(self.goal_volume/self.real_speed), 2)
         return self.pickr_needs
 
     # computation of number of picker needed for each block and based on EAN ONLY
@@ -41,6 +42,7 @@ class Dispatch():
 
         self.dictpkrneed_ean = {}
         self.df_speed = pd.read_sql_query("SELECT * FROM in_speed ORDER BY id DESC LIMIT 1", self.conn_main).drop(columns=['id'], axis=1)
+        self.df_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY id DESC LIMIT 1", self.conn_main).drop(columns=['id'], axis=1)
 
         for ncol in range(len(adminblocks.mainlistblock)):
 
@@ -53,14 +55,16 @@ class Dispatch():
             #   round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2)
             #   )
             self.dictpkrneed_ean[adminblocks.mainlistblock[ncol]]= self.picker_needs(
-                round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2),
+                self.df_goal.iloc[-1]["goal_eanbck{}".format(ncol)],
+                # round(float(self.df_goal.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2),
                 round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2)
                 )
 
+
         self.totalpkrneed = round(float(sum(self.dictpkrneed_ean.values())), 2)
         return self.dictpkrneed_ean, self.totalpkrneed #self.pickr_need_art
-    
-    
+
+
     def pkrandpoly(self):
         """
         Pickers and Poly returns dict of optimal_picker_needed per block, total sum optimal picker, float poly to give
@@ -72,11 +76,12 @@ class Dispatch():
         
         if self.declaredtp < self.totaloptipkr:
             for ncol in range(len(adminblocks.mainlistblock)):
-                
+
                 #self.optimalpkr["pkreanbck{}".format(ncol)] = round(float((self.optimalpkr["pkreanbck{}".format(ncol)] / self.totaloptipkr) * self.declaredtp), 2)
                 self.optimalpkr[adminblocks.mainlistblock[ncol]] = round(float((self.optimalpkr[adminblocks.mainlistblock[ncol]] / self.totaloptipkr) * self.declaredtp), 2)
                 self.polyneeded = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polyneeded
+
         else:
             self.polytogive = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polytogive
