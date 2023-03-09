@@ -324,8 +324,6 @@ class Computing:
             self.speed_real["speed_art_avg"] = self.speed_real["speed_art_avg"] / len(adminblocks.mainlistblock)
             self.speed_real["speed_ean_avg"] = self.speed_real["speed_ean_avg"] / len(adminblocks.mainlistblock)
 
-            print("REAL_TIME:", self.speed_real)
-
             # insertion of all speed data to in_speed sql table
             useofdb.insert_dicsql(self.speed_real, "in_speed")
             return self.speed_real
@@ -356,8 +354,6 @@ class Computing:
             if total_picker_realtime > total_pickers:
                 for n_newpicker in range((total_picker_realtime - total_pickers)):
                     self.onfly.insert_pickers((total_pickers + n_newpicker), "Picker_{}".format(total_pickers + n_newpicker), self.timerecord, round(float(stock_time/21600),2))
-
-
 
 
     def total(self):

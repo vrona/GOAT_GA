@@ -187,8 +187,9 @@ class Dispatch():
             else:
                 self.helper_insert_dispatch(picker_dispatch, pickerz)
 
-
         print("Dispatch", picker_dispatch)
+        return picker_dispatch
+        
 
 
         # for key_block_name, value_block_task in picker_dispatch.items():

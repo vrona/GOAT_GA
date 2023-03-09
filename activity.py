@@ -91,8 +91,9 @@ class Activity():
 
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=1, width=5, justify="center")
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(nblock)+2)
-            self.picker_name[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=8, width=10, justify="center")
+            self.picker_name[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=8, width=20, justify="center")
             self.picker_name[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+11, column=adminblocks.mainlistblock.index(nblock)+2)
+            
 
     # TOTALS PART 
     def totalpart(self):
@@ -126,13 +127,13 @@ class Activity():
 
         pdb.insert_dicsql(self.get_dictglobalpick, "in_globalpick")
         enginedb.weightnratio(self.get_dictglobalpick)
-        
+
         #insert new picker
         enginedb.insert_new_picker(self.totalpicker_text.get())
 
         # setting goals
         enginedb.new_goal()
-        
+
         # computes speedness of blocks
         self.speedpkr = enginedb.speedness()
 
@@ -153,26 +154,34 @@ class Activity():
 
         # Displaying TP Necessaire
         self.neededpickr.insert(tk.END, self.tot_opti_pkr)
-        
+
         # Displaying Poly num
         self.polystatus.insert(tk.END, self.poly_value)
         if self.poly_value < 0:
             self.polystatus.itemconfig(0, {'bg' : '#ED2939'})
         else:
             self.polystatus.itemconfig(0, {'bg' : '#00A86B'})
-        
+
         # Displaying hour and pickers per block
         self.hourofdispatch.insert(tk.END, self.get_dictglobalpick['time_glob'])
         for keys, vals in self.dispatch_pkr.items():
             self.dictblockpickerout[adminblocks.mainlistblock.index(keys)].insert(tk.END, vals)
-        
+
         for speed in range(len(adminblocks.mainlistblock)):
             self.speed_goal[speed].insert(tk.END,  self.speedpkr['speed_goal_artbck{}'.format(speed)])
             self.speed_realtime[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
-    
+
         # Displaying pickers dispatch
-        dispatch.dispatchme(datetime.datetime.now())
-       
+        self.dictofdispatch = dispatch.dispatchme(datetime.datetime.now())
+
+        for k, val in self.dictofdispatch.items():
+            for subval in val:
+
+                if subval[1] > 0:
+                #self.picker_name[k].insert(tk.END, namepick)
+                    self.picker_name[adminblocks.mainlistblock.index(k)].insert(tk.END,subval[0],subval[1])
+                #self.picker_name[adminblocks.mainlistblock.index(k)].insert(tk.END, timetask)
+
         # Displaying gauges and total
         if enginedb.totalongoal() is not None:
             self.percent_picked, self.totalofit = enginedb.totalongoal()
@@ -266,7 +275,6 @@ class Activity():
             # Navigation Button
             self.navbutton = ttk.Button(self.master, text="Reporting", bootstyle="PRIMARY", command= lambda: self.selecttab(2))
             self.navbutton.grid(row=23, column=self.lsofblock.index(self.lsofblock[-1])+6, pady=10)
-              
 
     # Clear all listbox
     def clear_listbox(self):
@@ -279,3 +287,4 @@ class Activity():
             self.dictblockpickerout[k].delete(0, tk.END)
             self.speed_goal[k].delete(0, tk.END)
             self.speed_realtime[k].delete(0, tk.END)
+            self.picker_name[k].delete(0, tk.END)
