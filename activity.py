@@ -24,6 +24,7 @@ class Activity():
         self.speedinitial_input = {}
         self.dictblockpickerout = {}
         self.picker_name = {}
+        self.picker_tasktime = {}
 
     def task_widget(self, lsofblock):
         
@@ -50,10 +51,10 @@ class Activity():
         self.eangoal = tk.Label(self.master, text='EAN Goal', justify='center',font=("bold", 13), pady=10)
         self.eangoal.grid(row=self.rowpart+2, column=1)
 
-        self.speedgoal = tk.Label(self.master, text='Vitesse Goal Block\nart./h.', justify='center',font=("bold", 13), pady=10)
+        self.speedgoal = tk.Label(self.master, text='Vitesse Goal Block\nean/h.', justify='center',font=("bold", 13), pady=10)
         self.speedgoal.grid(row=self.rowpart+3, column=1)
 
-        self.speedrealt = tk.Label(self.master, text='Vitesse réelle\nart./picker/h.', justify='center',font=("bold", 13), pady=10)
+        self.speedrealt = tk.Label(self.master, text='Vitesse Reel. Block\nean/h.', justify='center',font=("bold", 13), pady=10)
         self.speedrealt.grid(row=self.rowpart+4, column=1)
 
         # SEPARATOR & PICKERS PARTS
@@ -91,9 +92,11 @@ class Activity():
 
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=1, width=5, justify="center")
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(nblock)+2)
-            self.picker_name[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=8, width=20, justify="center")
+            self.picker_name[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=8, width=11, justify="center")
             self.picker_name[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+11, column=adminblocks.mainlistblock.index(nblock)+2)
-            
+            self.picker_tasktime[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=6, width=5, justify="center")
+            self.picker_tasktime[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+11, column=adminblocks.mainlistblock.index(nblock)+3)
+    
 
     # TOTALS PART 
     def totalpart(self):
@@ -168,8 +171,8 @@ class Activity():
             self.dictblockpickerout[adminblocks.mainlistblock.index(keys)].insert(tk.END, vals)
 
         for speed in range(len(adminblocks.mainlistblock)):
-            self.speed_goal[speed].insert(tk.END,  self.speedpkr['speed_goal_artbck{}'.format(speed)])
-            self.speed_realtime[speed].insert(tk.END,  self.speedpkr['speed_artbck{}'.format(speed)])
+            self.speed_goal[speed].insert(tk.END,  self.speedpkr['speed_goal_eanbck{}'.format(speed)])
+            self.speed_realtime[speed].insert(tk.END,  self.speedpkr['speed_eanbck{}'.format(speed)])
 
         # Displaying pickers dispatch
         self.dictofdispatch = dispatch.dispatchme(datetime.datetime.now())
@@ -179,7 +182,8 @@ class Activity():
 
                 if subval[1] > 0:
                 #self.picker_name[k].insert(tk.END, namepick)
-                    self.picker_name[adminblocks.mainlistblock.index(k)].insert(tk.END,subval[0],subval[1])
+                    self.picker_name[adminblocks.mainlistblock.index(k)].insert(tk.END,subval)
+                    #self.picker_tasktime[adminblocks.mainlistblock.index(k)].insert(tk.END,subval[1])
                 #self.picker_name[adminblocks.mainlistblock.index(k)].insert(tk.END, timetask)
 
         # Displaying gauges and total

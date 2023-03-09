@@ -22,8 +22,17 @@ class Dispatch():
         except Exception as e:
             print(f'An error occurred: {e}.')
             exit()
-
-
+    
+    sqlonfly = CreateDB_OnFly()
+    computing = Computing()
+    
+    def get_time_left(self):
+        timerecord = datetime.now()
+        limit_hour_shift = self.computing.get_shift()[0]
+        real_stock_time = (limit_hour_shift - timerecord).seconds #/ 360
+        real_stock_time = round(float(real_stock_time/21600),2)
+        return real_stock_time
+    
     def picker_needs(self, goal_volume, real_speed):
         """
         a helper func which computes the number of needed pickers given the real speed vs the needed speed
@@ -54,14 +63,20 @@ class Dispatch():
             #   round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2),
             #   round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2)
             #   )
+            print(self.df_goal.iloc[-1]["goal_eanbck{}".format(ncol)],)
+            print(round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2))
             self.dictpkrneed_ean[adminblocks.mainlistblock[ncol]]= self.picker_needs(
                 self.df_goal.iloc[-1]["goal_eanbck{}".format(ncol)],
                 # round(float(self.df_goal.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2),
                 round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2)
                 )
-
-
+        
+        
+        self.time_left = self.get_time_left() # TO DELETE
         self.totalpkrneed = round(float(sum(self.dictpkrneed_ean.values())), 2)
+        # self.totalpkrneed_r = round(float(sum(self.dictpkrneed_ean.values())/ self.time_left), 2)
+        print(self.dictpkrneed_ean, self.totalpkrneed)
+
         return self.dictpkrneed_ean, self.totalpkrneed #self.pickr_need_art
 
 
@@ -73,7 +88,7 @@ class Dispatch():
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn_main)
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
         self.optimalpkr, self.totaloptipkr = self.get_picker_bck_need()
-        
+
         if self.declaredtp < self.totaloptipkr:
             for ncol in range(len(adminblocks.mainlistblock)):
 
@@ -87,15 +102,9 @@ class Dispatch():
             return self.optimalpkr, self.totaloptipkr, self.polytogive
 
 
-    sqlonfly = CreateDB_OnFly()
-    computing = Computing()
-
     def real_time_stock_time(self, ls_pickr_names):
         # compute stock of time for each picker
-        timerecord = datetime.now()
-        limit_hour_shift = self.computing.get_shift()[0]
-        real_stock_time = (limit_hour_shift - timerecord).seconds #/ 360
-        rounded_real_stock_time = round(float(real_stock_time/21600),2)
+        rounded_real_stock_time = self.get_time_left()
 
         for picker in ls_pickr_names:
             self.sqlonfly.insert_real_stk_time(rounded_real_stock_time, picker)
@@ -209,7 +218,7 @@ class Dispatch():
 
             if sorted_vtasklist[0] > timestock:
 
-                picker_dispatch[sorted_kblocklist[0]].append((pickername[0], timestock))
+                picker_dispatch[sorted_kblocklist[0]].append((pickername[0], round(float(timestock),2)))
                 new_sub_task = sorted_vtasklist[0] - timestock
                 sorted_vtasklist[0] = new_sub_task
                 timestock -= timestock
@@ -217,7 +226,7 @@ class Dispatch():
 
             
             else: #sorted_vtasklist[0] < timestock
-                picker_dispatch[sorted_kblocklist[0]].append((pickername[0], sorted_vtasklist[0]))
+                picker_dispatch[sorted_kblocklist[0]].append((pickername[0], round(float(sorted_vtasklist[0]),2)))
                 residual_ts = timestock - sorted_vtasklist[0]
                 timestock = residual_ts
                 

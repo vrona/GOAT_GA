@@ -298,7 +298,7 @@ class Computing:
 
             # computes real speed at second level
             #self.speed_real = dict(zip(globaldb.ls_speed_artean, list(abs(self.df_delta.iloc[-1][col] / self.df_delta['delta_time'].values[-1]) for col in range(1, len(self.df_delta.columns)))))
-            
+
             iterable_iv_dict = []
             for col in range(1, len(self.df_delta.columns)):
                 if self.df_delta.iloc[-1][col] < 0:
@@ -308,7 +308,7 @@ class Computing:
                     iterable_iv_dict.append((0 / self.df_delta['delta_time'].values[-1]))
 
             self.speed_real = dict(zip(globaldb.ls_speed_artean, iterable_iv_dict))
-            
+
             # computes real speed at hour level
             for key_speed, val_speed in self.speed_real.items():
                 # if v == 0:
