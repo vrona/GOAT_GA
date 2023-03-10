@@ -186,6 +186,7 @@ class Dispatch():
             
             # in case number of picker more than the record before
             #if len(pickerz) > total_pickers:
+
             if total_pickers_n_1 > total_pickers_n_2:
                 print("Pickers", len(pickerz),"base -2", total_pickers_n_2)
 
