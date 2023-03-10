@@ -1,7 +1,8 @@
 import pandas as pd
 import sqlite3
 import adminblocks
-from datetime import datetime
+import datetime
+#from datetime import datetime
 from engine import Computing
 from globaldb import CreateDB_OnFly
 
@@ -27,15 +28,16 @@ class Dispatch():
     computing = Computing()
     
     def get_time_left(self):
-        timerecord = datetime.now()
+        timerecord = datetime.datetime.now()
         limit_hour_shift = self.computing.get_shift()[0]
         real_stock_time = (limit_hour_shift - timerecord).seconds #/ 360
         real_stock_time = round(float(real_stock_time/21600),2)
         return real_stock_time
-    
+
+
     def picker_needs(self, goal_volume, real_speed):
         """
-        a helper func which computes the number of needed pickers given the real speed vs the needed speed
+        a helper func which return the number of hours needed to pick given the real speed vs the goal to pick
         """
 
         self.goal_volume = goal_volume
@@ -44,11 +46,14 @@ class Dispatch():
             self.pickr_needs = 0
         else:
             self.pickr_needs = round(float(self.goal_volume/self.real_speed), 2)
+
         return self.pickr_needs
 
     # computation of number of picker needed for each block and based on EAN ONLY
     def get_picker_bck_need(self):
-
+        """
+        a helper func which return the number of hours needed to pick given the real ean speed vs the overall ean goal to pick
+        """
         self.dictpkrneed_ean = {}
         self.df_speed = pd.read_sql_query("SELECT * FROM in_speed ORDER BY id DESC LIMIT 1", self.conn_main).drop(columns=['id'], axis=1)
         self.df_goal = pd.read_sql_query("SELECT * FROM goalpick ORDER BY id DESC LIMIT 1", self.conn_main).drop(columns=['id'], axis=1)
@@ -63,21 +68,16 @@ class Dispatch():
             #   round(float(self.df_speed.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2),
             #   round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2)
             #   )
-            print(self.df_goal.iloc[-1]["goal_eanbck{}".format(ncol)],)
-            print(round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2))
+
             self.dictpkrneed_ean[adminblocks.mainlistblock[ncol]]= self.picker_needs(
                 self.df_goal.iloc[-1]["goal_eanbck{}".format(ncol)],
                 # round(float(self.df_goal.iloc[-1]["speed_goal_eanbck{}".format(ncol)]), 2),
                 round(float(self.df_speed.iloc[-1]["speed_eanbck{}".format(ncol)]), 2)
                 )
         
-        
-        self.time_left = self.get_time_left() # TO DELETE
         self.totalpkrneed = round(float(sum(self.dictpkrneed_ean.values())), 2)
-        # self.totalpkrneed_r = round(float(sum(self.dictpkrneed_ean.values())/ self.time_left), 2)
-        print(self.dictpkrneed_ean, self.totalpkrneed)
 
-        return self.dictpkrneed_ean, self.totalpkrneed #self.pickr_need_art
+        return self.dictpkrneed_ean, self.totalpkrneed
 
 
     def pkrandpoly(self):
@@ -89,15 +89,20 @@ class Dispatch():
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
         self.optimalpkr, self.totaloptipkr = self.get_picker_bck_need()
 
+        self.totaloptipkr = self.totaloptipkr/6
+
         if self.declaredtp < self.totaloptipkr:
             for ncol in range(len(adminblocks.mainlistblock)):
 
                 #self.optimalpkr["pkreanbck{}".format(ncol)] = round(float((self.optimalpkr["pkreanbck{}".format(ncol)] / self.totaloptipkr) * self.declaredtp), 2)
-                self.optimalpkr[adminblocks.mainlistblock[ncol]] = round(float((self.optimalpkr[adminblocks.mainlistblock[ncol]] / self.totaloptipkr) * self.declaredtp), 2)
+                # optimal declared picker per block 1.35 = weights of optimal picker per blocks 0.27 * 5 total declared picker
+                self.optimalpkr[adminblocks.mainlistblock[ncol]] = round(float(((self.optimalpkr[adminblocks.mainlistblock[ncol]] / 6) / self.totaloptipkr) * self.declaredtp), 2)
                 self.polyneeded = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polyneeded
 
         else:
+            for kk, xval in self.optimalpkr.items():
+                self.optimalpkr[kk] = round(float(xval / 6),2)
             self.polytogive = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polytogive
 
@@ -175,17 +180,22 @@ class Dispatch():
             self.sql_query = pd.read_sql_query("SELECT * FROM in_globalpick", self.conn_main).drop(columns=['id'], axis=1)
             self.dfbase = pd.DataFrame(self.sql_query)
 
-            total_pickers = int(self.dfbase.iloc[-2]['total_pickers'])
+            total_pickers_n_2 = int(self.dfbase.iloc[-2]['total_pickers'])
+            total_pickers_n_1 = int(self.dfbase.iloc[-1]['total_pickers'])
 
+            
             # in case number of picker more than the record before
-            if len(pickerz) > total_pickers:
+            #if len(pickerz) > total_pickers:
+            if total_pickers_n_1 > total_pickers_n_2:
+                print("Pickers", len(pickerz),"base -2", total_pickers_n_2)
 
                 pickerz_backup = pickerz.copy()
-                for n_picker in range(total_pickers):
+                for n_picker in range(total_pickers_n_2):
                     pickerz.pop(pickerz.index("Picker_{}".format(n_picker)))
 
                 # update column tables of tasks
                 for taskname in picker_dispatch.keys():
+                    print(pickerz)
                     for new_picker in pickerz:
                         self.sqlonfly.update_table_picker_tasks(taskname, new_picker)
                         
@@ -197,6 +207,7 @@ class Dispatch():
                 self.helper_insert_dispatch(picker_dispatch, pickerz)
 
         print("Dispatch", picker_dispatch)
+
         return picker_dispatch
         
 
@@ -249,6 +260,7 @@ class Dispatch():
 
 
     def helper_insert_dispatch(self, dictbase, listofpickerz):
+
         for task_name in dictbase.keys():
             if dictbase[task_name]:
                 self.sqlonfly.insert_disp_taskpickr(task_name, dictbase[task_name])

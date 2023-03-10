@@ -23,8 +23,8 @@ class Activity():
         self.get_dictglobalpick = {}
         self.speedinitial_input = {}
         self.dictblockpickerout = {}
+        self.taskname = {}
         self.picker_name = {}
-        self.picker_tasktime = {}
 
     def task_widget(self, lsofblock):
         
@@ -76,32 +76,50 @@ class Activity():
         self.sep_widget(7)
         
         # PICKERS PART
-    
+
     def pickrhour(self):
 
         self.pickertitle = tk.Label(self.master, text='PICKERS', font=("bold", 20), pady=10)
         self.pickertitle.grid(row=self.rowpart+7, column=len(adminblocks.mainlistblock)//2 +2)
 
-        self.hours = tk.Label(self.master, text='HEURE', font=("bold", 12), pady=10)
+        self.hours = tk.Label(self.master, text='RECORDING TIME', font=("bold", 12), pady=10)
         self.hours.grid(row=self.rowpart+8, column=1)
-     
+
         self.hourofdispatch = tk.Listbox(self.master, height=1, width=25, justify="center", font=14)
         self.hourofdispatch.grid(row=self.rowpart+9, column=1)
-        
+
         for nblock in adminblocks.mainlistblock:
 
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=1, width=5, justify="center")
             self.dictblockpickerout[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+9, column=adminblocks.mainlistblock.index(nblock)+2)
-            self.picker_name[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=8, width=11, justify="center")
-            self.picker_name[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+11, column=adminblocks.mainlistblock.index(nblock)+2)
-            self.picker_tasktime[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=6, width=5, justify="center")
-            self.picker_tasktime[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+11, column=adminblocks.mainlistblock.index(nblock)+3)
-    
+
+            self.task_name = tk.Label(self.master, text='{}Task'.format(nblock), font=("bold", 12), justify="center", pady=10)
+            self.task_name.grid(row=self.rowpart+8, column=adminblocks.mainlistblock.index(nblock)+2)
+
+            self.picker_name[adminblocks.mainlistblock.index(nblock)] = tk.Listbox(self.master, height=8, width=15, justify="center")
+            self.picker_name[adminblocks.mainlistblock.index(nblock)].grid(row=self.rowpart+11, column=adminblocks.mainlistblock.index(nblock)+2, padx=5, pady=2)
+
 
     # TOTALS PART 
     def totalpart(self):
-         
+
         self.totrow = 21
+
+
+    def dispatch_w_time(self, dict_dispatch):
+        timerecord = datetime.datetime.now()
+        new_dict_dispatch = {key:[] for key in dict_dispatch}
+
+        for key, val in dict_dispatch.items():
+            for subval in val:
+                if subval[1] > 0:
+                    newsubval = subval[1] * 21600 # portion for 6 hrs shift in seconds
+                    new_dict_dispatch[key].append((subval[0], (timerecord + datetime.timedelta(seconds=(newsubval))).strftime("%H:%M"))) #:%S
+                else:
+                    new_dict_dispatch[key].append((subval[0], 0))
+
+        print(new_dict_dispatch)
+        return new_dict_dispatch
 
 
     def input_art_ean(self):
@@ -116,7 +134,7 @@ class Activity():
         self.timerecord = datetime.datetime.now()
 
         self.get_dictglobalpick = {'time_glob': self.timerecord, **self.get_dictart,**self.get_dictean, 'total_pickers':self.totalpicker_text.get()}
-        
+
         # for key in self.get_dictglobalpick.keys():
         #     if self.get_dictglobalpick[key] == 0: 
         #         tkinter.messagebox.showerror(
@@ -176,14 +194,15 @@ class Activity():
 
         # Displaying pickers dispatch
         self.dictofdispatch = dispatch.dispatchme(datetime.datetime.now())
+        self.picker_dispacth_endtime = self.dispatch_w_time(self.dictofdispatch)
 
-        for k, val in self.dictofdispatch.items():
+        for k, val in self.picker_dispacth_endtime.items():
             for subval in val:
 
-                if subval[1] > 0:
+                if isinstance(subval[1], str):
+
                 #self.picker_name[k].insert(tk.END, namepick)
                     self.picker_name[adminblocks.mainlistblock.index(k)].insert(tk.END,subval)
-                    #self.picker_tasktime[adminblocks.mainlistblock.index(k)].insert(tk.END,subval[1])
                 #self.picker_name[adminblocks.mainlistblock.index(k)].insert(tk.END, timetask)
 
         # Displaying gauges and total

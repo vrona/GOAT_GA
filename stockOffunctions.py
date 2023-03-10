@@ -292,3 +292,29 @@ def createtask(self):
 
     #self.cur.execute("CREATE TABLE IF NOT EXISTS block_picker_out (block_id PRIMARY KEY, num_picker INTEGER, total_picker INTEGER, FOREIGN KEY (block_id) REFERENCES blocks_in (id), FOREIGN KEY (total_picker) REFERENCES in_globalpick (total_pickers))")
         #self.cur.execute("CREATE TABLE IF NOT EXISTS poly_out (time_glob REAL PRIMARY KEY, total_picker_onsite INTEGER NOT NULL, total_pick_goal INTEGER NOT NULL, poly_status INTEGER, FOREIGN KEY (total_picker_onsite) REFERENCES in_globalpick (time_glob), FOREIGN KEY (time_glob) REFERENCES in_globalpick (total_pickers))")
+
+def create_pickers(self, numofblock, db):
+        """
+        creates unique dynamic table. Columns' names and numbers are based on the number of blocks opened at the beginning of the shift.
+        """
+        self.numofblock = numofblock
+        ls_task_name = ["task_name{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_task_value = ["task_value{}".format(nblock) for nblock in range(0, self.numofblock)]
+        ls_time_ending = ["time_ending{}".format(nblock) for nblock in range(0, self.numofblock)]
+        
+        sql_tn = helper_dbtype(ls_task_name, "text")
+        sql_tv = helper_dbtype(ls_task_value, "FLOAT")
+        sql_te = helper_dbtype(ls_time_ending, "real")
+
+        # Table 8 input and partly computed data into pickers table
+        self.entete_picker = "CREATE TABLE IF NOT EXISTS pickers ("
+        self.corps_tn = ", ".join((sql_tn))
+        self.corps_tv = ", ".join((sql_tv))
+        self.corps_te = ", ".join((sql_te))
+        
+        self.pick_comp = self.entete_picker+"id INTEGER PRIMARY KEY, name text NOT NULL, arrival_time REAL, initial_stock_time FLOAT, real_stock_time FLOAT, "+self.corps_tn+", "+self.corps_tv+", "+self.corps_te+")"
+
+        self.conn = sqlite3.connect(db)
+        self.cur = self.conn.cursor()
+        self.cur.execute(self.pick_comp)
+        self.conn.commit()
