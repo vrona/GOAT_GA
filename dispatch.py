@@ -85,24 +85,27 @@ class Dispatch():
         Pickers and Poly returns dict of optimal_picker_needed per block, total sum optimal picker, float poly to give
         """
 
+        # get the real remaining time
+        self.real_time_left = self.get_time_left()
+
         self.df_declaredtp = pd.read_sql_query("SELECT total_pickers FROM in_globalpick ORDER BY id DESC LIMIT 1", self.conn_main)
         self.declaredtp = self.df_declaredtp.iloc[-1][0]
         self.optimalpkr, self.totaloptipkr = self.get_picker_bck_need()
 
-        self.totaloptipkr = self.totaloptipkr/6
+        self.totaloptipkr = self.totaloptipkr/self.real_time_left
 
         if self.declaredtp < self.totaloptipkr:
             for ncol in range(len(adminblocks.mainlistblock)):
 
                 #self.optimalpkr["pkreanbck{}".format(ncol)] = round(float((self.optimalpkr["pkreanbck{}".format(ncol)] / self.totaloptipkr) * self.declaredtp), 2)
                 # optimal declared picker per block 1.35 = weights of optimal picker per blocks 0.27 * 5 total declared picker
-                self.optimalpkr[adminblocks.mainlistblock[ncol]] = round(float(((self.optimalpkr[adminblocks.mainlistblock[ncol]] / 6) / self.totaloptipkr) * self.declaredtp), 2)
+                self.optimalpkr[adminblocks.mainlistblock[ncol]] = round(float(((self.optimalpkr[adminblocks.mainlistblock[ncol]] / self.real_time_left) / self.totaloptipkr) * self.declaredtp), 2)
                 self.polyneeded = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polyneeded
 
         else:
             for kk, xval in self.optimalpkr.items():
-                self.optimalpkr[kk] = round(float(xval / 6),2)
+                self.optimalpkr[kk] = round(float(xval / self.real_time_left),2)
             self.polytogive = round(float(self.declaredtp - self.totaloptipkr), 2)
             return self.optimalpkr, self.totaloptipkr, self.polytogive
 

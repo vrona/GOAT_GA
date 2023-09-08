@@ -1,0 +1,10 @@
+*.DS_Store
+*.o
+node_modules
+*.log
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.cache
